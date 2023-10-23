@@ -46,8 +46,10 @@ class Inter_Grafica:
 #
 #            print 'x = %s and y = %s' % (event.xdata,event.ydata)
 #
+            
             ax = gca()  # mantengo los ejes actuales
-            ax.hold(True) # superpongo graficos.
+            #obsoleto: ya no es necesario MatplotLib lo hace por defecto    
+            #ax.hold(True) # superpongo graficos.
 
     # Graficamos un punto rojo dende se hizo click.
             ax.plot([event.xdata],[event.ydata],'ro', picker=5)
@@ -74,7 +76,8 @@ class Inter_Grafica:
                     self.ydatalist.append( y[j] )
 #
             ax = gca()  # mantengo los ejes actuales
-            ax.hold(True) # superpongo graficos.
+            #obsoleto: ya no es necesario MatplotLib lo hace por defecto    
+            #ax.hold(True) # superpongo graficos.
             ax.plot(x[i_min],y[i_min],'kx',lw=2,ms=12)
             draw()
 #
@@ -99,8 +102,11 @@ class Inter_Grafica:
                     x.append(i)
 #
                 x.sort()
+                
                 ax= gca()  # mantengo los ejes actuales
-                ax.hold(True) # superpongo graficos.
+                #obsoleto: ya no es necesario MatplotLib lo hace por defecto
+                #ax.hold(True) # superpongo graficos.
+                
                 ax.plot(x,polyval(y,x), 'g-')
                 draw()
 #
@@ -139,8 +145,11 @@ class Inter_Grafica:
                     x.append(i)
 #
                 x.sort()
+                
                 ax= gca()  # mantengo los ejes actuales
-                ax.hold(True) # superpongo graficos.
+                #obsoleto: ya no es necesario MatplotLib lo hace por defecto
+                #ax.hold(True) # superpongo graficos.
+
                 ax.plot(x,polyval(y,x), 'g-')
                 draw()
 #

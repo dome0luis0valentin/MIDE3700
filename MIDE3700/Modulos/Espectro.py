@@ -288,7 +288,7 @@ class Espectro:
 # Despliego la ventana
 #
             #c_o_f= Despliega_ventana.Despliega_ventana()
-            texto= raw_input('La estrella es mas fria que A2? \n Is the star colder than a spectral type A2? (Yes/No): [no] ') or "n"
+            texto= input('La estrella es mas fria que A2? \n Is the star colder than a spectral type A2? (Yes/No): [no] ') or "n"
             #if texto == 'Si' or texto == 'si':
             if texto.lower()[0] == 'y':
                 c_o_f= 'f'

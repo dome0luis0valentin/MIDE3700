@@ -41,7 +41,7 @@ class Allen:
 #-------------------------------------------------------------------------------
     def Cargo_Tablas(self):
 #
-        print "Cargo Tablas de Allen \ Load Allen Tables\n"
+        print("Cargo Tablas de Allen \ Load Allen Tables\n")
 
         tablas_in= self.Leo_Archivo()
 #

@@ -237,13 +237,13 @@ for nom_est in lista_estrellas:
 #
 #-------------------------------------------------------------------------------
         else:
-            print 'No se puede calcular lambda_1'
-            print 'Cannot calculate lambda_1'
+            print('No se puede calcular lambda_1')
+            print('Cannot calculate lambda_1')
 #
 #-------------------------------------------------------------------------------
     else:
-        print 'No se puede calcular lambda_1'
-        print 'Cannot calculate lambda_1'
+        print('No se puede calcular lambda_1')
+        print('Cannot calculate lambda_1')
 #-------------------------------------------------------------------------------
 # Escribimos los valores de D, lambda_1 y Phi en un archivo
 # Write D, lambda_1 and Phi values in a file

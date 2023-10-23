@@ -27,7 +27,7 @@ class Curvas:
     #---------------------------------------------------------------------------
     def Cargo_Curva(self, magnitud):
 
-        print "Cargo curvas de ", magnitud," \ Load ", magnitud, " curves\n"
+        print("Cargo curvas de ", magnitud," \ Load ", magnitud, " curves\n")
 
         if magnitud == "Teff":
 

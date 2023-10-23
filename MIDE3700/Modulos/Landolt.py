@@ -42,7 +42,7 @@ class Landolt:
 #-------------------------------------------------------------------------------
     def Cargo_Tablas(self):
 #
-        print "Cargo Tablas de Landolt \ Load Landolt tables\n"
+        print("Cargo Tablas de Landolt \ Load Landolt tables\n")
         tablas_in= self.Leo_Archivo()
 #
         self.tabla1_I= self.Cargo_Tabla1(tablas_in[0])
