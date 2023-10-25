@@ -1,1 +1,0 @@
-plot [0.7:0][80:-10] 'TE_A5-6.dat' u 1:2 w l,'TE_A7-9.dat' u 1:2 w l,'TE_F0-1.dat' u 1:2 w l,'TE_F2-3.dat' u 1:2 w l,'TE_F4-5.dat' u 1:2 w l,'TE_F6.dat' u 1:2 w l,'TE_F7.dat' u 1:2 w l,'TE_F8-9.dat' u 1:2 w l,'TE_G0.dat' u 1:2 w l
