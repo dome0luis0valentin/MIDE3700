@@ -23,6 +23,7 @@ class Espectro:
     archivo_out= ""
     l_onda= []
     flujo= []
+    log_flujo = []
     espec= int()
     paschen= Polinomios.Polinomio()
     balmer= Polinomios.Polinomio()
@@ -41,6 +42,7 @@ class Espectro:
 # Inicializo los valores
         self.l_onda= []
         self.flujo= []
+        self.log_flujo = []
         self.espec= int()
         self.paschen= Polinomios.Polinomio()
         self.balmer= Polinomios.Polinomio()
@@ -104,14 +106,16 @@ class Espectro:
         # n= 3  Grafico el espectro, Paschen, Balmer y Balmer inf
         # n= 4  Grafico el espectro, Paschen, Balmer, Balmer inf y Balmer sup
 #
-        log_flujo= []
+        self.log_flujo= []
         for i in self.flujo:
-            log_flujo.append( math.log(i,10) )
+            self.log_flujo.append( math.log(i,10) )
+
+        
 #
     # Graficamos el espectro
         plt.xlabel('$\lambda$ [$\AA$]')
         plt.ylabel('$\log (F_{\lambda})$')
-        plt.plot(self.l_onda, log_flujo, 'b-')
+        plt.plot(self.l_onda, self.log_flujo, 'b-')
         plt.axvline(x=3700., color='k')
 #
 # Grafico los ajustes realizados hasta el momento
@@ -153,7 +157,10 @@ class Espectro:
                 plt.title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
         else:
             plt.title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
+        print("Antes de mostrar")
         plt.show()
+        print("Despues de mostrar")
+
 #-------------------------------------------------------------------------------
     def Guardo_ajuste(self, BCD, n):
 #
@@ -312,12 +319,17 @@ class Espectro:
         f_est.write( '\n' )
         f_est.close()
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
+        print("1")
         self.Grafico_espec(1)
+        print("2")
+        
         self.paschen.coef= copy.copy( ajuste.p.coef )
+        print("3")
         self.xP= copy.copy( ajuste.xdatalist )
+        print("Esto en el ajuste")
 #
         return
 #-------------------------------------------------------------------------------

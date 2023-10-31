@@ -17,18 +17,19 @@ import math
 import numpy as np
 import sys
 sys.path.append('./Modulos')
-import Archivos_in_out
-import Espectro
-import Inter_Grafica
-import Polinomios
-import Algebra
-import Parametros_BCD
-import Parametros_FUN
-import Normalizo_espectro
-import Curvas
+
+from Modulos import Archivos_in_out
+from Modulos import Espectro
+from Modulos import Inter_Grafica
+from Modulos import Polinomios
+from Modulos import Algebra
+from Modulos import Parametros_BCD
+from Modulos import Parametros_FUN
+from Modulos import Normalizo_espectro
+from Modulos import Curvas
 #import Allen
-import Landolt
-import Distancia
+from Modulos import Landolt
+from Modulos import Distancia
 #######################################################################
 #######################################################################
 #############            PRINCIPAL PROGRAM              ##############
@@ -69,6 +70,7 @@ for nom_est in lista_estrellas:
 # Fitting Paschen continuum
 #
     espectro.Ajuste_Paschen()
+    print("Aca paso el ajuste de Paschen")
 #
 # Ajuste del continuo de Balmer
 # Fitting Balmer continuum

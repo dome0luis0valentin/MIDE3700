@@ -11,6 +11,7 @@ import numpy as np
 import Espectro
 import Polinomios
 import copy
+from Funciones_auxiliares import encontrar_punto_mas_cercano
 ################################################################################
 ################################################################################
 ################################################################################
@@ -26,23 +27,44 @@ class Inter_Grafica:
     nor= bool # es para saber si el espectro esta normalizado
     key1= True
     key2= True
+    espectro = None #Recibe las coordenadas x e y del espectro
 #-------------------------------------------------------------------------------
-    def __init__(self, archivo, nor):
+    def __init__(self, archivo, nor, espectro):
 #        self.archivo= "Ajustes/" + nombre + ".out" # Archivo de salida
         self.archivo= archivo
         self.xdatalist = [] # puntos a ajustar
         self.ydatalist = []
         self.p.coef= []
         self.nor= nor
+        self.espectro = espectro
 #-------------------------------------------------------------------------------
     def click(self, event):
         self.event = event
+        print(self.espectro)
 #
-# Con el boton izquierdo agrego un punto
+# Con el boton derecho agrego un punto
         if event.button == 1:
 #
-            self.xdatalist.append(event.xdata)
-            self.ydatalist.append(event.ydata)
+            #Aquí sería necesario modificar x e y para que sean el punto más cercano de la lista
+
+            max_x = max(self.espectro.l_onda)
+            max_y = max(self.espectro.log_flujo)
+            
+            print("##",self.espectro.log_flujo[0])
+            l_onda_norm = [v / max_x for v in self.espectro.l_onda]
+            log_flujo_norm = [v / max_y for v in self.espectro.log_flujo]
+            
+            print("##",self.espectro.log_flujo[0])
+            
+            
+            
+            x, y = encontrar_punto_mas_cercano(event.xdata, event.ydata, l_onda_norm, log_flujo_norm, max_x, max_y)
+            input("_")
+
+            print("Puntos más cercanos", x, y)
+            self.xdatalist.append(x)
+            self.ydatalist.append(y)
+            input("_")
 #
 #            print 'x = %s and y = %s' % (event.xdata,event.ydata)
 #
@@ -51,9 +73,13 @@ class Inter_Grafica:
             #obsoleto: ya no es necesario MatplotLib lo hace por defecto    
             #ax.hold(True) # superpongo graficos.
 
-    # Graficamos un punto rojo dende se hizo click.
-            ax.plot([event.xdata],[event.ydata],'ro', picker=5)
+    # Graficamos un punto rojo donde se hizo click.
+            input("Aca se rompe?")
+            ax.plot([x],[y],'ro', picker=5)
+            input("Ya se rompio")
             draw()  # refrescamos el grafico.
+            input("Ya se rompio")
+
         if event.button == 3:
 #
             x= self.xdatalist
@@ -203,3 +229,4 @@ class Inter_Grafica:
         f.close()
         return
 #-------------------------------------------------------------------------------
+
