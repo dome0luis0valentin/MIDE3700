@@ -47,24 +47,19 @@ class Inter_Grafica:
 #
             #Aquí sería necesario modificar x e y para que sean el punto más cercano de la lista
 
+#Normalizo los datos para poder trabajar con el gráfico en iguales dimencioenes de 0 a 1
             max_x = max(self.espectro.l_onda)
             max_y = max(self.espectro.log_flujo)
-            
-            print("##",self.espectro.log_flujo[0])
-            l_onda_norm = [v / max_x for v in self.espectro.l_onda]
-            log_flujo_norm = [v / max_y for v in self.espectro.log_flujo]
-            
-            print("##",self.espectro.log_flujo[0])
-            
-            
-            
-            x, y = encontrar_punto_mas_cercano(event.xdata, event.ydata, l_onda_norm, log_flujo_norm, max_x, max_y)
-            input("_")
 
-            print("Puntos más cercanos", x, y)
+            l_onda_norm = [v / max_x for v in self.espectro.l_onda]
+            log_flujo_norm = [v / max_y for v in self.espectro.log_flujo]            
+                
+            x, y = encontrar_punto_mas_cercano(event.xdata, event.ydata, l_onda_norm, log_flujo_norm, max_x, max_y)
+            
+            print("Puntos mas cercanos: ", x, y)
             self.xdatalist.append(x)
             self.ydatalist.append(y)
-            input("_")
+            
 #
 #            print 'x = %s and y = %s' % (event.xdata,event.ydata)
 #
@@ -74,11 +69,8 @@ class Inter_Grafica:
             #ax.hold(True) # superpongo graficos.
 
     # Graficamos un punto rojo donde se hizo click.
-            input("Aca se rompe?")
             ax.plot([x],[y],'ro', picker=5)
-            input("Ya se rompio")
             draw()  # refrescamos el grafico.
-            input("Ya se rompio")
 
         if event.button == 3:
 #
@@ -159,7 +151,8 @@ class Inter_Grafica:
         if event.key=='a':
 #
             ajuste= self.p.minimos_cuadrados(self.xdatalist,self.ydatalist,2)
-#
+#   
+            color_counter = 0
             if ajuste:
                 y= poly1d(self.p.coef); y
                 x= []
@@ -175,8 +168,12 @@ class Inter_Grafica:
                 ax= gca()  # mantengo los ejes actuales
                 #obsoleto: ya no es necesario MatplotLib lo hace por defecto
                 #ax.hold(True) # superpongo graficos.
+                colores = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+                color = colores[color_counter % len(colores)]
+                
+                ax.plot(x,polyval(y,x), color+'-')
+                color_counter+=1
 
-                ax.plot(x,polyval(y,x), 'g-')
                 draw()
 #
                 self.Print_puntos('parabola')

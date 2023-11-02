@@ -322,14 +322,10 @@ class Espectro:
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
-        print("1")
         self.Grafico_espec(1)
-        print("2")
         
         self.paschen.coef= copy.copy( ajuste.p.coef )
-        print("3")
         self.xP= copy.copy( ajuste.xdatalist )
-        print("Esto en el ajuste")
 #
         return
 #-------------------------------------------------------------------------------
@@ -343,7 +339,7 @@ class Espectro:
         f_est.write( '\n' )
         f_est.close()
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
         self.Grafico_espec(2)
@@ -365,7 +361,7 @@ class Espectro:
         x_min, y_min= Algebra.Busco_minimos(self.l_onda, self.flujo)
         self.xH_inf, self.yH_inf= Algebra.Busco_lineas_balmer(x_min, y_min)
 ##
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         ajuste.xdatalist= copy.copy(self.xH_inf)
         ajuste.ydatalist= copy.copy(self.yH_inf)
 ##
@@ -391,7 +387,7 @@ class Espectro:
 #
 # Cargo los datos calculados
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         ajuste.xdatalist= x_max
         self.xH_sup= x_max
         log_y_max= []

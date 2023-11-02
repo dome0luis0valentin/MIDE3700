@@ -211,7 +211,7 @@ class Normalizo_espectro(Espectro.Espectro):
             self.xP.append( x )
             self.yP.append( math.log( self.flujo[k],10) )
             
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
         ajuste.xdatalist= copy.copy( self.xP )
         ajuste.ydatalist= copy.copy( self.yP )
 
@@ -239,7 +239,7 @@ class Normalizo_espectro(Espectro.Espectro):
             self.xB.append( x )
             self.yB.append( math.log( self.flujo[k],10) )
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
         ajuste.xdatalist= copy.copy( self.xB )
         ajuste.ydatalist= copy.copy( self.yB )
 #
@@ -267,7 +267,7 @@ class Normalizo_espectro(Espectro.Espectro):
             self.xB_inf.append( x )
             self.yB_inf.append( math.log( self.flujo[k],10) )
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
         ajuste.xdatalist= copy.copy( self.xB_inf )
         ajuste.ydatalist= copy.copy( self.yB_inf )
 #

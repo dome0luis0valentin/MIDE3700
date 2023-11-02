@@ -20,9 +20,12 @@ def encontrar_punto_mas_cercano( x_clicked, y_clicked, x_spectro_norm, y_spectro
     """
     min_distance = float("inf")
     closest_spectrum_index = None
-    
+
+    x_norm = x_clicked/ max_x_spectrum
+    y_norm = y_clicked/ max_y_spectrum
+
     for i in range(len(x_spectro_norm)):
-        distance = distancia_euclidea(x_spectro_norm[i], x_clicked/ max_x_spectrum, y_spectro_norm[i]/ max_y_spectrum, y_clicked/ max_y_spectrum)
+        distance = distancia_euclidea(x_spectro_norm[i], x_norm, y_spectro_norm[i], y_norm)
         if distance < min_distance:
             min_distance = distance
             closest_spectrum_index = i
