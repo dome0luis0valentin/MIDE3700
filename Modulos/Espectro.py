@@ -14,6 +14,7 @@ import Algebra
 import Inter_Grafica
 #import Despliega_ventana
 import copy
+from Modulos.Funciones_auxiliares import maximizar_pantalla
 #######################################################################
 #######################################################################
 #############                CLASE                       ##############
@@ -23,6 +24,7 @@ class Espectro:
     archivo_out= ""
     l_onda= []
     flujo= []
+    log_flujo = []
     espec= int()
     paschen= Polinomios.Polinomio()
     balmer= Polinomios.Polinomio()
@@ -41,6 +43,7 @@ class Espectro:
 # Inicializo los valores
         self.l_onda= []
         self.flujo= []
+        self.log_flujo = []
         self.espec= int()
         self.paschen= Polinomios.Polinomio()
         self.balmer= Polinomios.Polinomio()
@@ -104,14 +107,16 @@ class Espectro:
         # n= 3  Grafico el espectro, Paschen, Balmer y Balmer inf
         # n= 4  Grafico el espectro, Paschen, Balmer, Balmer inf y Balmer sup
 #
-        log_flujo= []
+        self.log_flujo= []
         for i in self.flujo:
-            log_flujo.append( math.log(i,10) )
+            self.log_flujo.append( math.log(i,10) )
+
+        
 #
     # Graficamos el espectro
         plt.xlabel('$\lambda$ [$\AA$]')
         plt.ylabel('$\log (F_{\lambda})$')
-        plt.plot(self.l_onda, log_flujo, 'b-')
+        plt.plot(self.l_onda, self.log_flujo, 'b-')
         plt.axvline(x=3700., color='k')
 #
 # Grafico los ajustes realizados hasta el momento
@@ -153,7 +158,10 @@ class Espectro:
                 plt.title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
         else:
             plt.title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
+        print("Antes de mostrar")
         plt.show()
+        print("Despues de mostrar")
+
 #-------------------------------------------------------------------------------
     def Guardo_ajuste(self, BCD, n):
 #
@@ -304,6 +312,7 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Paschen(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "w") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE PASCHEN\n' )
@@ -312,10 +321,12 @@ class Espectro:
         f_est.write( '\n' )
         f_est.close()
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
+        
         self.Grafico_espec(1)
+        
         self.paschen.coef= copy.copy( ajuste.p.coef )
         self.xP= copy.copy( ajuste.xdatalist )
 #
@@ -323,6 +334,7 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE BALMER\n' )
@@ -331,7 +343,7 @@ class Espectro:
         f_est.write( '\n' )
         f_est.close()
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
         self.Grafico_espec(2)
@@ -342,6 +354,7 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer_inf(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DE LA ENVOLVENTE INFERIOR\n' )
@@ -353,7 +366,7 @@ class Espectro:
         x_min, y_min= Algebra.Busco_minimos(self.l_onda, self.flujo)
         self.xH_inf, self.yH_inf= Algebra.Busco_lineas_balmer(x_min, y_min)
 ##
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         ajuste.xdatalist= copy.copy(self.xH_inf)
         ajuste.ydatalist= copy.copy(self.yH_inf)
 ##
@@ -367,6 +380,7 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer_sup(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DE LA ENVOLVENTE SUPERIOR\n' )
@@ -379,7 +393,7 @@ class Espectro:
 #
 # Cargo los datos calculados
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         ajuste.xdatalist= x_max
         self.xH_sup= x_max
         log_y_max= []

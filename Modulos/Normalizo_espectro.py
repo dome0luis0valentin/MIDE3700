@@ -13,6 +13,7 @@ import Polinomios
 import Algebra
 import Inter_Grafica
 import copy
+from Modulos.Funciones_auxiliares import maximizar_pantalla
 ##########################################################################################
 # Defino constantes globales
 k = 1.3806503 * pow(10.,-16) # erg/K Constante de Boltzmann
@@ -126,8 +127,9 @@ class Normalizo_espectro(Espectro.Espectro):
 #
 #     Divido el flujo del espectro por el del cuerpo negro normalizado
 #
-            self.l_onda.append( 1. / i ) # en Angstroms
-            self.flujo.append( self.espectro.flujo[k] / b_nor )
+        
+            self.l_onda.append( 1. / i ) # en Angstroms, representa el eje x
+            self.flujo.append( self.espectro.flujo[k] / b_nor ) #representa el eje y
             k= k + 1
 #
         return
@@ -196,6 +198,7 @@ class Normalizo_espectro(Espectro.Espectro):
 #-------------------------------------------------------------------------------
     def Ajuste_Paschen(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE PASCHEN\n' )
@@ -211,7 +214,7 @@ class Normalizo_espectro(Espectro.Espectro):
             self.xP.append( x )
             self.yP.append( math.log( self.flujo[k],10) )
             
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
         ajuste.xdatalist= copy.copy( self.xP )
         ajuste.ydatalist= copy.copy( self.yP )
 
@@ -224,6 +227,7 @@ class Normalizo_espectro(Espectro.Espectro):
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE BALMER\n' )
@@ -239,7 +243,7 @@ class Normalizo_espectro(Espectro.Espectro):
             self.xB.append( x )
             self.yB.append( math.log( self.flujo[k],10) )
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
         ajuste.xdatalist= copy.copy( self.xB )
         ajuste.ydatalist= copy.copy( self.yB )
 #
@@ -252,6 +256,7 @@ class Normalizo_espectro(Espectro.Espectro):
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer_inf(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DE LA ENVOLVENTE INFERIOR\n' )
@@ -267,7 +272,7 @@ class Normalizo_espectro(Espectro.Espectro):
             self.xB_inf.append( x )
             self.yB_inf.append( math.log( self.flujo[k],10) )
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True)
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
         ajuste.xdatalist= copy.copy( self.xB_inf )
         ajuste.ydatalist= copy.copy( self.yB_inf )
 #

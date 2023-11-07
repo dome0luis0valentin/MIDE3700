@@ -1,4 +1,3 @@
-2to3==1.0
 contourpy==1.1.1
 cycler==0.12.1
 fonttools==4.43.1
