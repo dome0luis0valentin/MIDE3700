@@ -261,8 +261,14 @@ class Curvas:
         self.Matriz_Curvas(curvas_in)
         return
     #---------------------------------------------------------------------------
-    def Leo_Archivo(self):
+    
 
+    def Leo_Archivo(self):
+        with open(self.archivo_in, 'r') as f_curva:
+            return [linea.split()[0] for linea in f_curva if linea.strip()]
+        
+    """
+    def Leo_Archivo(self):
         f_curva= open(self.archivo_in, 'r') # Abro el archivo de lectura
         linea= f_curva.readline()
         curvas_in= []
@@ -279,6 +285,9 @@ class Curvas:
 
         f_curva.close()
         return curvas_in
+    """
+
+        
     #---------------------------------------------------------------------------
     def Matriz_Curvas(self, curvas_in):
 
@@ -300,15 +309,34 @@ class Curvas:
             j1= 0
             j2= Algebra.Redondeo_int_mas_cerca( (self.yn + abs(self.y0)) * float(self.ky) )
 
-        # Inicializo la matriz con numeros exageradamente grandes
-
+# Inicializo la matriz con numeros exageradamente grandes
+        """
         self.matriz= np.zeros( [i2+1,j2+1] , float )
         for i in range(i1,i2):
             for j in range(j1,j2):
                 self.matriz[i][j]= 99999.
-
+        """
+       
+        # Crear una matriz llena de 99999.0
+        self.matriz = np.full((i2+1, j2+1), 99999.0, dtype=float)
         # Leo todos los archivos de las curvas
 
+        for i in range(self.nc):
+            with open(curvas_in[i], 'r') as f_curva:
+                next(f_curva)  # Saltar la primera línea
+                for linea in f_curva:
+
+                    xy = [float(j) for j in linea.split() if j]
+                    if not self.x0 <= xy[0] <= self.xn or not self.y0 <= xy[1] <= self.yn:
+                        continue
+
+                    ii = Algebra.Redondeo_int_mas_cerca((xy[0] + abs(self.x0)) * float(self.kx)) if self.x0 < 0. else Algebra.Redondeo_int_mas_cerca(xy[0] * float(self.kx))
+                    jj = Algebra.Redondeo_int_mas_cerca((xy[1] + abs(self.y0)) * float(self.ky)) if self.y0 < 0. else Algebra.Redondeo_int_mas_cerca(xy[1] * float(self.ky))
+
+                    self.matriz[ii][jj] = self.cte_curvas[i]
+
+        #obsoleto?
+        """
         for i in range(self.nc):
             f_curva= open(curvas_in[i], 'r') # Abro el archivo de lectura
             linea= f_curva.readline()
@@ -337,6 +365,9 @@ class Curvas:
 
                 linea= f_curva.readline()# leemos la siguiente linea del archivo
             f_curva.close()
+        
+        """
+        
         return
     #---------------------------------------------------------------------------
     def Interpolo(self, x, y):

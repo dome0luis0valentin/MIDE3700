@@ -44,6 +44,57 @@ Archivos_in_out.Genero_Dist_out()
 #-------------------------------------------------------------------------------
 # Cargo curvas
 # Load curves
+import time
+
+# Registra el tiempo de inicio
+inicio = time.time()
+
+import multiprocessing
+
+def cargar_curvas(nombre, curvas_dict):
+    curvas = Curvas.Curvas(nombre)
+    curvas_dict[nombre] = curvas
+
+# Crear una lista de nombres de curvas
+nombres_curvas = ["Teff", "TE_c", "TE_f", "CL_c", "CL_f", "Logg", "Mv", "Mbol", "PHIo_c", "PHIo_f"]
+
+# Crear un diccionario para almacenar las curvas
+manager = multiprocessing.Manager()
+curvas_dict = manager.dict()
+
+# Crear una lista de procesos
+processes = []
+
+
+# Crear un proceso para cargar cada curva
+for nombre in nombres_curvas:
+    process = multiprocessing.Process(target=cargar_curvas, args=(nombre, curvas_dict))
+    processes.append(process)
+    process.start()
+
+# Esperar a que todos los procesos terminen
+for process in processes:
+    process.join()
+
+# Accede a las curvas cargadas por su nombre
+print(curvas_dict)
+
+curvas_teff = curvas_dict["Teff"]
+curvas_te_c = curvas_dict["TE_c"]
+curvas_te_f = curvas_dict["TE_f"]
+curvas_cl_c = curvas_dict["CL_c"]
+curvas_cl_f = curvas_dict["CL_f"]
+curvas_logg = curvas_dict["Logg"]
+curvas_mv = curvas_dict["Mv"]
+curvas_mbol = curvas_dict["Mbol"]
+curvas_phio_c = curvas_dict["PHIo_c"]
+curvas_phio_f = curvas_dict["PHIo_f"]
+
+# Crear el objeto Landolt
+landolt = Landolt.Landolt()
+
+#obsoleto?
+"""
 curvas_teff= Curvas.Curvas("Teff")
 curvas_te_c= Curvas.Curvas("TE_c")
 curvas_te_f= Curvas.Curvas("TE_f")
@@ -56,6 +107,17 @@ curvas_phio_c= Curvas.Curvas("PHIo_c")
 curvas_phio_f= Curvas.Curvas("PHIo_f")
 #allen= Allen.Allen()
 landolt= Landolt.Landolt()
+"""
+
+
+
+# Registra el tiempo de finalización
+fin = time.time()
+
+# Calcula la duración en milisegundos
+duracion_ms = (fin - inicio) * 1000
+print(f"La sección de código tomó {duracion_ms} milisegundos en ejecutarse.")
+
 #-------------------------------------------------------------------------------
 i= -1
 for nom_est in lista_estrellas:
