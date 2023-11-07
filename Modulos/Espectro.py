@@ -14,6 +14,7 @@ import Algebra
 import Inter_Grafica
 #import Despliega_ventana
 import copy
+from Modulos.Funciones_auxiliares import maximizar_pantalla
 #######################################################################
 #######################################################################
 #############                CLASE                       ##############
@@ -311,6 +312,7 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Paschen(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "w") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE PASCHEN\n' )
@@ -322,6 +324,7 @@ class Espectro:
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
+        
         self.Grafico_espec(1)
         
         self.paschen.coef= copy.copy( ajuste.p.coef )
@@ -331,6 +334,7 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE BALMER\n' )
@@ -350,6 +354,7 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer_inf(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DE LA ENVOLVENTE INFERIOR\n' )
@@ -375,6 +380,7 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer_sup(self):
 #
+        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DE LA ENVOLVENTE SUPERIOR\n' )

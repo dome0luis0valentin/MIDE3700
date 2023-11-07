@@ -9,6 +9,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import Espectro
+
 import Polinomios
 import copy
 from Funciones_auxiliares import encontrar_punto_mas_cercano
@@ -28,6 +29,11 @@ class Inter_Grafica:
     key1= True
     key2= True
     espectro = None #Recibe las coordenadas x e y del espectro
+
+#Atributos para el manejo de colores de las rectas y curvas
+    colores = ['b', 'g', 'r', 'c', 'm', 'y', 'k'] #Es el color actual de la curva
+    index_color_actual = 0
+
 #-------------------------------------------------------------------------------
     def __init__(self, archivo, nor, espectro):
 #        self.archivo= "Ajustes/" + nombre + ".out" # Archivo de salida
@@ -39,24 +45,58 @@ class Inter_Grafica:
         self.espectro = espectro
 #-------------------------------------------------------------------------------
     def click(self, event):
+        import Modulos
         self.event = event
-        print(self.espectro)
+       
 #
 # Con el boton derecho agrego un punto
         if event.button == 1:
 #
-            #Aquí sería necesario modificar x e y para que sean el punto más cercano de la lista
+            clic_x = event.xdata
+            clic_y = event.ydata
+
 
 #Normalizo los datos para poder trabajar con el gráfico en iguales dimencioenes de 0 a 1
-            max_x = max(self.espectro.l_onda)
-            max_y = max(self.espectro.log_flujo)
+            if isinstance(self.espectro, Modulos.Normalizo_espectro.Normalizo_espectro):
 
-            l_onda_norm = [v / max_x for v in self.espectro.l_onda]
-            log_flujo_norm = [v / max_y for v in self.espectro.log_flujo]            
                 
-            x, y = encontrar_punto_mas_cercano(event.xdata, event.ydata, l_onda_norm, log_flujo_norm, max_x, max_y)
+                #Se elige max(ejex) porque deja al eje x e y en las mismas proporciones
+                constante = 8
+                
+                #eje_y_normalizdo = [v + constante for v in self.espectro.flujo]
+                eje_y_normalizado = self.espectro.espectro.flujo
+                eje_x = self.espectro.espectro.l_onda
+
+                print("Largo de cada uno de los elmentos de lso ejes:")
+                print(len(eje_y_normalizado))
+                print(max(eje_y_normalizado))
+                print("Ejex ")
+                print(len(eje_x))
+                print(max(eje_x))
+
+                x, y = encontrar_punto_mas_cercano(clic_x, clic_y, eje_x, eje_y_normalizado)
+                print("Puntos mas cercanos encontrados")
+                print(x,y)
+                print("1 / lambda: ", 1/x)
+                x =  math.log( x,10) 
+                print("X log: ", x)
+                x = clic_x 
+                y = clic_y
+                print("Puntos cliceados")
+                print(x,y)
+                #x -= 8
+            else:
+                max_x = max(self.espectro.l_onda)
+                max_y = max(self.espectro.log_flujo)
+
+                eje_x_normalizado = [v / max_x for v in self.espectro.l_onda]
+                eje_y_normalizado = [v / max_y for v in self.espectro.log_flujo]            
+                    
+                x, y = encontrar_punto_mas_cercano(clic_x/max_x, clic_y/max_y, eje_x_normalizado, eje_y_normalizado)
+                #Desnormalizo la coordenada
+                x = x*max_x
+                y = y*max_y
             
-            print("Puntos mas cercanos: ", x, y)
             self.xdatalist.append(x)
             self.ydatalist.append(y)
             
@@ -70,6 +110,7 @@ class Inter_Grafica:
 
     # Graficamos un punto rojo donde se hizo click.
             ax.plot([x],[y],'ro', picker=5)
+            
             draw()  # refrescamos el grafico.
 
         if event.button == 3:
@@ -97,6 +138,7 @@ class Inter_Grafica:
             #obsoleto: ya no es necesario MatplotLib lo hace por defecto    
             #ax.hold(True) # superpongo graficos.
             ax.plot(x[i_min],y[i_min],'kx',lw=2,ms=12)
+            
             draw()
 #
         else: return
@@ -109,6 +151,10 @@ class Inter_Grafica:
 #
             ajuste= self.p.minimos_cuadrados(self.xdatalist,self.ydatalist,1)
 #
+
+            color = self.cambiar_color()
+
+            print("Se usará este color", color)
             if ajuste:
                 y= poly1d(self.p.coef); y
                 x= []
@@ -125,7 +171,7 @@ class Inter_Grafica:
                 #obsoleto: ya no es necesario MatplotLib lo hace por defecto
                 #ax.hold(True) # superpongo graficos.
                 
-                ax.plot(x,polyval(y,x), 'g-')
+                ax.plot(x,polyval(y,x), color+'-')
                 draw()
 #
                 self.Print_puntos('recta')
@@ -152,7 +198,10 @@ class Inter_Grafica:
 #
             ajuste= self.p.minimos_cuadrados(self.xdatalist,self.ydatalist,2)
 #   
-            color_counter = 0
+
+            color = self.cambiar_color()   
+            print("Se usará este color", color)
+
             if ajuste:
                 y= poly1d(self.p.coef); y
                 x= []
@@ -168,11 +217,10 @@ class Inter_Grafica:
                 ax= gca()  # mantengo los ejes actuales
                 #obsoleto: ya no es necesario MatplotLib lo hace por defecto
                 #ax.hold(True) # superpongo graficos.
-                colores = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
-                color = colores[color_counter % len(colores)]
+                
                 
                 ax.plot(x,polyval(y,x), color+'-')
-                color_counter+=1
+                
 
                 draw()
 #
@@ -226,4 +274,15 @@ class Inter_Grafica:
         f.close()
         return
 #-------------------------------------------------------------------------------
+    def cambiar_color(self, index_color=None):
+        """
+        Modifico el color actual de la curva
+        """
+        if index_color is not None:
+            self.index_color_actual = index_color
+        else:
+            self.index_color_actual += 1
 
+        color = self.colores[self.index_color_actual % len(self.colores)]
+
+        return color
