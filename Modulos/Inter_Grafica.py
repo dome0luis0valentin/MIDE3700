@@ -21,8 +21,8 @@ class Inter_Grafica:
 # Atributos de la clase
 
     event = None
-    xdatalist = [] # puntos a ajustar
-    ydatalist = []
+    xdatalist = [] # coordenadas x de puntos a ajustar
+    ydatalist = [] # coordenadas y de puntos a ajustar
     p = Polinomios.Polinomio() # polinomio de ajuste
     archivo= ""
     nor= bool # es para saber si el espectro esta normalizado
@@ -33,7 +33,8 @@ class Inter_Grafica:
 #Atributos para el manejo de colores de las rectas y curvas
     colores = ['b', 'g', 'r', 'c', 'm', 'y', 'k'] #Es el color actual de la curva
     index_color_actual = 0
-
+#Lista de puntos en el gráfico, funciona de forma independiente de xdatalist e ydatalist
+    points = []
 #-------------------------------------------------------------------------------
     def __init__(self, archivo, nor, espectro):
 #        self.archivo= "Ajustes/" + nombre + ".out" # Archivo de salida
@@ -96,7 +97,9 @@ class Inter_Grafica:
                 #Desnormalizo la coordenada
                 x = x*max_x
                 y = y*max_y
-            
+
+            #Agrego el punto a la lista de puntos
+            self.points.append(Circle(x,y))  
             self.xdatalist.append(x)
             self.ydatalist.append(y)
             
@@ -105,20 +108,23 @@ class Inter_Grafica:
 #
             
             ax = gca()  # mantengo los ejes actuales
-            #obsoleto: ya no es necesario MatplotLib lo hace por defecto    
-            #ax.hold(True) # superpongo graficos.
+            
 
     # Graficamos un punto rojo donde se hizo click.
             ax.plot([x],[y],'ro', picker=5)
             
             draw()  # refrescamos el grafico.
 
-        if event.button == 3:
 #
+# Con el boton izquierdo, busco el más cercano, si el más cercano esta activo --> Lo desactivo
+#                                               si el más cercano esta inactivo --> Lo activo
+#
+        if event.button == 3:
+
             x= self.xdatalist
             y= self.ydatalist
 #
-#     Busco el punto
+#     Busco el punto más cercano
             dif_min= abs(x[0] - event.xdata)
             for j in range(len(x)):
                 dif= abs(x[j] - event.xdata)

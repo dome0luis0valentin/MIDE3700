@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#Carpetas de test
+/Pruebas-borrar
+
 # C extensions
 *.so
 

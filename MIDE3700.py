@@ -116,7 +116,7 @@ fin = time.time()
 
 # Calcula la duración en milisegundos
 duracion_ms = (fin - inicio) * 1000
-print(f"La sección de código tomó {duracion_ms} milisegundos en ejecutarse.")
+print(f"La sección de código tomó {duracion_ms:.2f} milisegundos en ejecutarse.")
 
 #-------------------------------------------------------------------------------
 i= -1
