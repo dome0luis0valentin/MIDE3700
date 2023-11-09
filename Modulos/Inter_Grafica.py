@@ -13,6 +13,9 @@ import Espectro
 import Polinomios
 import copy
 from Funciones_auxiliares import encontrar_punto_mas_cercano
+from Funciones_auxiliares import calcular_indice_del_punto_mas_cercano
+
+from Modulos.Punto import Punto
 ################################################################################
 ################################################################################
 ################################################################################
@@ -99,20 +102,15 @@ class Inter_Grafica:
                 y = y*max_y
 
             #Agrego el punto a la lista de puntos
-            self.points.append(Circle(x,y))  
+ 
             self.xdatalist.append(x)
             self.ydatalist.append(y)
-            
-#
-#            print 'x = %s and y = %s' % (event.xdata,event.ydata)
-#
-            
+           
             ax = gca()  # mantengo los ejes actuales
-            
 
-    # Graficamos un punto rojo donde se hizo click.
-            ax.plot([x],[y],'ro', picker=5)
-            
+    # Graficamos un punto rojo en el punto del espectro más cercano.
+            new_point = ax.plot([x],[y],'ro', picker=5)
+            self.points.append(Punto(x, y, new_point[0]))
             draw()  # refrescamos el grafico.
 
 #
@@ -121,8 +119,33 @@ class Inter_Grafica:
 #
         if event.button == 3:
 
-            x= self.xdatalist
-            y= self.ydatalist
+            clic_x = event.xdata
+            clic_y = event.ydata
+            coor_x= self.xdatalist
+            coor_y= self.ydatalist
+            indice_mas_cercano = calcular_indice_del_punto_mas_cercano(clic_x, clic_y, coor_x, coor_y)
+
+            if indice_mas_cercano == -1:
+                return
+            
+            punto = self.points[indice_mas_cercano]
+            if punto.get_activate():
+                punto.set_activate(False)
+                punto.set_color("grey")
+                #desactivo y pinto de gris
+            else:
+                punto.set_activate(True)
+                punto.set_color("green")
+                #activo y pinto de verde
+
+            ax = gca()  # mantengo los ejes actuales
+           
+            #ax.plot(x[i_min],y[i_min],'kx',lw=2,ms=12)
+            
+            draw()
+#
+        else: return
+        """
 #
 #     Busco el punto más cercano
             dif_min= abs(x[0] - event.xdata)
@@ -139,15 +162,9 @@ class Inter_Grafica:
                 if j != i_min:
                     self.xdatalist.append( x[j] )
                     self.ydatalist.append( y[j] )
-#
-            ax = gca()  # mantengo los ejes actuales
-            #obsoleto: ya no es necesario MatplotLib lo hace por defecto    
-            #ax.hold(True) # superpongo graficos.
-            ax.plot(x[i_min],y[i_min],'kx',lw=2,ms=12)
-            
-            draw()
-#
-        else: return
+
+        """           
+          
 #
 #-------------------------------------------------------------------------------
     def ajuste_recta(self, event):

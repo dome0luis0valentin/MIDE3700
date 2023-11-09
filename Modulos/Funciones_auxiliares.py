@@ -38,3 +38,20 @@ def encontrar_punto_mas_cercano( x_norm, y_norm, x_spectro_norm, y_spectro_norm)
     y = y_spectro_norm[closest_spectrum_index] 
 
     return x, y
+
+
+
+def calcular_indice_del_punto_mas_cercano(clic_x, clic_y, coor_x, coor_y):
+    # Inicializa la distancia mínima como infinito y el índice del punto más cercano como -1
+    distancia_minima = float('inf')
+    indice_mas_cercano = -1
+    
+    # Itera a través de las coordenadas x e y para encontrar el punto más cercano
+    for i in range(len(coor_x)):
+        distancia = math.sqrt((clic_x - coor_x[i]) ** 2 + (clic_y - coor_y[i]) ** 2)
+        if distancia < distancia_minima:
+            distancia_minima = distancia
+            indice_mas_cercano = i
+    
+    # Devuelve el índice del punto más cercano
+    return indice_mas_cercano

@@ -15,6 +15,7 @@ import Inter_Grafica
 #import Despliega_ventana
 import copy
 from Modulos.Funciones_auxiliares import maximizar_pantalla
+from Modulos.Punto import Punto
 #######################################################################
 #######################################################################
 #############                CLASE                       ##############
@@ -118,6 +119,7 @@ class Espectro:
         plt.ylabel('$\log (F_{\lambda})$')
         plt.plot(self.l_onda, self.log_flujo, 'b-')
         plt.axvline(x=3700., color='k')
+
 #
 # Grafico los ajustes realizados hasta el momento
         if n >= 2:
@@ -158,9 +160,7 @@ class Espectro:
                 plt.title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
         else:
             plt.title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
-        print("Antes de mostrar")
         plt.show()
-        print("Despues de mostrar")
 
 #-------------------------------------------------------------------------------
     def Guardo_ajuste(self, BCD, n):

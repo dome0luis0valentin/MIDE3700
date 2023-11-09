@@ -1,16 +1,18 @@
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle
 
-class Punto(Circle):
+class Punto:
     #Por defecto siempre van a tener el mismo tamaño y color verde
-    def __init__(self, x, y,  color='green', radius=0.01 ,activate=True, *args, **kwargs):
-        super().__init__((x, y), radius, color=color, *args, **kwargs)
+    def __init__(self, x, y, grafico, color='red', activate=True ):
         self.x = x
         self.y = y
         self.activate = activate
+        self.grafico = grafico
 
     def set_activate(self, activate):
         self.activate = activate
 
     def get_activate(self):
         return self.activate
+    
+    def set_color(self, color):
+        self.grafico.set_color(color)
