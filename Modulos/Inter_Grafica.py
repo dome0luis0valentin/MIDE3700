@@ -132,8 +132,10 @@ class Inter_Grafica:
             if indice_mas_cercano == -1:
                 return
             print(indice_mas_cercano)
+            
             punto = self.points[indice_mas_cercano]
             
+            print("Este es el punto más cercano: Type:  ", type(punto), punto.x, punto.y)
             if punto.get_activate():
                 punto.set_activate(False)
                 punto.set_color("grey")
@@ -234,10 +236,8 @@ class Inter_Grafica:
 #                
             x_active, y_active = self.get_active_points()
 
-            ajuste= self.p.minimos_cuadrados(x_active,y_active,2)
-            
+            ajuste= self.p.minimos_cuadrados(x_active,y_active,2)         
 #   
-
             color = self.cambiar_color()   
 
             if ajuste:
@@ -254,11 +254,9 @@ class Inter_Grafica:
                 
                 ax= gca()  # mantengo los ejes actuales
                 #obsoleto: ya no es necesario MatplotLib lo hace por defecto
-                #ax.hold(True) # superpongo graficos.
+                #ax.hold(True) # superpongo graficos.                
                 
-                
-                ax.plot(x,polyval(y,x), color+'-')
-                
+                ax.plot(x,polyval(y,x), color+'-')                
 
                 draw()
 #
@@ -285,8 +283,12 @@ class Inter_Grafica:
     def Print_puntos(self, fun):
         f= open(self.archivo, "a")
         f.write( 'Puntos ajustados\n' )
-        for i in range(len(self.xdatalist)):
-            f.write( 'x = %s and y = %s' % (self.xdatalist[i],self.ydatalist[i]))
+        
+        #Escribo solamente los puntos que no estan activos:
+        x_active, y_active = self.get_active_points()
+        
+        for i in range(len(x_active)):
+            f.write( 'x = %s and y = %s' % (x_active[i],y_active[i]))
             f.write('\n')
 #
         y= self.p.Print_pol(self.p)

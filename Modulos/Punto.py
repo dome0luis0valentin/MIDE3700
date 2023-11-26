@@ -15,4 +15,6 @@ class Punto:
         return self.activate
     
     def set_color(self, color):
+        print("Cambiando el color: ", color, " Grafico es d e tipo: ", type(self.grafico), " es ", self.grafico)
+        
         self.grafico.set_color(color)

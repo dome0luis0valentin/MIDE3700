@@ -14,6 +14,7 @@ import Algebra
 import Inter_Grafica
 import copy
 from Modulos.Funciones_auxiliares import maximizar_pantalla
+from Punto import Punto
 ##########################################################################################
 # Defino constantes globales
 k = 1.3806503 * pow(10.,-16) # erg/K Constante de Boltzmann
@@ -47,6 +48,7 @@ class Normalizo_espectro(Espectro.Espectro):
     yB_inf= []
     xH_inf= []
     yH_inf= []
+    
 #-------------------------------------------------------------------------------
     def __init__(self, T, espectro):
 #

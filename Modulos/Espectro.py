@@ -150,7 +150,10 @@ class Espectro:
 
                     plt.title(self.nombre + '\n' + 'Ajuste la envolvente inferior\n' + 'Fit the bottom envelope of Balmer lines')
 #
-                if n == 4:# Grafico Balmer inf
+                if n == 4:# Grafico Balmer superior
+                    
+                    print("En ajuste superior ###\n###\n###\n")
+                    
                     ybi= poly1d(self.balmer_inf.coef); ybi
                     xv= -self.balmer_inf.coef[1] / (2. * self.balmer_inf.coef[0])
                     xbi= []
@@ -162,9 +165,21 @@ class Espectro:
                         for i in self.l_onda:
                             if 3700. <= i and i <= 3800.:
                                 xbi.append( i )
+                                
                     plt.plot(xbi, polyval(ybi,xbi), 'g-')
-                    plt.plot(self.xH_sup, self.yH_sup, 'ro')
+                    
+                    #Dibujo los puntos
+                    print("Estos son los puntos que se agregarán: ", len(self.xH_sup))
+                    for x, y in zip(self.xH_sup, self.yH_sup):
+                        punto, = plt.plot(x, y, 'ro')
+                        new_point = punto
+                        print("Tipo de new point: ", type(new_point))
+                        puntos.append(Punto(x, y, new_point))
+                    
+                        print("Punto por Balmer superior agregado: ", new_point, "\n Se agregoó a la lista de puntos: \n\n")
+                    
                     plt.title(self.nombre + '\n' + 'Ajuste la envolvente superior\n' + 'Fit the upper envelope of Balmer lines')
+                    
             else:
                 plt.title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
         else:
@@ -420,7 +435,7 @@ class Espectro:
 #
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_parab)
-        self.Grafico_espec(4)
+        self.Grafico_espec(4, ajuste.points)
         self.balmer_sup.coef= ajuste.p.coef
 #
         return
