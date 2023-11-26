@@ -19,6 +19,7 @@ class Polinomio:
     def minimos_cuadrados(self, x, y, n):
         # x e y son los puntos a ajustar
         # n es el grado del polinomio
+        
 #
 #  Programa que ajusta un polinomio de grado n por minimos cuadrados
 #
@@ -37,7 +38,7 @@ class Polinomio:
         self.grado= n + 1
         self.coef= np.arange(self.grado).reshape(self.grado)
         self.coef= np.zeros((self.grado))
-        
+                
         if len(x) > self.grado:
             A= np.zeros((self.grado, self.grado))
             b= np.zeros((self.grado))
@@ -49,12 +50,13 @@ class Polinomio:
                         b[k] += y[i] * math.pow(x[i], k)
 #
             sol= np.linalg.solve(A,b)
+
             for i in range(len(sol)):
                 self.coef[i]= sol[n-i]
         
             ajuste= True
 #        else:
-#            print "Agregue ", n-len(x)+2, " puntos"
+#            print ("Agregue ", n-len(x)+2, " puntos")
 #
         return ajuste
 #------------------------------------------------------------------------------

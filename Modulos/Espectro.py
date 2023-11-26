@@ -101,7 +101,7 @@ class Espectro:
         return
         
 #-------------------------------------------------------------------------------
-    def Grafico_espec(self, n):
+    def Grafico_espec(self, n, puntos = None):
 #
         # n= 1  Grafico el espectro
         # n= 2  Grafico el espectro y Paschen
@@ -138,7 +138,16 @@ class Espectro:
                         xb.append( i )
                 plt.plot(xb, polyval(yb,xb), 'g-')# Grafico Balmer
                 if n == 3:
-                    plt.plot(self.xH_inf, self.yH_inf, 'ro')
+                    #obsoleto: Lo cambio por lo de abajo para poder manipular esos puntos.
+                    #plt.plot(self.xH_inf, self.yH_inf, 'ro')
+                    # Plotear los puntos y almacenarlos en la lista
+                    for x, y in zip(self.xH_inf, self.yH_inf):
+                        punto, = plt.plot(x, y, 'ro')
+                        new_point = punto
+                        print("Punto por Balmer inferior agregado: ", punto, " Se agregoó a \n\n", puntos)
+            
+                        puntos.append(Punto(x, y, new_point))
+
                     plt.title(self.nombre + '\n' + 'Ajuste la envolvente inferior\n' + 'Fit the bottom envelope of Balmer lines')
 #
                 if n == 4:# Grafico Balmer inf
@@ -320,8 +329,11 @@ class Espectro:
         f_est.write( '------------------------------\n' )
         f_est.write( '\n' )
         f_est.close()
+
+        
 #
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
+        ajuste.clean_puntos()
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
         
@@ -344,6 +356,8 @@ class Espectro:
         f_est.close()
 #
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
+        ajuste.clean_puntos()
+
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
         self.Grafico_espec(2)
@@ -367,12 +381,13 @@ class Espectro:
         self.xH_inf, self.yH_inf= Algebra.Busco_lineas_balmer(x_min, y_min)
 ##
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
+        
         ajuste.xdatalist= copy.copy(self.xH_inf)
         ajuste.ydatalist= copy.copy(self.yH_inf)
 ##
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_parab)
-        self.Grafico_espec(3)
+        self.Grafico_espec(3, ajuste.points)
         self.balmer_inf.coef= copy.copy( ajuste.p.coef )
         self.xB_inf= copy.copy( ajuste.xdatalist )
 #
@@ -394,6 +409,7 @@ class Espectro:
 # Cargo los datos calculados
 #
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
+        ajuste.clean_puntos()
         ajuste.xdatalist= x_max
         self.xH_sup= x_max
         log_y_max= []

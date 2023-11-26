@@ -132,7 +132,6 @@ for nom_est in lista_estrellas:
 # Fitting Paschen continuum
 #
     espectro.Ajuste_Paschen()
-    print("Aca paso el ajuste de Paschen")
 #
 # Ajuste del continuo de Balmer
 # Fitting Balmer continuum

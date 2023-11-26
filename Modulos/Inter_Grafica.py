@@ -53,7 +53,7 @@ class Inter_Grafica:
         self.event = event
        
 #
-# Con el boton derecho agrego un punto
+# Con el boton izquierdo agrego un punto
         if event.button == 1:
 #
             clic_x = event.xdata
@@ -63,13 +63,15 @@ class Inter_Grafica:
 #Normalizo los datos para poder trabajar con el gráfico en iguales dimencioenes de 0 a 1
             if isinstance(self.espectro, Modulos.Normalizo_espectro.Normalizo_espectro):
 
-                
+                #L flujo.
+
+                #L_honda 
                 #Se elige max(ejex) porque deja al eje x e y en las mismas proporciones
                 constante = 8
                 
                 #eje_y_normalizdo = [v + constante for v in self.espectro.flujo]
-                eje_y_normalizado = self.espectro.espectro.flujo
-                eje_x = self.espectro.espectro.l_onda
+                eje_y_normalizado = self.espectro.flujo
+                eje_x = self.espectro.l_onda
 
                 print("Largo de cada uno de los elmentos de lso ejes:")
                 print(len(eje_y_normalizado))
@@ -108,13 +110,14 @@ class Inter_Grafica:
            
             ax = gca()  # mantengo los ejes actuales
 
-    # Graficamos un punto rojo en el punto del espectro más cercano.
+            # Graficamos un punto rojo en el punto del espectro más cercano.
             new_point = ax.plot([x],[y],'ro', picker=5)
-            self.points.append(Punto(x, y, new_point[0]))
+            
+            self.agregar_punto(Punto(x, y, new_point[0]))
             draw()  # refrescamos el grafico.
 
 #
-# Con el boton izquierdo, busco el más cercano, si el más cercano esta activo --> Lo desactivo
+# Con el boton derecho, busco el más cercano, si el más cercano esta activo --> Lo desactivo
 #                                               si el más cercano esta inactivo --> Lo activo
 #
         if event.button == 3:
@@ -124,18 +127,20 @@ class Inter_Grafica:
             coor_x= self.xdatalist
             coor_y= self.ydatalist
             indice_mas_cercano = calcular_indice_del_punto_mas_cercano(clic_x, clic_y, coor_x, coor_y)
+           
 
             if indice_mas_cercano == -1:
                 return
-            
+            print(indice_mas_cercano)
             punto = self.points[indice_mas_cercano]
+            
             if punto.get_activate():
                 punto.set_activate(False)
                 punto.set_color("grey")
                 #desactivo y pinto de gris
             else:
                 punto.set_activate(True)
-                punto.set_color("green")
+                punto.set_color("red")
                 #activo y pinto de verde
 
             ax = gca()  # mantengo los ejes actuales
@@ -172,12 +177,20 @@ class Inter_Grafica:
         if event.key not in ('a','q'): return
         if event.key=='a':
 #
-            ajuste= self.p.minimos_cuadrados(self.xdatalist,self.ydatalist,1)
+            #Armo la recta sobre los puntos que estan activos
+            x_active = []
+            y_active = []
+            
+            for point in self.get_puntos():
+                if point.get_activate():
+                    x_active.append(point.x)
+                    y_active.append(point.y)
+                                
+            ajuste= self.p.minimos_cuadrados(x_active,y_active,1)
 #
 
             color = self.cambiar_color()
 
-            print("Se usará este color", color)
             if ajuste:
                 y= poly1d(self.p.coef); y
                 x= []
@@ -218,12 +231,14 @@ class Inter_Grafica:
     def ajuste_parab(self, event):
         if event.key not in ('a','q'): return
         if event.key=='a':
-#
-            ajuste= self.p.minimos_cuadrados(self.xdatalist,self.ydatalist,2)
+#                
+            x_active, y_active = self.get_active_points()
+
+            ajuste= self.p.minimos_cuadrados(x_active,y_active,2)
+            
 #   
 
             color = self.cambiar_color()   
-            print("Se usará este color", color)
 
             if ajuste:
                 y= poly1d(self.p.coef); y
@@ -232,7 +247,7 @@ class Inter_Grafica:
                     x.append(1./3700.)
                 else:
                     x.append(3700.)
-                for i in self.xdatalist:
+                for i in x_active:
                     x.append(i)
 #
                 x.sort()
@@ -309,3 +324,22 @@ class Inter_Grafica:
         color = self.colores[self.index_color_actual % len(self.colores)]
 
         return color
+    
+ #-------------------------------------------------------------------------------
+    def agregar_punto(self, punto):
+        self.points.append(punto)
+
+    def get_puntos(self):
+        return self.points
+    
+    def clean_puntos(self):
+        self.points = []
+
+    def get_active_points(self):
+        x_active = []
+        y_active = []
+        for point in self.get_puntos():
+            if point.get_activate():
+                x_active.append(point.x)
+                y_active.append(point.y)
+        return x_active, y_active

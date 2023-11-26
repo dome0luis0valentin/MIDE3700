@@ -1,11 +1,12 @@
 from matplotlib.pyplot import gca, draw
 import math
 import matplotlib.pyplot as plt
-
+import os
 
 def maximizar_pantalla():
+   
     mng = plt.get_current_fig_manager()
-    mng.resize(*mng.window.maxsize())
+    mng.resize(1846,1000)
     return
 
 def distancia_euclidea(x1, x2, y1, y2):
