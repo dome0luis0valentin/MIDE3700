@@ -152,7 +152,7 @@ class Normalizo_espectro(Espectro.Espectro):
 #
         return lambda_max, b_max
 #-----------------------------------------------------------------------------------------
-    def Grafico_espec(self, n):
+    def Grafico_espec(self, n, puntos = None):
 #
         # n= 1  Grafico el espectro
         # n= 2  Grafico el espectro y Paschen
@@ -187,13 +187,34 @@ class Normalizo_espectro(Espectro.Espectro):
                         xb.append( i )
                 plt.plot(xb, polyval(yb,xb), 'g-')# Grafico Balmer
                 if n == 3:
-                    plt.plot(self.xB_inf, self.yB_inf, 'ro')
+                    for x, y in zip(self.xB_inf, self.yB_inf):
+                        punto, = plt.plot(x, y, 'ro')
+                        new_point = punto
+                        print("Punto por Pashen agregado automáticamente: ", punto, " Se agregoó a \n\n", puntos)
+                    
+                        puntos.append(Punto(x, y, new_point))   
+                        
                     plt.title(self.nombre + '\n' + 'Ajuste la envolvente inferior\n' + 'Fit the bottom envelope of Balmer lines')
             else:
-                plt.plot(self.xB, self.yB, 'ro')
+                for x, y in zip(self.xB, self.yB):
+                        punto, = plt.plot(x, y, 'ro')
+                        new_point = punto
+                        print("Punto por Balmer agregado automáticamente: ", punto, " Se agregoó a \n\n", puntos)
+                
+                        puntos.append(Punto(x, y, new_point))
+                
+                
                 plt.title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
         else:
-            plt.plot(self.xP, self.yP, 'ro')
+            
+            #Agrego los puntos del ajuste hecho en la primera etapa
+            for x, y in zip(self.xP, self.yP):
+                punto, = plt.plot(x, y, 'ro')
+                new_point = punto
+                print("Punto por Pashen agregado automáticamente: ", punto, " Se agregoó a \n\n", puntos)
+            
+                puntos.append(Punto(x, y, new_point))
+                
             plt.title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
             
         plt.show()
@@ -217,12 +238,13 @@ class Normalizo_espectro(Espectro.Espectro):
             self.yP.append( math.log( self.flujo[k],10) )
             
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
+        ajuste.clean_puntos()
         ajuste.xdatalist= copy.copy( self.xP )
         ajuste.ydatalist= copy.copy( self.yP )
 
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
-        self.Grafico_espec(1)
+        self.Grafico_espec(1, ajuste.points)
         self.paschen.coef= copy.copy( ajuste.p.coef )
 #
         return
@@ -246,12 +268,13 @@ class Normalizo_espectro(Espectro.Espectro):
             self.yB.append( math.log( self.flujo[k],10) )
 #
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
+        ajuste.clean_puntos()
         ajuste.xdatalist= copy.copy( self.xB )
         ajuste.ydatalist= copy.copy( self.yB )
 #
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
-        self.Grafico_espec(2)
+        self.Grafico_espec(2, ajuste.points)
         self.balmer.coef= copy.copy( ajuste.p.coef )
 #
         return
@@ -275,12 +298,13 @@ class Normalizo_espectro(Espectro.Espectro):
             self.yB_inf.append( math.log( self.flujo[k],10) )
 #
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
+        ajuste.clean_puntos()
         ajuste.xdatalist= copy.copy( self.xB_inf )
         ajuste.ydatalist= copy.copy( self.yB_inf )
 #
         Inter_Grafica.connect('button_press_event', ajuste.click)
         Inter_Grafica.connect('key_press_event', ajuste.ajuste_parab)
-        self.Grafico_espec(3)
+        self.Grafico_espec(3, ajuste.points)
         self.balmer_inf.coef= copy.copy( ajuste.p.coef )
 #
         return

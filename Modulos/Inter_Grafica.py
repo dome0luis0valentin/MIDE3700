@@ -12,7 +12,7 @@ import Espectro
 
 import Polinomios
 import copy
-from Funciones_auxiliares import encontrar_punto_mas_cercano
+from Funciones_auxiliares import encontrar_punto_mas_cercano, encontrar_punto_mas_cercano_normalizado, encontra_aproximado_eje_x
 from Funciones_auxiliares import calcular_indice_del_punto_mas_cercano
 
 from Modulos.Punto import Punto
@@ -51,7 +51,7 @@ class Inter_Grafica:
     def click(self, event):
         import Modulos
         self.event = event
-       
+
 #
 # Con el boton izquierdo agrego un punto
         if event.button == 1:
@@ -62,35 +62,15 @@ class Inter_Grafica:
 
 #Normalizo los datos para poder trabajar con el gráfico en iguales dimencioenes de 0 a 1
             if isinstance(self.espectro, Modulos.Normalizo_espectro.Normalizo_espectro):
-
-                #L flujo.
-
-                #L_honda 
-                #Se elige max(ejex) porque deja al eje x e y en las mismas proporciones
-                constante = 8
+                eje_y_normalizado = []
                 
-                #eje_y_normalizdo = [v + constante for v in self.espectro.flujo]
-                eje_y_normalizado = self.espectro.flujo
+                for i in self.espectro.flujo:
+                    eje_y_normalizado.append(math.log(i,10))
+                
                 eje_x = self.espectro.l_onda
 
-                print("Largo de cada uno de los elmentos de lso ejes:")
-                print(len(eje_y_normalizado))
-                print(max(eje_y_normalizado))
-                print("Ejex ")
-                print(len(eje_x))
-                print(max(eje_x))
+                x, y = encontra_aproximado_eje_x(clic_x, clic_y, eje_x, eje_y_normalizado)
 
-                x, y = encontrar_punto_mas_cercano(clic_x, clic_y, eje_x, eje_y_normalizado)
-                print("Puntos mas cercanos encontrados")
-                print(x,y)
-                print("1 / lambda: ", 1/x)
-                x =  math.log( x,10) 
-                print("X log: ", x)
-                x = clic_x 
-                y = clic_y
-                print("Puntos cliceados")
-                print(x,y)
-                #x -= 8
             else:
                 max_x = max(self.espectro.l_onda)
                 max_y = max(self.espectro.log_flujo)
@@ -187,6 +167,10 @@ class Inter_Grafica:
                 if point.get_activate():
                     x_active.append(point.x)
                     y_active.append(point.y)
+                    
+            print(f'Estos son los puntos a ajustar en la recta:')
+            for i in x_active:
+                print(i)
                                 
             ajuste= self.p.minimos_cuadrados(x_active,y_active,1)
 #

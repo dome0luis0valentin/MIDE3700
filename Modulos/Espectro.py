@@ -31,7 +31,7 @@ class Espectro:
     balmer= Polinomios.Polinomio()
     balmer_inf= Polinomios.Polinomio()
     balmer_sup= Polinomios.Polinomio()
-    xP= []
+    xP= []  #  puntos x del ajuste de Pashen
     xB= []
     xB_inf= []
     xH_inf= []
@@ -140,6 +140,7 @@ class Espectro:
                 if n == 3:
                     #obsoleto: Lo cambio por lo de abajo para poder manipular esos puntos.
                     #plt.plot(self.xH_inf, self.yH_inf, 'ro')
+                    
                     # Plotear los puntos y almacenarlos en la lista
                     for x, y in zip(self.xH_inf, self.yH_inf):
                         punto, = plt.plot(x, y, 'ro')
