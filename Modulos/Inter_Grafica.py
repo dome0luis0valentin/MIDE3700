@@ -16,6 +16,7 @@ from Funciones_auxiliares import encontrar_punto_mas_cercano, encontrar_punto_ma
 from Funciones_auxiliares import calcular_indice_del_punto_mas_cercano
 
 from Modulos.Punto import Punto
+from Modulos.Line import Line
 ################################################################################
 ################################################################################
 ################################################################################
@@ -36,8 +37,14 @@ class Inter_Grafica:
 #Atributos para el manejo de colores de las rectas y curvas
     colores = ['b', 'g', 'r', 'c', 'm', 'y', 'k'] #Es el color actual de la curva
     index_color_actual = 0
+    
 #Lista de puntos en el gráfico, funciona de forma independiente de xdatalist e ydatalist
     points = []
+    
+#Lista con todas las rectas que se van gráficando:
+    lines = []
+#Lista con todas las parabolas que se van gráficando:
+    parables = []   
 #-------------------------------------------------------------------------------
     def __init__(self, archivo, nor, espectro):
 #        self.archivo= "Ajustes/" + nombre + ".out" # Archivo de salida
@@ -111,11 +118,9 @@ class Inter_Grafica:
 
             if indice_mas_cercano == -1:
                 return
-            print(indice_mas_cercano)
             
             punto = self.points[indice_mas_cercano]
             
-            print("Este es el punto más cercano: Type:  ", type(punto), punto.x, punto.y)
             if punto.get_activate():
                 punto.set_activate(False)
                 punto.set_color("grey")
@@ -157,25 +162,18 @@ class Inter_Grafica:
     def ajuste_recta(self, event):
 #
         if event.key not in ('a','q'): return
+        
         if event.key=='a':
 #
             #Armo la recta sobre los puntos que estan activos
             x_active = []
             y_active = []
             
-            for point in self.get_puntos():
-                if point.get_activate():
-                    x_active.append(point.x)
-                    y_active.append(point.y)
-                    
-            print(f'Estos son los puntos a ajustar en la recta:')
-            for i in x_active:
-                print(i)
-                                
+            x_active, y_active = zip(*[(point.x, point.y) for point in self.get_puntos() if point.get_activate()])
+
             ajuste= self.p.minimos_cuadrados(x_active,y_active,1)
 #
-
-            color = self.cambiar_color()
+            #color = self.cambiar_color()
 
             if ajuste:
                 y= poly1d(self.p.coef); y
@@ -184,8 +182,9 @@ class Inter_Grafica:
                     x.append(1./3700.)
                 else:
                     x.append(3700.)
-                for i in self.xdatalist:
-                    x.append(i)
+                    
+                x.extend(self.xdatalist) # agrega todos los elementos de self.xdatalist a la lista x
+
 #
                 x.sort()
                 
@@ -193,7 +192,12 @@ class Inter_Grafica:
                 #obsoleto: ya no es necesario MatplotLib lo hace por defecto
                 #ax.hold(True) # superpongo graficos.
                 
-                ax.plot(x,polyval(y,x), color+'-')
+                #Agrego la linea al gráfico y la lista de variables
+                #ax.plot(x,polyval(y,x), color+'-')
+               
+                new_line = plt.plot(x,polyval(y,x),'g-')
+                self.agregar_linea(new_line)
+                
                 draw()
 #
                 self.Print_puntos('recta')
@@ -222,7 +226,6 @@ class Inter_Grafica:
 
             ajuste= self.p.minimos_cuadrados(x_active,y_active,2)         
 #   
-            color = self.cambiar_color()   
 
             if ajuste:
                 y= poly1d(self.p.coef); y
@@ -231,17 +234,18 @@ class Inter_Grafica:
                     x.append(1./3700.)
                 else:
                     x.append(3700.)
-                for i in x_active:
-                    x.append(i)
+                    
+                x.extend(x_active)  
 #
                 x.sort()
                 
                 ax= gca()  # mantengo los ejes actuales
                 #obsoleto: ya no es necesario MatplotLib lo hace por defecto
                 #ax.hold(True) # superpongo graficos.                
+                                
+                new_parable = plt.plot(x,polyval(y,x), 'g-')
+                self.agregar_parable(new_parable)
                 
-                ax.plot(x,polyval(y,x), color+'-')                
-
                 draw()
 #
                 self.Print_puntos('parabola')
@@ -329,3 +333,74 @@ class Inter_Grafica:
                 x_active.append(point.x)
                 y_active.append(point.y)
         return x_active, y_active
+
+ #-------------------------------------------------------------------------------
+ 
+    def agregar_linea(self, linea):
+        """
+        Agrega el objeto que representa a la linea graficada a la lista de lineas graficadas
+
+        Args:
+            linea (_list_): _una lista con un único elemento, que representa a la linea en la interfaz gráfica_
+        """
+        linea = linea[0]
+        
+        lineas_dibujadas = self.get_lines()
+        
+        if len(lineas_dibujadas) > 0:
+            for l in lineas_dibujadas:
+                l.set_color("gray")
+                
+        self.append_line(linea)
+
+    def get_lines(self):
+        return self.lines
+    
+    def append_line(self, line):
+        return self.lines.append(line)
+    
+    def clean_lines(self):
+        self.lines = []
+
+    def get_last_line(self):
+        lines = []
+        for line in self.get_lines():
+            if line.is_last():
+                lines.append(line)
+        return lines
+    
+    
+ #-------------------------------------------------------------------------------
+    def agregar_parable(self, parable):
+        """
+        Agrega el objeto que representa a una parabola graficada a la lista de lineas graficadas
+
+        Args:
+            parable (_list_): _una lista con un único elemento, que representa a la parabola en la interfaz gráfica_
+        """
+        parable = parable[0]
+        
+        parabolas_dibujadas = self.get_parables()
+        
+        if len(parabolas_dibujadas) > 0:
+            for p in parabolas_dibujadas:
+                p.set_color("gray")
+                
+        self.append_parable(parable)
+
+    def get_parables(self):
+        return self.parables
+    
+    def append_parable(self, parable):
+        return self.parables.append(parable)
+    
+    def clean_parables(self):
+        self.parables = []
+
+    def get_last_parable(self):
+        parable = []
+        for parable in self.get_parables():
+            if parable.is_last():
+                self.parables.append(parable)
+        return self.parables
+    

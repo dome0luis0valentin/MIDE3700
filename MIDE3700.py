@@ -46,9 +46,6 @@ Archivos_in_out.Genero_Dist_out()
 # Load curves
 import time
 
-# Registra el tiempo de inicio
-inicio = time.time()
-
 import multiprocessing
 
 def cargar_curvas(nombre, curvas_dict):
@@ -108,15 +105,6 @@ curvas_phio_f= Curvas.Curvas("PHIo_f")
 #allen= Allen.Allen()
 landolt= Landolt.Landolt()
 """
-
-
-
-# Registra el tiempo de finalización
-fin = time.time()
-
-# Calcula la duración en milisegundos
-duracion_ms = (fin - inicio) * 1000
-print(f"La sección de código tomó {duracion_ms:.2f} milisegundos en ejecutarse.")
 
 #-------------------------------------------------------------------------------
 i= -1
