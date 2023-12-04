@@ -134,10 +134,6 @@ class Espectro:
         self.axes.set_ylabel('$\log (F_{\lambda})$')
         self.axes.axvline(x=3700., color='k')
         self.axes.plot(self.l_onda, self.log_flujo, 'b-')
-        
-        self.figure.canvas.draw()
-        
-    
 
 #
 # Grafico los ajustes realizados hasta el momento
