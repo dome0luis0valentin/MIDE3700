@@ -71,6 +71,7 @@ class Espectro:
         figure = None
         
         # Initialize a list to store the button instances
+        self.lines = []
         self.line_buttons = []
 #
         n= len(nombre)
@@ -132,7 +133,6 @@ class Espectro:
         
         self.figure.canvas.draw()
         
-        self.create_line_button(self.axes, 'Toggle Spectrum', line)
     
 
 #
@@ -381,7 +381,7 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer(self):
 #
-        maximizar_pantalla()
+        
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE BALMER\n' )
@@ -389,12 +389,20 @@ class Espectro:
         f_est.write( '------------------------------\n' )
         f_est.write( '\n' )
         f_est.close()
+        
+        #Configuración para Widgets
+        self.line_buttons = []
+        
+        self.figure, self.axes= plt.subplots()
 #
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         ajuste.clean_puntos()
-
-        Inter_Grafica.connect('button_press_event', ajuste.click)
-        Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
+        
+        maximizar_pantalla()
+        
+        self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_recta)
+        
         self.Grafico_espec(2)
         self.balmer.coef= copy.copy( ajuste.p.coef )
         self.xB= copy.copy( ajuste.xdatalist )
@@ -461,7 +469,7 @@ class Espectro:
         return
 #-------------------------------------------------------------------------------
     
-    def create_line_button(self, ax, label, line):
+    def create_line_button(self, ax, label, lines, line):
         """
         Create a toggle button for a given line on the plot.
 
@@ -473,8 +481,9 @@ class Espectro:
         Returns:
         - None
         """
-        button_ax = plt.axes([0.91, 0.2 - len(self.line_buttons) * 0.1, 0.08, 0.05])
-        line_button = Button(button_ax, label)
+        self.lines = lines
+        button_ax = plt.axes([0.91, 0.9 - len(self.line_buttons) * 0.1, 0.08, 0.05])
+        line_button = Button(button_ax, label, color=line.get_color())
         line_button.on_clicked(lambda event, l=line: self.toggle_line(l))
         ax.figure.canvas.mpl_connect('pick_event', line_button)
         self.line_buttons.append(line_button)
@@ -486,5 +495,10 @@ class Espectro:
         Parameters:
         - line (matplotlib.lines.Line2D): The line to be toggled.
         """
-        line.set_visible(not line.get_visible())
+        for l in self.lines:
+            if l != line:
+                l.grafico.set_color("grey")
+                l.set_last(False)
+        line.grafico.set_color(line.get_color_original())
+        line.set_last(True)
         plt.draw()

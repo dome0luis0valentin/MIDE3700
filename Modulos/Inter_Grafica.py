@@ -35,7 +35,7 @@ class Inter_Grafica:
     espectro = None #Recibe las coordenadas x e y del espectro
 
 #Atributos para el manejo de colores de las rectas y curvas
-    colores = ['b', 'g', 'r', 'c', 'm', 'y', 'k'] #Es el color actual de la curva
+    colores = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '#FFA07A', '#00CED1', '#800080'] #Es el color actual de la curva
     index_color_actual = 0
     
 #Lista de puntos en el gráfico, funciona de forma independiente de xdatalist e ydatalist
@@ -54,11 +54,14 @@ class Inter_Grafica:
         self.p.coef= []
         self.nor= nor
         self.espectro = espectro
+
 #-------------------------------------------------------------------------------
     def click(self, event):
         import Modulos
         self.event = event
 
+        if event.inaxes != self.espectro.axes:
+            return
 #
 # Con el boton izquierdo agrego un punto
         if event.button == 1:
@@ -66,6 +69,7 @@ class Inter_Grafica:
             clic_x = event.xdata
             clic_y = event.ydata
 
+            print(f'Clic en X {clic_x}, Clic en Y {clic_y}')
             if (clic_x == None or clic_y == None ):
                 return
 
@@ -166,6 +170,7 @@ class Inter_Grafica:
 #
         if event.key not in ('a','q'): return
         
+        
         if event.key=='a':
 #
             #Armo la recta sobre los puntos que estan activos
@@ -176,7 +181,6 @@ class Inter_Grafica:
 
             ajuste= self.p.minimos_cuadrados(x_active,y_active,1)
 #
-            #color = self.cambiar_color()
 
             if ajuste:
                 y= poly1d(self.p.coef); y
@@ -191,7 +195,10 @@ class Inter_Grafica:
                 x.sort()
                 
                 # Utilizo self.axes en lugar de gca()
-                new_line = self.espectro.axes.plot(x, polyval(y, x), 'g-')
+                color = self.colores[self.index_color_actual]
+                self.index_color_actual+=1
+                
+                new_line = Line(self.espectro.axes.plot(x, polyval(y, x), color+'-')[0])
                 draw()
                 self.agregar_linea(new_line)
 #
@@ -209,7 +216,7 @@ class Inter_Grafica:
                         draw()
                     self.key1 = False
         else:
-            plt.close(self.figure)
+            plt.close(self.espectro.figure)
             return
 #-------------------------------------------------------------------------------
     def ajuste_parab(self, event):
@@ -329,7 +336,7 @@ class Inter_Grafica:
         return x_active, y_active
 
  #-------------------------------------------------------------------------------
- 
+
     def agregar_linea(self, linea):
         """
         Agrega el objeto que representa a la linea graficada a la lista de lineas graficadas
@@ -337,16 +344,18 @@ class Inter_Grafica:
         Args:
             linea (_list_): _una lista con un único elemento, que representa a la linea en la interfaz gráfica_
         """
-        linea = linea[0]
         
         lineas_dibujadas = self.get_lines()
         
         if len(lineas_dibujadas) > 0:
             for l in lineas_dibujadas:
-                l.set_color("gray")
+                l.grafico.set_color("gray")
+                l.set_last(False)
                 
-        self.espectro.create_line_button(self.espectro.axes, 'Linea', linea)
         self.append_line(linea)
+        
+        self.espectro.create_line_button(self.espectro.axes, 'Linea', lineas_dibujadas, linea)
+        
         
 
     def get_lines(self):
