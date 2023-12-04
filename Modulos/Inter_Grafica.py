@@ -17,6 +17,7 @@ from Funciones_auxiliares import calcular_indice_del_punto_mas_cercano
 
 from Modulos.Punto import Punto
 from Modulos.Line import Line
+from Modulos.Parable import Parable
 ################################################################################
 ################################################################################
 ################################################################################
@@ -68,8 +69,7 @@ class Inter_Grafica:
 #
             clic_x = event.xdata
             clic_y = event.ydata
-
-            print(f'Clic en X {clic_x}, Clic en Y {clic_y}')
+            
             if (clic_x == None or clic_y == None ):
                 return
 
@@ -100,10 +100,9 @@ class Inter_Grafica:
  
             self.xdatalist.append(x)
             self.ydatalist.append(y)
-           
+            
             ax = self.espectro.axes  # mantengo los ejes actuales
 
-            print(f'Este es el eje actual {ax}')
             # Graficamos un punto rojo en el punto del espectro más cercano.
             new_point = ax.plot([x],[y],'ro', picker=5)
             
@@ -198,7 +197,10 @@ class Inter_Grafica:
                 color = self.colores[self.index_color_actual]
                 self.index_color_actual+=1
                 
-                new_line = Line(self.espectro.axes.plot(x, polyval(y, x), color+'-')[0])
+                line_graph, = self.espectro.axes.plot(x, polyval(y, x), color+'-')
+                new_line = Line(grafico = line_graph,
+                                x_active = x_active,
+                                y_active = y_active)
                 draw()
                 self.agregar_linea(new_line)
 #
@@ -238,13 +240,15 @@ class Inter_Grafica:
                     
                 x.extend(x_active)  
 #
-                x.sort()
-                
-                ax= gca()  # mantengo los ejes actuales
-                #obsoleto: ya no es necesario MatplotLib lo hace por defecto
-                #ax.hold(True) # superpongo graficos.                
+                x.sort()                
                                 
-                new_parable = plt.plot(x,polyval(y,x), 'g-')
+                color = self.colores[self.index_color_actual]
+                self.index_color_actual+=1
+                
+                graph_parable, = self.espectro.axes.plot(x,polyval(y,x), color+'-')
+                
+                new_parable = Parable(grafico= graph_parable, x_active= x_active, y_active= y_active)
+                
                 self.agregar_parable(new_parable)
                 
                 draw()
@@ -354,7 +358,7 @@ class Inter_Grafica:
                 
         self.append_line(linea)
         
-        self.espectro.create_line_button(self.espectro.axes, 'Linea', lineas_dibujadas, linea)
+        self.espectro.create_line_button(self.espectro.axes, 'Ajuste '+str(len(lineas_dibujadas)), lineas_dibujadas, linea)
         
         
 
@@ -383,7 +387,6 @@ class Inter_Grafica:
         Args:
             parable (_list_): _una lista con un único elemento, que representa a la parabola en la interfaz gráfica_
         """
-        parable = parable[0]
         
         parabolas_dibujadas = self.get_parables()
         
@@ -392,11 +395,24 @@ class Inter_Grafica:
                 p.set_color("gray")
                 
         self.append_parable(parable)
+        
+        self.espectro.create_parable_button(self.espectro.axes, 'Parabola '+str(len(parabolas_dibujadas)), parabolas_dibujadas, parable)
 
     def get_parables(self):
+        """
+        The function returns the parables attribute of an object.
+        :return: The method is returning the value of the variable "self.parables".
+        """
         return self.parables
     
     def append_parable(self, parable):
+        """
+        The function appends a parable to a list of parables.
+        
+        :param parable: The parameter "parable" is a variable that represents a parable. It is being
+        passed to the function "append_parable" as an argument
+        :return: The method is returning the updated list of parables after appending the new parable.
+        """
         return self.parables.append(parable)
     
     def clean_parables(self):

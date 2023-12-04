@@ -73,6 +73,10 @@ class Espectro:
         # Initialize a list to store the button instances
         self.lines = []
         self.line_buttons = []
+        
+        # Initialize a list to store the button instances
+        self.parables = []
+        self.parable_buttons = []
 #
         n= len(nombre)
         if nombre[n-1:n] == '\n':
@@ -129,7 +133,7 @@ class Espectro:
         self.axes.set_xlabel('$\lambda$ [$\AA$]')
         self.axes.set_ylabel('$\log (F_{\lambda})$')
         self.axes.axvline(x=3700., color='k')
-        line, = self.axes.plot(self.l_onda, self.log_flujo, 'b-')
+        self.axes.plot(self.l_onda, self.log_flujo, 'b-')
         
         self.figure.canvas.draw()
         
@@ -156,17 +160,13 @@ class Espectro:
                     # Plotear los puntos y almacenarlos en la lista
                     for x, y in zip(self.xH_inf, self.yH_inf):
                         punto, = self.axes.plot(x, y, 'ro')
-                        new_point = punto
-                        print("Punto por Balmer inferior agregado: ", punto, " Se agregoó a \n\n", puntos)
-                        
+                        new_point = punto                        
                         puntos.append(Punto(x, y, new_point))
 
                     # Utilizo self.axes.set_title en lugar de plt.title
                     self.axes.set_title(self.nombre + '\n' + 'Ajuste la envolvente inferior\n' + 'Fit the bottom envelope of Balmer lines')
 
                 if n == 4:# Grafico Balmer superior
-                    
-                    print("En ajuste superior ###\n###\n###\n")
                     
                     ybi= poly1d(self.balmer_inf.coef); ybi
                     xv= -self.balmer_inf.coef[1] / (2. * self.balmer_inf.coef[0])
@@ -183,15 +183,11 @@ class Espectro:
                     self.axes.plot(xbi, polyval(ybi, xbi), 'g-')
                     
                     #Dibujo los puntos
-                    print("Estos son los puntos que se agregarán: ", len(self.xH_sup))
                     for x, y in zip(self.xH_sup, self.yH_sup):
                         punto, = self.axes.plot(x, y, 'ro')
                         new_point = punto
-                        print("Tipo de new point: ", type(new_point))
                         puntos.append(Punto(x, y, new_point))
-                    
-                        print("Punto por Balmer superior agregado: ", new_point, "\n Se agregoó a la lista de puntos: \n\n")
-                    
+                                        
                     self.axes.set_title(self.nombre + '\n' + 'Ajuste la envolvente superior\n' + 'Fit the upper envelope of Balmer lines')                    
             else:
                 self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
@@ -374,8 +370,10 @@ class Espectro:
         
         self.Grafico_espec(1)
         
-        self.paschen.coef= copy.copy( ajuste.p.coef )
-        self.xP= copy.copy( ajuste.xdatalist )
+        self.graficar_ajuste_pashen_activa(ajuste.p)
+        
+        # self.paschen.coef= copy.copy( ajuste.p.coef )
+        # self.xP= copy.copy( ajuste.xdatalist )
 #
         return
 #-------------------------------------------------------------------------------
@@ -404,6 +402,9 @@ class Espectro:
         self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_recta)
         
         self.Grafico_espec(2)
+        
+        self.graficar_ajuste_balmer_activa(ajuste.p)
+        
         self.balmer.coef= copy.copy( ajuste.p.coef )
         self.xB= copy.copy( ajuste.xdatalist )
 #
@@ -411,7 +412,6 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer_inf(self):
 #
-        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DE LA ENVOLVENTE INFERIOR\n' )
@@ -419,20 +419,28 @@ class Espectro:
         f_est.write( '------------------------------\n' )
         f_est.write( '\n' )
         f_est.close()
+
+        self.figure, self.axes= plt.subplots()
+#
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
+        ajuste.clean_puntos()
+        
+        maximizar_pantalla()
 #
         x_min, y_min= Algebra.Busco_minimos(self.l_onda, self.flujo)
         self.xH_inf, self.yH_inf= Algebra.Busco_lineas_balmer(x_min, y_min)
 ##
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         
         ajuste.xdatalist= copy.copy(self.xH_inf)
         ajuste.ydatalist= copy.copy(self.yH_inf)
 ##
-        Inter_Grafica.connect('button_press_event', ajuste.click)
-        Inter_Grafica.connect('key_press_event', ajuste.ajuste_parab)
+
+        self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_parab)
+
         self.Grafico_espec(3, ajuste.points)
-        self.balmer_inf.coef= copy.copy( ajuste.p.coef )
-        self.xB_inf= copy.copy( ajuste.xdatalist )
+        
+        self.graficar_balmer_inferior_activa(ajuste.p)
 #
         return
 #-------------------------------------------------------------------------------
@@ -447,12 +455,17 @@ class Espectro:
         f_est.write( '\n' )
         f_est.close()
 #
+
+        self.figure, self.axes= plt.subplots()
+#
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
+        ajuste.clean_puntos()
+        
+        maximizar_pantalla()
         x_max, y_max= Algebra.Busco_maximos(self.l_onda, self.flujo)
 #
 # Cargo los datos calculados
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
-        ajuste.clean_puntos()
         ajuste.xdatalist= x_max
         self.xH_sup= x_max
         log_y_max= []
@@ -461,12 +474,52 @@ class Espectro:
         ajuste.ydatalist= log_y_max
         self.yH_sup= log_y_max
 #
-        Inter_Grafica.connect('button_press_event', ajuste.click)
-        Inter_Grafica.connect('key_press_event', ajuste.ajuste_parab)
+        self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_parab)
+        
+        self.graficar_balmer_inferior_activa()
+        
         self.Grafico_espec(4, ajuste.points)
         self.balmer_sup.coef= ajuste.p.coef
 #
         return
+    
+    
+#-------------------------------------------------------------------------------
+
+    def create_parable_button(self, ax, label, parables, parable):
+        """
+        Create a toggle button for a given line on the plot.
+
+        Parameters:
+        - ax (matplotlib.axes._axes.Axes): The Axes on which the button will be added.
+        - label (str): The label/text for the button.
+        - line (matplotlib.lines.Line2D): The line associated with the button.
+
+        Returns:
+        - None
+        """
+        self.parables = parables
+        button_ax = plt.axes([0.91, 0.9 - len(self.parable_buttons) * 0.1, 0.08, 0.05])
+        parable_button = Button(button_ax, label, color=parable.get_color())
+        parable_button.on_clicked(lambda event, l=parable: self.toggle_parable(l))
+        ax.figure.canvas.mpl_connect('pick_event', parable_button)
+        self.parable_buttons.append(parable_button)
+
+    def toggle_parable(self, parable):
+        """
+        Esta función se encarga de manejar la funcionalidad de la linea cuando se presiona el botón
+
+        Parameters:
+        - line (matplotlib.lines.Line2D): The line to be toggled.
+        """
+        for p in self.parables:
+            if p != parable:
+                p.grafico.set_color("grey")
+                p.set_last(False)
+        parable.grafico.set_color(parable.get_color_original())
+        parable.set_last(True)
+        plt.draw()
 #-------------------------------------------------------------------------------
     
     def create_line_button(self, ax, label, lines, line):
@@ -502,3 +555,53 @@ class Espectro:
         line.grafico.set_color(line.get_color_original())
         line.set_last(True)
         plt.draw()
+        
+#------------------------------------------------------------------------------------------
+
+    def get_lines(self):
+        return self.lines
+
+    def get_parables(self):
+        return self.parables
+    
+    def get_last_line(self):
+        for line in self.get_lines():
+            if line.is_last():
+                return line
+            
+    def get_last_parable(self):
+        for parable in self.get_parables():
+            if parable.is_last():
+                return parable
+            
+    def graficar_ajuste_pashen_activa(self, polinomio):
+        last_line = self.get_last_line()
+        coeficients = last_line.get_coeficient(polinomio)
+        x_last_line = last_line.get_x()
+        
+        #Guardo los valores de la recta activa para graficar 
+        self.paschen.coef= copy.copy( coeficients )
+        self.xP= copy.copy( x_last_line )
+        
+    def graficar_ajuste_balmer_activa(self, polinomio):
+        last_line = self.get_last_line()
+        coeficients = last_line.get_coeficient(polinomio)
+        x_last_line = last_line.get_x()
+        
+        #Guardo los valores de la recta activa para graficar 
+        self.balmer.coef= copy.copy( coeficients )
+        self.xB= copy.copy( x_last_line )
+        
+    def graficar_balmer_inferior_activa(self, polinomio):
+        last_parable = self.get_last_parable()
+        coeficients = last_parable.get_coeficient(polinomio)
+        x_last_parable = last_parable.get_x()
+        
+        #Guardo los valores de la recta activa para graficar 
+        
+        self.balmer_inf.coef= copy.copy( coeficients )
+        self.xB_inf= copy.copy( x_last_parable )
+        
+        
+        
+        
