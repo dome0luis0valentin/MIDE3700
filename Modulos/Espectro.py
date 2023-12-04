@@ -361,19 +361,16 @@ class Espectro:
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
         self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_recta)
         
-        # Inter_Grafica.connect('button_press_event', ajuste.click)
-        # Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
-        
         self.Grafico_espec(1)
         
         self.graficar_ajuste_pashen_activa(ajuste.p)
         
-        # self.paschen.coef= copy.copy( ajuste.p.coef )
-        # self.xP= copy.copy( ajuste.xdatalist )
+        self.parable_buttons = []
+ 
 #
         return
 #-------------------------------------------------------------------------------
-    def Ajuste_Balmer(self):
+    def  Ajuste_Balmer(self):
 #
         
         f_est= open(self.archivo_out, "a") # Archivo de salida
@@ -400,9 +397,7 @@ class Espectro:
         self.Grafico_espec(2)
         
         self.graficar_ajuste_balmer_activa(ajuste.p)
-        
-        self.balmer.coef= copy.copy( ajuste.p.coef )
-        self.xB= copy.copy( ajuste.xdatalist )
+
 #
         return
 #-------------------------------------------------------------------------------
@@ -497,7 +492,7 @@ class Espectro:
         """
         self.parables = parables
         button_ax = plt.axes([0.91, 0.9 - len(self.parable_buttons) * 0.1, 0.08, 0.05])
-        parable_button = Button(button_ax, label, color=parable.get_color())
+        parable_button = Button(button_ax, label+" "+str(len(self.parable_buttons)+1), color=parable.get_color())
         parable_button.on_clicked(lambda event, l=parable: self.toggle_parable(l))
         ax.figure.canvas.mpl_connect('pick_event', parable_button)
         self.parable_buttons.append(parable_button)
@@ -517,7 +512,10 @@ class Espectro:
         parable.set_last(True)
         plt.draw()
 #-------------------------------------------------------------------------------
-    
+    def colorear_botones(self, botones, color):
+        for b in botones:
+            b.color =color
+            
     def create_line_button(self, ax, label, lines, line):
         """
         Create a toggle button for a given line on the plot.
@@ -530,14 +528,17 @@ class Espectro:
         Returns:
         - None
         """
+        self.colorear_botones(self.get_line_buttons(), "grey")
+        
+        print(f'Lista de botones sobre el lado lateral: {self.get_line_buttons()}')
         self.lines = lines
-        button_ax = plt.axes([0.91, 0.9 - len(self.line_buttons) * 0.1, 0.08, 0.05])
-        line_button = Button(button_ax, label, color=line.get_color())
-        line_button.on_clicked(lambda event, l=line: self.toggle_line(l))
+        button_ax = plt.axes([0.91, 0.9 - len(self.get_line_buttons()) * 0.1, 0.08, 0.05])
+        line_button = Button(button_ax, label+" "+str(len(self.get_line_buttons())+1), color=line.get_color())
+        line_button.on_clicked(lambda event, l=line, b=line_button: self.toggle_line(l, b))
         ax.figure.canvas.mpl_connect('pick_event', line_button)
         self.line_buttons.append(line_button)
 
-    def toggle_line(self, line):
+    def toggle_line(self, line, button):
         """
         Esta función se encarga de manejar la funcionalidad de la linea cuando se presiona el botón
 
@@ -548,11 +549,21 @@ class Espectro:
             if l != line:
                 l.grafico.set_color("grey")
                 l.set_last(False)
+                
+        for b in self.get_line_buttons():
+            if b != button:
+                b.color="gray"
+            else:
+               b.color = 'green'
+                #b.set_facecolor("green")
+                
         line.grafico.set_color(line.get_color_original())
         line.set_last(True)
         plt.draw()
         
 #------------------------------------------------------------------------------------------
+    def get_line_buttons(self):
+        return self.line_buttons
 
     def get_lines(self):
         return self.lines

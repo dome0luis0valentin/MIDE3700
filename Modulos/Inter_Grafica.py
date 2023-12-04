@@ -12,8 +12,8 @@ import Espectro
 
 import Polinomios
 import copy
-from Funciones_auxiliares import encontrar_punto_mas_cercano, encontrar_punto_mas_cercano_normalizado, encontra_aproximado_eje_x
-from Funciones_auxiliares import calcular_indice_del_punto_mas_cercano
+from Funciones_auxiliares import encontrar_punto_mas_cercano, encontrar_punto_mas_cercano_normalizado
+from Funciones_auxiliares import calcular_indice_del_punto_mas_cercano, calcular_indice_del_punto_mas_cercano_normalizado
 
 from Modulos.Punto import Punto
 from Modulos.Line import Line
@@ -46,6 +46,7 @@ class Inter_Grafica:
     lines = []
 #Lista con todas las parabolas que se van gráficando:
     parables = []   
+    
 #-------------------------------------------------------------------------------
     def __init__(self, archivo, nor, espectro):
 #        self.archivo= "Ajustes/" + nombre + ".out" # Archivo de salida
@@ -82,7 +83,7 @@ class Inter_Grafica:
                 
                 eje_x = self.espectro.l_onda
 
-                x, y = encontra_aproximado_eje_x(clic_x, clic_y, eje_x, eje_y_normalizado)
+                x, y = encontrar_punto_mas_cercano_normalizado(clic_x, clic_y, eje_x, eje_y_normalizado)
 
             else:
                 max_x = max(self.espectro.l_onda)
@@ -110,7 +111,9 @@ class Inter_Grafica:
             draw()  # refrescamos el grafico.
 
 #
-# Con el boton derecho, busco el más cercano, si el más cercano esta activo --> Lo desactivo
+# Con el boton derecho:
+# 
+#       busco el más cercano, si el más cercano esta activo --> Lo desactivo
 #                                               si el más cercano esta inactivo --> Lo activo
 #
         if event.button == 3:
@@ -119,8 +122,12 @@ class Inter_Grafica:
             clic_y = event.ydata
             coor_x= self.xdatalist
             coor_y= self.ydatalist
-            indice_mas_cercano = calcular_indice_del_punto_mas_cercano(clic_x, clic_y, coor_x, coor_y)
-           
+            
+            if isinstance(self.espectro, Modulos.Normalizo_espectro.Normalizo_espectro):
+                indice_mas_cercano = calcular_indice_del_punto_mas_cercano_normalizado(clic_x, clic_y, coor_x, coor_y)
+            else:
+                indice_mas_cercano = calcular_indice_del_punto_mas_cercano(clic_x, clic_y, coor_x, coor_y)
+        
 
             if indice_mas_cercano == -1:
                 return
@@ -358,7 +365,7 @@ class Inter_Grafica:
                 
         self.append_line(linea)
         
-        self.espectro.create_line_button(self.espectro.axes, 'Ajuste '+str(len(lineas_dibujadas)), lineas_dibujadas, linea)
+        self.espectro.create_line_button(self.espectro.axes, 'Ajuste', lineas_dibujadas, linea)
         
         
 
@@ -396,7 +403,7 @@ class Inter_Grafica:
                 
         self.append_parable(parable)
         
-        self.espectro.create_parable_button(self.espectro.axes, 'Parabola '+str(len(parabolas_dibujadas)), parabolas_dibujadas, parable)
+        self.espectro.create_parable_button(self.espectro.axes, 'Parabola', parabolas_dibujadas, parable)
 
     def get_parables(self):
         """
