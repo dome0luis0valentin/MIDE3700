@@ -98,7 +98,10 @@ def encontrar_punto_mas_cercano( x_norm, y_norm, x_spectro_norm, y_spectro_norm)
     closest_spectrum_index = None
 
     for i in range(len(x_spectro_norm)):
-        distance = distancia_euclidea(x_spectro_norm[i], x_norm, y_spectro_norm[i], y_norm)
+        
+        #Los valores del eje x se multiplican por 10000 para trabajar con valores en una escala aproximada
+        
+        distance = distancia_euclidea(x_spectro_norm[i]*10000, x_norm*10000, y_spectro_norm[i], y_norm)
         if distance < min_distance:
             min_distance = distance
             closest_spectrum_index = i
@@ -112,6 +115,21 @@ def encontrar_punto_mas_cercano( x_norm, y_norm, x_spectro_norm, y_spectro_norm)
     print("##--##--##--Punto -1 ", len(x_spectro_norm)-closest_spectrum_index, " vale ", x_spectro_norm[len(x_spectro_norm)-closest_spectrum_index])
     
     return x, y
+
+def calcular_indice_del_punto_mas_cercano_normalizado(clic_x, clic_y, coor_x, coor_y):
+    # Inicializa la distancia mínima como infinito y el índice del punto más cercano como -1
+    distancia_minima = float('inf')
+    indice_mas_cercano = -1
+    
+    # Itera a través de las coordenadas x e y para encontrar el punto más cercano
+    for i in range(len(coor_x)):
+        distancia = math.sqrt((clic_x*10000 - coor_x[i]*10000) ** 2 + (clic_y - coor_y[i]) ** 2)
+        if distancia < distancia_minima:
+            distancia_minima = distancia
+            indice_mas_cercano = i
+    
+    # Devuelve el índice del punto más cercano
+    return indice_mas_cercano
 
 
 

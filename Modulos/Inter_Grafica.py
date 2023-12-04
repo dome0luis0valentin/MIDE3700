@@ -13,7 +13,7 @@ import Espectro
 import Polinomios
 import copy
 from Funciones_auxiliares import encontrar_punto_mas_cercano, encontrar_punto_mas_cercano_normalizado, encontra_aproximado_eje_x
-from Funciones_auxiliares import calcular_indice_del_punto_mas_cercano
+from Funciones_auxiliares import calcular_indice_del_punto_mas_cercano, calcular_indice_del_punto_mas_cercano_normalizado
 
 from Modulos.Punto import Punto
 from Modulos.Line import Line
@@ -66,17 +66,25 @@ class Inter_Grafica:
             clic_x = event.xdata
             clic_y = event.ydata
 
+            print(f'X {clic_x}, Y {clic_y}')
 
 #Normalizo los datos para poder trabajar con el gráfico en iguales dimencioenes de 0 a 1
             if isinstance(self.espectro, Modulos.Normalizo_espectro.Normalizo_espectro):
                 eje_y_normalizado = []
                 
+                print("Flujo linea 75 ", self.espectro.flujo[100])
                 for i in self.espectro.flujo:
                     eje_y_normalizado.append(math.log(i,10))
-                
+                print("Flujo linea después  75 ", eje_y_normalizado[100])
                 eje_x = self.espectro.l_onda
-
-                x, y = encontra_aproximado_eje_x(clic_x, clic_y, eje_x, eje_y_normalizado)
+                
+                print("Flujo linea 81 ", self.espectro.l_onda[100])
+                
+                
+                x,y = encontrar_punto_mas_cercano(clic_x, clic_y, eje_x, eje_y_normalizado)
+                
+                print("###--> x e y linea 84: ", x," ", y)
+                #x, y = encontra_aproximado_eje_x(clic_x, clic_y, eje_x, eje_y_normalizado)
 
             else:
                 max_x = max(self.espectro.l_onda)
@@ -113,7 +121,10 @@ class Inter_Grafica:
             clic_y = event.ydata
             coor_x= self.xdatalist
             coor_y= self.ydatalist
-            indice_mas_cercano = calcular_indice_del_punto_mas_cercano(clic_x, clic_y, coor_x, coor_y)
+            if isinstance(self.espectro, Modulos.Normalizo_espectro.Normalizo_espectro):
+                indice_mas_cercano = calcular_indice_del_punto_mas_cercano_normalizado(clic_x, clic_y, coor_x, coor_y)
+            else:
+                indice_mas_cercano = calcular_indice_del_punto_mas_cercano(clic_x, clic_y, coor_x, coor_y)
            
 
             if indice_mas_cercano == -1:
