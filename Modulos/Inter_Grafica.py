@@ -66,6 +66,8 @@ class Inter_Grafica:
             clic_x = event.xdata
             clic_y = event.ydata
 
+            if (clic_x == None or clic_y == None ):
+                return
 
 #Normalizo los datos para poder trabajar con el gráfico en iguales dimencioenes de 0 a 1
             if isinstance(self.espectro, Modulos.Normalizo_espectro.Normalizo_espectro):
@@ -95,8 +97,9 @@ class Inter_Grafica:
             self.xdatalist.append(x)
             self.ydatalist.append(y)
            
-            ax = gca()  # mantengo los ejes actuales
+            ax = self.espectro.axes  # mantengo los ejes actuales
 
+            print(f'Este es el eje actual {ax}')
             # Graficamos un punto rojo en el punto del espectro más cercano.
             new_point = ax.plot([x],[y],'ro', picker=5)
             
@@ -130,7 +133,7 @@ class Inter_Grafica:
                 punto.set_color("red")
                 #activo y pinto de verde
 
-            ax = gca()  # mantengo los ejes actuales
+            ax = self.espectro.axes  # mantengo los ejes actuales
            
             #ax.plot(x[i_min],y[i_min],'kx',lw=2,ms=12)
             
@@ -184,38 +187,29 @@ class Inter_Grafica:
                     x.append(3700.)
                     
                 x.extend(self.xdatalist) # agrega todos los elementos de self.xdatalist a la lista x
-
 #
                 x.sort()
                 
-                ax= gca()  # mantengo los ejes actuales
-                #obsoleto: ya no es necesario MatplotLib lo hace por defecto
-                #ax.hold(True) # superpongo graficos.
-                
-                #Agrego la linea al gráfico y la lista de variables
-                #ax.plot(x,polyval(y,x), color+'-')
-               
-                new_line = plt.plot(x,polyval(y,x),'g-')
-                self.agregar_linea(new_line)
-                
+                # Utilizo self.axes en lugar de gca()
+                new_line = self.espectro.axes.plot(x, polyval(y, x), 'g-')
                 draw()
+                self.agregar_linea(new_line)
 #
                 self.Print_puntos('recta')
             else:
                 n= 1 - ( len(self.xdatalist) ) + 2
                 while self.key1:
                     if n == 1:
-                        texto= 'Agregue 1 punto \ Add 1 point'
-                        plt.figtext(0.50, 0.85, texto)
+                        texto = 'Agregue 1 punto \ Add 1 point'
+                        self.espectro.figure.text(0.50, 0.85, texto)
                         draw()
                     else:
-                        texto= 'Agregue ' + str(n) + ' puntos \ Add ' + str(n) + ' points'
-                        plt.figtext(0.50, 0.85, texto)
+                        texto = f'Agregue {n} puntos \ Add {n} points'
+                        self.figure.text(0.50, 0.85, texto)
                         draw()
-                    self.key1= False
-#
+                    self.key1 = False
         else:
-            plt.close(event.canvas.figure)
+            plt.close(self.figure)
             return
 #-------------------------------------------------------------------------------
     def ajuste_parab(self, event):
@@ -351,7 +345,9 @@ class Inter_Grafica:
             for l in lineas_dibujadas:
                 l.set_color("gray")
                 
+        self.espectro.create_line_button(self.espectro.axes, 'Linea', linea)
         self.append_line(linea)
+        
 
     def get_lines(self):
         return self.lines

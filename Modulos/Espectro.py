@@ -7,6 +7,8 @@
 import os, sys
 import math
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Button
+
 from pylab import *
 from PIL import Image
 import Polinomios
@@ -16,6 +18,8 @@ import Inter_Grafica
 import copy
 from Modulos.Funciones_auxiliares import maximizar_pantalla
 from Modulos.Punto import Punto
+
+
 #######################################################################
 #######################################################################
 #############                CLASE                       ##############
@@ -61,6 +65,13 @@ class Espectro:
         self.yH_inf= []
         self.xH_sup= []
         self.yH_sup= []
+        
+        # Manejo los datos del gráfico
+        axes = None
+        figure = None
+        
+        # Initialize a list to store the button instances
+        self.line_buttons = []
 #
         n= len(nombre)
         if nombre[n-1:n] == '\n':
@@ -111,14 +122,18 @@ class Espectro:
         self.log_flujo= []
         for i in self.flujo:
             self.log_flujo.append( math.log(i,10) )
-
-        
-#
     # Graficamos el espectro
-        plt.xlabel('$\lambda$ [$\AA$]')
-        plt.ylabel('$\log (F_{\lambda})$')
-        plt.plot(self.l_onda, self.log_flujo, 'b-')
-        plt.axvline(x=3700., color='k')
+    
+    # Utiliza los atributos axes y figure
+        self.axes.set_xlabel('$\lambda$ [$\AA$]')
+        self.axes.set_ylabel('$\log (F_{\lambda})$')
+        self.axes.axvline(x=3700., color='k')
+        line, = self.axes.plot(self.l_onda, self.log_flujo, 'b-')
+        
+        self.figure.canvas.draw()
+        
+        self.create_line_button(self.axes, 'Toggle Spectrum', line)
+    
 
 #
 # Grafico los ajustes realizados hasta el momento
@@ -128,29 +143,27 @@ class Espectro:
             for i in self.l_onda:
                 if i > 3700.:
                     xp.append( i )
-            plt.plot(xp, polyval(yp,xp), 'g-')# Grafico Paschen
+            self.axes.plot(xp, polyval(yp, xp), 'g-')  # Grafico Paschen
 #
             if n >= 3:
                 yb= poly1d(self.balmer.coef); yb
-                xb= []
-                for i in self.l_onda:
-                    if i < 3700.:
-                        xb.append( i )
-                plt.plot(xb, polyval(yb,xb), 'g-')# Grafico Balmer
+                xb = [i for i in self.l_onda if i < 3700.]
+        
+                # Utilizo self.axes en lugar de plt
+                self.axes.plot(xb, polyval(yb, xb), 'g-')  # Grafico Balmer
+        
                 if n == 3:
-                    #obsoleto: Lo cambio por lo de abajo para poder manipular esos puntos.
-                    #plt.plot(self.xH_inf, self.yH_inf, 'ro')
-                    
                     # Plotear los puntos y almacenarlos en la lista
                     for x, y in zip(self.xH_inf, self.yH_inf):
-                        punto, = plt.plot(x, y, 'ro')
+                        punto, = self.axes.plot(x, y, 'ro')
                         new_point = punto
                         print("Punto por Balmer inferior agregado: ", punto, " Se agregoó a \n\n", puntos)
-            
+                        
                         puntos.append(Punto(x, y, new_point))
 
-                    plt.title(self.nombre + '\n' + 'Ajuste la envolvente inferior\n' + 'Fit the bottom envelope of Balmer lines')
-#
+                    # Utilizo self.axes.set_title en lugar de plt.title
+                    self.axes.set_title(self.nombre + '\n' + 'Ajuste la envolvente inferior\n' + 'Fit the bottom envelope of Balmer lines')
+
                 if n == 4:# Grafico Balmer superior
                     
                     print("En ajuste superior ###\n###\n###\n")
@@ -167,24 +180,24 @@ class Espectro:
                             if 3700. <= i and i <= 3800.:
                                 xbi.append( i )
                                 
-                    plt.plot(xbi, polyval(ybi,xbi), 'g-')
+                    self.axes.plot(xbi, polyval(ybi, xbi), 'g-')
                     
                     #Dibujo los puntos
                     print("Estos son los puntos que se agregarán: ", len(self.xH_sup))
                     for x, y in zip(self.xH_sup, self.yH_sup):
-                        punto, = plt.plot(x, y, 'ro')
+                        punto, = self.axes.plot(x, y, 'ro')
                         new_point = punto
                         print("Tipo de new point: ", type(new_point))
                         puntos.append(Punto(x, y, new_point))
                     
                         print("Punto por Balmer superior agregado: ", new_point, "\n Se agregoó a la lista de puntos: \n\n")
                     
-                    plt.title(self.nombre + '\n' + 'Ajuste la envolvente superior\n' + 'Fit the upper envelope of Balmer lines')
-                    
+                    self.axes.set_title(self.nombre + '\n' + 'Ajuste la envolvente superior\n' + 'Fit the upper envelope of Balmer lines')                    
             else:
-                plt.title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
+                self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
         else:
-            plt.title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
+            self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
+        
         plt.show()
 
 #-------------------------------------------------------------------------------
@@ -337,7 +350,7 @@ class Espectro:
 #-------------------------------------------------------------------------------
     def Ajuste_Paschen(self):
 #
-        maximizar_pantalla()
+        
         f_est= open(self.archivo_out, "w") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE PASCHEN\n' )
@@ -345,13 +358,19 @@ class Espectro:
         f_est.write( '------------------------------\n' )
         f_est.write( '\n' )
         f_est.close()
-
         
+        self.figure, self.axes= plt.subplots()
 #
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         ajuste.clean_puntos()
-        Inter_Grafica.connect('button_press_event', ajuste.click)
-        Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
+        
+        maximizar_pantalla()
+        
+        self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_recta)
+        
+        # Inter_Grafica.connect('button_press_event', ajuste.click)
+        # Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
         
         self.Grafico_espec(1)
         
@@ -441,3 +460,31 @@ class Espectro:
 #
         return
 #-------------------------------------------------------------------------------
+    
+    def create_line_button(self, ax, label, line):
+        """
+        Create a toggle button for a given line on the plot.
+
+        Parameters:
+        - ax (matplotlib.axes._axes.Axes): The Axes on which the button will be added.
+        - label (str): The label/text for the button.
+        - line (matplotlib.lines.Line2D): The line associated with the button.
+
+        Returns:
+        - None
+        """
+        button_ax = plt.axes([0.91, 0.2 - len(self.line_buttons) * 0.1, 0.08, 0.05])
+        line_button = Button(button_ax, label)
+        line_button.on_clicked(lambda event, l=line: self.toggle_line(l))
+        ax.figure.canvas.mpl_connect('pick_event', line_button)
+        self.line_buttons.append(line_button)
+
+    def toggle_line(self, line):
+        """
+        Esta función se encarga de manejar la funcionalidad de la linea cuando se presiona el botón
+
+        Parameters:
+        - line (matplotlib.lines.Line2D): The line to be toggled.
+        """
+        line.set_visible(not line.get_visible())
+        plt.draw()
