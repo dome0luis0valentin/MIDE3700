@@ -153,21 +153,25 @@ class Normalizo_espectro(Espectro.Espectro):
         return lambda_max, b_max
 #-----------------------------------------------------------------------------------------
     def Grafico_espec(self, n, puntos = None):
+
 #
         # n= 1  Grafico el espectro
         # n= 2  Grafico el espectro y Paschen
         # n= 3  Grafico el espectro, Paschen, Balmer y Balmer inf
+        
+        # puntos: contiene los puntos graficados, trae los puntos del etapa anterior(espectro sin normalizar)
 #
         log_flujo= []
         for i in self.flujo:
             log_flujo.append( math.log(i,10) )
 #
-    # Graficamos el espectro
+        # Graficamos el espectro
 #
-        plt.xlabel('$1/ \lambda$ [$\AA$]')
-        plt.ylabel('$\log (F_{\lambda} / B_{\lambda})$')
-        plt.plot(self.l_onda, log_flujo, 'b-')
-        plt.axvline(x=1./3700., color='k')
+        # Utiliza los atributos axes y figure
+        self.axes.set_xlabel('$\lambda$ [$\AA$]')
+        self.axes.set_ylabel('$\log (F_{\lambda})$')
+        self.axes.axvline(x=1./3700., color='k')
+        self.axes.plot(self.l_onda, log_flujo, 'b-')
 #
 # Grafico los ajustes realizados hasta el momento
 #
@@ -177,7 +181,7 @@ class Normalizo_espectro(Espectro.Espectro):
             for i in self.l_onda:
                 if i < 1./3700.:
                     xp.append( i )
-            plt.plot(xp, polyval(yp,xp), 'g-')# Grafico Paschen
+            self.axes.plot(xp, polyval(yp,xp), 'g-')# Grafico Paschen
 #
             if n >= 3:
                 yb= poly1d(self.balmer.coef); yb
@@ -185,43 +189,42 @@ class Normalizo_espectro(Espectro.Espectro):
                 for i in self.l_onda:
                     if i > 1./3700.:
                         xb.append( i )
-                plt.plot(xb, polyval(yb,xb), 'g-')# Grafico Balmer
+                self.axes.plot(xb, polyval(yb,xb), 'g-')# Grafico Balmer
                 if n == 3:
                     for x, y in zip(self.xB_inf, self.yB_inf):
-                        punto, = plt.plot(x, y, 'ro')
+                        punto, = self.axes.plot(x, y, 'ro')
                         new_point = punto
                         print("Punto por Pashen agregado automáticamente: ", punto, " Se agregoó a \n\n", puntos)
                     
                         puntos.append(Punto(x, y, new_point))   
                         
-                    plt.title(self.nombre + '\n' + 'Ajuste la envolvente inferior\n' + 'Fit the bottom envelope of Balmer lines')
+                    self.axes.set_title(self.nombre + '\n' + 'Ajuste la envolvente inferior\n' + 'Fit the bottom envelope of Balmer lines')
             else:
                 for x, y in zip(self.xB, self.yB):
-                        punto, = plt.plot(x, y, 'ro')
+                        punto, = self.axes.plot(x, y, 'ro')
                         new_point = punto
                         print("Punto por Balmer agregado automáticamente: ", punto, " Se agregoó a \n\n", puntos)
                 
                         puntos.append(Punto(x, y, new_point))
                 
                 
-                plt.title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
+                self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
         else:
             
             #Agrego los puntos del ajuste hecho en la primera etapa
             for x, y in zip(self.xP, self.yP):
-                punto, = plt.plot(x, y, 'ro')
+                punto, = self.axes.plot(x, y, 'ro')
                 new_point = punto
                 print("Punto por Pashen agregado automáticamente: ", punto, " Se agregoó a \n\n", puntos)
             
                 puntos.append(Punto(x, y, new_point))
                 
-            plt.title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
+            self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
             
         plt.show()
 #-------------------------------------------------------------------------------
     def Ajuste_Paschen(self):
 #
-        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE PASCHEN\n' )
@@ -229,6 +232,10 @@ class Normalizo_espectro(Espectro.Espectro):
         f_est.write( '------------------------------\n' )
         f_est.write( '\n' )
         f_est.close()
+        
+        #Definimos los datos del grafico que utilizaremos
+        self.figure, self.axes= plt.subplots()
+
 #
 #     Traemos los puntos con los que hicimos el ajuste
 #
@@ -239,19 +246,27 @@ class Normalizo_espectro(Espectro.Espectro):
             
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
         ajuste.clean_puntos()
+        maximizar_pantalla()
+        
+        #Agregamos los puntos del espectro sin normalizar
         ajuste.xdatalist= copy.copy( self.xP )
         ajuste.ydatalist= copy.copy( self.yP )
 
-        Inter_Grafica.connect('button_press_event', ajuste.click)
-        Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
+        # Inter_Grafica.connect('button_press_event', ajuste.click)
+        # Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
+        self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_recta)
+        
         self.Grafico_espec(1, ajuste.points)
-        self.paschen.coef= copy.copy( ajuste.p.coef )
+        
+        self.graficar_ajuste_pashen_activa(ajuste.p)
+        # self.paschen.coef= copy.copy( ajuste.p.coef )
 #
         return
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer(self):
 #
-        maximizar_pantalla()
+        print("Ajuste de Balmer")
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE BALMER\n' )
@@ -259,6 +274,17 @@ class Normalizo_espectro(Espectro.Espectro):
         f_est.write( '------------------------------\n' )
         f_est.write( '\n' )
         f_est.close()
+        
+        #Configuración para Widgets
+        self.line_buttons = []
+        
+        #Obtiene los datos con los que se van a graficar.
+        self. figure, self.axes= plt.subplots()
+        
+        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
+        ajuste.clean_puntos()
+        
+        maximizar_pantalla()
 #
 #     Traemos los puntos con los que hicimos el ajuste
 #
@@ -267,21 +293,24 @@ class Normalizo_espectro(Espectro.Espectro):
             self.xB.append( x )
             self.yB.append( math.log( self.flujo[k],10) )
 #
-        ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
-        ajuste.clean_puntos()
+        
         ajuste.xdatalist= copy.copy( self.xB )
         ajuste.ydatalist= copy.copy( self.yB )
+        
 #
-        Inter_Grafica.connect('button_press_event', ajuste.click)
-        Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
+        self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_recta)
+        
         self.Grafico_espec(2, ajuste.points)
-        self.balmer.coef= copy.copy( ajuste.p.coef )
+        
+        #Grafico solamente la recta que se a activado
+        self.graficar_ajuste_balmer_activa(ajuste.p)
+        # self.balmer.coef= copy.copy( ajuste.p.coef )
 #
         return
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer_inf(self):
 #
-        maximizar_pantalla()
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DE LA ENVOLVENTE INFERIOR\n' )
@@ -289,6 +318,11 @@ class Normalizo_espectro(Espectro.Espectro):
         f_est.write( '------------------------------\n' )
         f_est.write( '\n' )
         f_est.close()
+        
+        #Configuración para Widgets
+        self.line_buttons = []
+        
+        self.figure, self.axes= plt.subplots()
 #
 #     Traemos los puntos con los que hicimos el ajuste
 #
@@ -299,13 +333,21 @@ class Normalizo_espectro(Espectro.Espectro):
 #
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
         ajuste.clean_puntos()
+        maximizar_pantalla()
+        
         ajuste.xdatalist= copy.copy( self.xB_inf )
         ajuste.ydatalist= copy.copy( self.yB_inf )
 #
-        Inter_Grafica.connect('button_press_event', ajuste.click)
-        Inter_Grafica.connect('key_press_event', ajuste.ajuste_parab)
+        self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_parab)
+        
+        # Inter_Grafica.connect('button_press_event', ajuste.click)
+        # Inter_Grafica.connect('key_press_event', ajuste.ajuste_parab)
+        
         self.Grafico_espec(3, ajuste.points)
-        self.balmer_inf.coef= copy.copy( ajuste.p.coef )
+        
+        self.graficar_balmer_inferior_activa(ajuste.p)
+        # self.balmer_inf.coef= copy.copy( ajuste.p.coef )
 #
         return
 #-------------------------------------------------------------------------------

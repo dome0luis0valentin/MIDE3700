@@ -74,8 +74,8 @@ class Inter_Grafica:
             if (clic_x == None or clic_y == None ):
                 return
 
-#Normalizo los datos para poder trabajar con el gráfico en iguales dimencioenes de 0 a 1
             if isinstance(self.espectro, Modulos.Normalizo_espectro.Normalizo_espectro):
+#Normalizo los datos para poder trabajar con el gráfico en iguales dimenciones de 0 a 1
                 eje_y_normalizado = []
                 
                 for i in self.espectro.flujo:
@@ -144,39 +144,21 @@ class Inter_Grafica:
                 #activo y pinto de verde
 
             ax = self.espectro.axes  # mantengo los ejes actuales
-           
+        
             #ax.plot(x[i_min],y[i_min],'kx',lw=2,ms=12)
             
             draw()
 #
         else: return
-        """
-#
-#     Busco el punto más cercano
-            dif_min= abs(x[0] - event.xdata)
-            for j in range(len(x)):
-                dif= abs(x[j] - event.xdata)
-                if dif <= dif_min:
-                    dif_min= dif
-                    i_min= j
-#
-            self.xdatalist= []
-            self.ydatalist= []
-#
-            for j in range(len(x)):
-                if j != i_min:
-                    self.xdatalist.append( x[j] )
-                    self.ydatalist.append( y[j] )
 
-        """           
-          
+
 #
 #-------------------------------------------------------------------------------
     def ajuste_recta(self, event):
 #
         if event.key not in ('a','q'): return
         
-        
+        #Si presiona el botón "a"
         if event.key=='a':
 #
             #Armo la recta sobre los puntos que estan activos
@@ -204,7 +186,7 @@ class Inter_Grafica:
                 color = self.colores[self.index_color_actual]
                 self.index_color_actual+=1
                 
-                line_graph, = self.espectro.axes.plot(x, polyval(y, x), color+'-')
+                line_graph, = self.espectro.axes.plot(x, polyval(y, x), 'g-')
                 new_line = Line(grafico = line_graph,
                                 x_active = x_active,
                                 y_active = y_active)
@@ -212,6 +194,8 @@ class Inter_Grafica:
                 self.agregar_linea(new_line)
 #
                 self.Print_puntos('recta')
+                
+            #Si presiona el botón "q"
             else:
                 n= 1 - ( len(self.xdatalist) ) + 2
                 while self.key1:
@@ -252,7 +236,7 @@ class Inter_Grafica:
                 color = self.colores[self.index_color_actual]
                 self.index_color_actual+=1
                 
-                graph_parable, = self.espectro.axes.plot(x,polyval(y,x), color+'-')
+                graph_parable, = self.espectro.axes.plot(x,polyval(y,x), 'g-')
                 
                 new_parable = Parable(grafico= graph_parable, x_active= x_active, y_active= y_active)
                 
