@@ -233,9 +233,11 @@ class Normalizo_espectro(Espectro.Espectro):
         f_est.write( '\n' )
         f_est.close()
         
+        #Configuración para Widgets
+        self.line_buttons = []
+        
         #Definimos los datos del grafico que utilizaremos
         self.figure, self.axes= plt.subplots()
-
 #
 #     Traemos los puntos con los que hicimos el ajuste
 #
@@ -255,10 +257,10 @@ class Normalizo_espectro(Espectro.Espectro):
         # Inter_Grafica.connect('button_press_event', ajuste.click)
         # Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
-        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_recta)
-        
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_rect)
+
         self.Grafico_espec(1, ajuste.points)
-        
+
         self.graficar_ajuste_pashen_activa(ajuste.p)
         # self.paschen.coef= copy.copy( ajuste.p.coef )
 #
@@ -279,7 +281,7 @@ class Normalizo_espectro(Espectro.Espectro):
         self.line_buttons = []
         
         #Obtiene los datos con los que se van a graficar.
-        self. figure, self.axes= plt.subplots()
+        self.figure, self.axes= plt.subplots()
         
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
         ajuste.clean_puntos()
@@ -299,7 +301,7 @@ class Normalizo_espectro(Espectro.Espectro):
         
 #
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
-        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_recta)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_rect)
         
         self.Grafico_espec(2, ajuste.points)
         
@@ -339,7 +341,7 @@ class Normalizo_espectro(Espectro.Espectro):
         ajuste.ydatalist= copy.copy( self.yB_inf )
 #
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
-        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_parab)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_parable)
         
         # Inter_Grafica.connect('button_press_event', ajuste.click)
         # Inter_Grafica.connect('key_press_event', ajuste.ajuste_parab)

@@ -371,7 +371,7 @@ class Espectro:
         maximizar_pantalla()
         
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
-        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_recta)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_rect)
         
         self.Grafico_espec(1)
         
@@ -404,7 +404,7 @@ class Espectro:
         maximizar_pantalla()
         
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
-        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_recta)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_rect)
         
         self.Grafico_espec(2)
         
@@ -439,7 +439,7 @@ class Espectro:
 ##
 
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
-        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_parab)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_parable)
 
         self.Grafico_espec(3, ajuste.points)
         
@@ -478,7 +478,7 @@ class Espectro:
         self.yH_sup= log_y_max
 #
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
-        self.figure.canvas.mpl_connect('key_press_event', ajuste.ajuste_parab)
+        self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_parable)
         
         self.graficar_balmer_inferior_activa(ajuste.p)
         
