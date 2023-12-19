@@ -5,18 +5,22 @@
 # http://scienceoss.com/interactively-select-points-from-a-plot-in-matplotlib/
 ################################################################################
 from pylab import *
+from datetime import datetime
+import time
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import Espectro
 
+
 import Polinomios
 import copy
-from Funciones_auxiliares import encontrar_punto_mas_cercano, encontrar_punto_mas_cercano_normalizado, encontra_aproximado_eje_x
+from Funciones_auxiliares import encontrar_punto_mas_cercano, encontrar_punto_mas_cercano_normalizado
 from Funciones_auxiliares import calcular_indice_del_punto_mas_cercano, calcular_indice_del_punto_mas_cercano_normalizado
 
 from Modulos.Punto import Punto
 from Modulos.Line import Line
+from Modulos.Parable import Parable
 ################################################################################
 ################################################################################
 ################################################################################
@@ -35,7 +39,7 @@ class Inter_Grafica:
     espectro = None #Recibe las coordenadas x e y del espectro
 
 #Atributos para el manejo de colores de las rectas y curvas
-    colores = ['b', 'g', 'r', 'c', 'm', 'y', 'k'] #Es el color actual de la curva
+    colores = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '#FFA07A', '#00CED1', '#800080'] #Es el color actual de la curva
     index_color_actual = 0
     
 #Lista de puntos en el gráfico, funciona de forma independiente de xdatalist e ydatalist
@@ -45,6 +49,10 @@ class Inter_Grafica:
     lines = []
 #Lista con todas las parabolas que se van gráficando:
     parables = []   
+
+#Atributtes for the manage the key press:
+    # a: to adjust the rect, q: to pass at the next part, p: to graphic a point out the espectrum
+    key_avaible = ['a', 'q', 'p']    
 #-------------------------------------------------------------------------------
     def __init__(self, archivo, nor, espectro):
 #        self.archivo= "Ajustes/" + nombre + ".out" # Archivo de salida
@@ -54,22 +62,42 @@ class Inter_Grafica:
         self.p.coef= []
         self.nor= nor
         self.espectro = espectro
+
+#
+    def draw_point(self, x, y):
+        #Agrego el punto a la lista de puntos
+
+        self.xdatalist.append(x)
+        self.ydatalist.append(y)
+            
+        ax = self.espectro.axes  # mantengo los ejes actuales
+
+        # Graficamos un punto rojo en el punto del espectro más cercano.
+        new_point = ax.plot([x],[y],'ro', picker=5)
+            
+        self.agregar_punto(Punto(x, y, new_point[0]))
+        draw()  # refrescamos el grafico.
+
 #-------------------------------------------------------------------------------
     def click(self, event):
+        
         import Modulos
         self.event = event
-
+        
+        if event.inaxes != self.espectro.axes:
+            return
 #
 # Con el boton izquierdo agrego un punto
         if event.button == 1:
 #
             clic_x = event.xdata
             clic_y = event.ydata
+            
+            if (clic_x == None or clic_y == None ):
+                return
 
-            print(f'X {clic_x}, Y {clic_y}')
-
-#Normalizo los datos para poder trabajar con el gráfico en iguales dimencioenes de 0 a 1
             if isinstance(self.espectro, Modulos.Normalizo_espectro.Normalizo_espectro):
+#Normalizo los datos para poder trabajar con el gráfico en iguales dimenciones de 0 a 1
                 eje_y_normalizado = []
                 
                 print("Flujo linea 75 ", self.espectro.flujo[100])
@@ -77,14 +105,8 @@ class Inter_Grafica:
                     eje_y_normalizado.append(math.log(i,10))
                 print("Flujo linea después  75 ", eje_y_normalizado[100])
                 eje_x = self.espectro.l_onda
-                
-                print("Flujo linea 81 ", self.espectro.l_onda[100])
-                
-                
-                x,y = encontrar_punto_mas_cercano(clic_x, clic_y, eje_x, eje_y_normalizado)
-                
-                print("###--> x e y linea 84: ", x," ", y)
-                #x, y = encontra_aproximado_eje_x(clic_x, clic_y, eje_x, eje_y_normalizado)
+
+                x, y = encontrar_punto_mas_cercano_normalizado(clic_x, clic_y, eje_x, eje_y_normalizado)
 
             else:
                 max_x = max(self.espectro.l_onda)
@@ -98,21 +120,12 @@ class Inter_Grafica:
                 x = x*max_x
                 y = y*max_y
 
-            #Agrego el punto a la lista de puntos
- 
-            self.xdatalist.append(x)
-            self.ydatalist.append(y)
-           
-            ax = gca()  # mantengo los ejes actuales
-
-            # Graficamos un punto rojo en el punto del espectro más cercano.
-            new_point = ax.plot([x],[y],'ro', picker=5)
+            self.draw_point(x, y)
             
-            self.agregar_punto(Punto(x, y, new_point[0]))
-            draw()  # refrescamos el grafico.
-
 #
-# Con el boton derecho, busco el más cercano, si el más cercano esta activo --> Lo desactivo
+# Con el boton derecho:
+# 
+#       busco el más cercano, si el más cercano esta activo --> Lo desactivo
 #                                               si el más cercano esta inactivo --> Lo activo
 #
         if event.button == 3:
@@ -121,11 +134,12 @@ class Inter_Grafica:
             clic_y = event.ydata
             coor_x= self.xdatalist
             coor_y= self.ydatalist
+            
             if isinstance(self.espectro, Modulos.Normalizo_espectro.Normalizo_espectro):
                 indice_mas_cercano = calcular_indice_del_punto_mas_cercano_normalizado(clic_x, clic_y, coor_x, coor_y)
             else:
                 indice_mas_cercano = calcular_indice_del_punto_mas_cercano(clic_x, clic_y, coor_x, coor_y)
-           
+        
 
             if indice_mas_cercano == -1:
                 return
@@ -141,93 +155,154 @@ class Inter_Grafica:
                 punto.set_color("red")
                 #activo y pinto de verde
 
-            ax = gca()  # mantengo los ejes actuales
-           
+            ax = self.espectro.axes  # mantengo los ejes actuales
+        
             #ax.plot(x[i_min],y[i_min],'kx',lw=2,ms=12)
             
             draw()
 #
         else: return
+        
+    def handler_graph_parable(self, event):
         """
-#
-#     Busco el punto más cercano
-            dif_min= abs(x[0] - event.xdata)
-            for j in range(len(x)):
-                dif= abs(x[j] - event.xdata)
-                if dif <= dif_min:
-                    dif_min= dif
-                    i_min= j
-#
-            self.xdatalist= []
-            self.ydatalist= []
-#
-            for j in range(len(x)):
-                if j != i_min:
-                    self.xdatalist.append( x[j] )
-                    self.ydatalist.append( y[j] )
+        This function graph the parable, depend of the points, graph a parable that adjust at there.
+        If not there are sufficient points, show error.
+        """
+        x_active, y_active = self.get_active_points()
 
-        """           
-          
+        ajuste= self.p.minimos_cuadrados(x_active,y_active,2)         
+    #   
+
+        if ajuste:
+            y= poly1d(self.p.coef); y
+            x= []
+            if self.nor:
+                x.append(1./3700.)
+            else:
+                x.append(3700.)
+                        
+            x.extend(x_active)  
+    #
+            x.sort()                
+                                    
+            color = self.colores[self.index_color_actual]
+            self.index_color_actual+=1
+                    
+            graph_parable, = self.espectro.axes.plot(x,polyval(y,x), 'g-')
+                    
+            new_parable = Parable(grafico= graph_parable, x_active= x_active, y_active= y_active)
+                    
+            self.agregar_parable(new_parable)
+                    
+            draw()
+    #
+            self.Print_puntos('parabola')
+        else:
+            n= 2 - ( len(self.xdatalist) ) + 2
+            while self.key2:
+                if n == 1:
+                    texto= 'Agregue 1 punto \ Add 1 point'
+                    plt.figtext(0.50, 0.85, texto)
+                    draw()
+                else:
+                    texto= 'Agregue ' + str(n) + ' puntos \ Add ' + str(n) + ' points'
+                    plt.figtext(0.50, 0.85, texto)
+                    draw()
+                self.key2= False
+                
+    def handler_graph_rect(self, event):
+        #Armo la recta sobre los puntos que estan activos
+                x_active = []
+                y_active = []
+                
+                x_active, y_active = zip(*[(point.x, point.y) for point in self.get_puntos() if point.get_activate()])
+
+                ajuste= self.p.minimos_cuadrados(x_active,y_active,1)
+    #
+
+                if ajuste:
+                    y= poly1d(self.p.coef); y
+                    x= []
+                    if self.nor:
+                        x.append(1./3700.)
+                    else:
+                        x.append(3700.)
+                        
+                    x.extend(self.xdatalist) # agrega todos los elementos de self.xdatalist a la lista x
+    #
+                    x.sort()
+                    
+                    # Utilizo self.axes en lugar de gca()
+                    color = self.colores[self.index_color_actual]
+                    self.index_color_actual+=1
+                    
+                    line_graph, = self.espectro.axes.plot(x, polyval(y, x), 'g-')
+                    new_line = Line(grafico = line_graph,
+                                    x_active = x_active,
+                                    y_active = y_active)
+                    draw()
+                    self.agregar_linea(new_line)
+    #
+                    self.Print_puntos('recta')
+                else: 
+                    self.show_error_rect
+
+    def show_error_rect(self):
+        n= 1 - ( len(self.xdatalist) ) + 2
+        while self.key1:
+            if n == 1:
+                texto = 'Agregue 1 punto \ Add 1 point'
+                self.espectro.figure.text(0.50, 0.85, texto)
+                draw()
+            else:
+                texto = f'Agregue {n} puntos \ Add {n} points'
+                self.figure.text(0.50, 0.85, texto)
+                draw()
+            self.key1 = False    
+
+    def handler_rect_next_stage(self, event):
+        plt.close(event.canvas.figure)
+        return
+
+    def handler_make_point_customice(self, event):
+        x = event.xdata
+        y = event.ydata
+        
+        self.draw_point(x, y)
+        
+        return
+        
+        
+    
+    def handler_of_key_rect(self, event):
+        key_pressed = event.key
+        if key_pressed not in self.key_avaible: return 
+        print(f"Someone press the key {key_pressed} ")
+        if key_pressed == "a":
+            self.handler_graph_rect(event)
+        elif key_pressed == "q":
+            self.handler_rect_next_stage(event)
+        elif key_pressed == "p":
+            self.handler_make_point_customice(event)
+        return
+
+    def handler_of_key_parable(self, event):
+        key_pressed = event.key
+        if key_pressed not in self.key_avaible: return 
+        
+        if key_pressed == "a":
+            self.handler_graph_parable(event)
+        elif key_pressed == "q":
+            plt.close(event.canvas.figure)
+            # Guardo los valores
+            self.Print_pol('parabola')
+            return
+        elif key_pressed == "p":
+            self.handler_make_point_customice(event)
+        
+   
 #
 #-------------------------------------------------------------------------------
-    def ajuste_recta(self, event):
-#
-        if event.key not in ('a','q'): return
-        
-        if event.key=='a':
-#
-            #Armo la recta sobre los puntos que estan activos
-            x_active = []
-            y_active = []
-            
-            x_active, y_active = zip(*[(point.x, point.y) for point in self.get_puntos() if point.get_activate()])
-
-            ajuste= self.p.minimos_cuadrados(x_active,y_active,1)
-#
-            #color = self.cambiar_color()
-
-            if ajuste:
-                y= poly1d(self.p.coef); y
-                x= []
-                if self.nor:
-                    x.append(1./3700.)
-                else:
-                    x.append(3700.)
-                    
-                x.extend(self.xdatalist) # agrega todos los elementos de self.xdatalist a la lista x
-
-#
-                x.sort()
-                
-                ax= gca()  # mantengo los ejes actuales
-                #obsoleto: ya no es necesario MatplotLib lo hace por defecto
-                #ax.hold(True) # superpongo graficos.
-                
-                #Agrego la linea al gráfico y la lista de variables
-                #ax.plot(x,polyval(y,x), color+'-')
-               
-                new_line = plt.plot(x,polyval(y,x),'g-')
-                self.agregar_linea(new_line)
-                
-                draw()
-#
-                self.Print_puntos('recta')
-            else:
-                n= 1 - ( len(self.xdatalist) ) + 2
-                while self.key1:
-                    if n == 1:
-                        texto= 'Agregue 1 punto \ Add 1 point'
-                        plt.figtext(0.50, 0.85, texto)
-                        draw()
-                    else:
-                        texto= 'Agregue ' + str(n) + ' puntos \ Add ' + str(n) + ' points'
-                        plt.figtext(0.50, 0.85, texto)
-                        draw()
-                    self.key1= False
-#
-        else:
-            plt.close(event.canvas.figure)
-            return
 #-------------------------------------------------------------------------------
     def ajuste_parab(self, event):
         if event.key not in ('a','q'): return
@@ -248,13 +323,15 @@ class Inter_Grafica:
                     
                 x.extend(x_active)  
 #
-                x.sort()
-                
-                ax= gca()  # mantengo los ejes actuales
-                #obsoleto: ya no es necesario MatplotLib lo hace por defecto
-                #ax.hold(True) # superpongo graficos.                
+                x.sort()                
                                 
-                new_parable = plt.plot(x,polyval(y,x), 'g-')
+                color = self.colores[self.index_color_actual]
+                self.index_color_actual+=1
+                
+                graph_parable, = self.espectro.axes.plot(x,polyval(y,x), 'g-')
+                
+                new_parable = Parable(grafico= graph_parable, x_active= x_active, y_active= y_active)
+                
                 self.agregar_parable(new_parable)
                 
                 draw()
@@ -346,7 +423,7 @@ class Inter_Grafica:
         return x_active, y_active
 
  #-------------------------------------------------------------------------------
- 
+
     def agregar_linea(self, linea):
         """
         Agrega el objeto que representa a la linea graficada a la lista de lineas graficadas
@@ -354,15 +431,19 @@ class Inter_Grafica:
         Args:
             linea (_list_): _una lista con un único elemento, que representa a la linea en la interfaz gráfica_
         """
-        linea = linea[0]
         
         lineas_dibujadas = self.get_lines()
         
         if len(lineas_dibujadas) > 0:
             for l in lineas_dibujadas:
-                l.set_color("gray")
+                l.grafico.set_color("gray")
+                l.set_last(False)
                 
         self.append_line(linea)
+        
+        self.espectro.create_line_button(self.espectro.axes, 'Ajuste', lineas_dibujadas, linea)
+        
+        
 
     def get_lines(self):
         return self.lines
@@ -389,7 +470,6 @@ class Inter_Grafica:
         Args:
             parable (_list_): _una lista con un único elemento, que representa a la parabola en la interfaz gráfica_
         """
-        parable = parable[0]
         
         parabolas_dibujadas = self.get_parables()
         
@@ -398,11 +478,24 @@ class Inter_Grafica:
                 p.set_color("gray")
                 
         self.append_parable(parable)
+        
+        self.espectro.create_parable_button(self.espectro.axes, 'Parabola', parabolas_dibujadas, parable)
 
     def get_parables(self):
+        """
+        The function returns the parables attribute of an object.
+        :return: The method is returning the value of the variable "self.parables".
+        """
         return self.parables
     
     def append_parable(self, parable):
+        """
+        The function appends a parable to a list of parables.
+        
+        :param parable: The parameter "parable" is a variable that represents a parable. It is being
+        passed to the function "append_parable" as an argument
+        :return: The method is returning the updated list of parables after appending the new parable.
+        """
         return self.parables.append(parable)
     
     def clean_parables(self):
