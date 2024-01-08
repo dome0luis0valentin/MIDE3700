@@ -41,14 +41,6 @@ class Inter_Grafica:
 #Atributos para el manejo de colores de las rectas y curvas
     colores = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '#FFA07A', '#00CED1', '#800080'] #Es el color actual de la curva
     index_color_actual = 0
-    
-#Lista de puntos en el gráfico, funciona de forma independiente de xdatalist e ydatalist
-    points = []
-    
-#Lista con todas las rectas que se van gráficando:
-    lines = []
-#Lista con todas las parabolas que se van gráficando:
-    parables = []   
 
 #Atributtes for the manage the key press:
     # a: to adjust the rect, q: to pass at the next part, p: to graphic a point out the espectrum
@@ -62,6 +54,15 @@ class Inter_Grafica:
         self.p.coef= []
         self.nor= nor
         self.espectro = espectro
+        
+        #Lista de puntos en el gráfico, funciona de forma independiente de xdatalist e ydatalist
+        self.points = []
+        
+        #Lista con todas las rectas que se van gráficando:
+        self.lines = []
+        
+        #Lista con todas las parabolas que se van gráficando:
+        self.parables = [] 
 
 #
     def draw_point(self, x, y):
@@ -170,12 +171,14 @@ class Inter_Grafica:
         """
         x_active, y_active = self.get_active_points()
 
-        ajuste= self.p.minimos_cuadrados(x_active,y_active,2)         
+        ajuste = self.p.minimos_cuadrados(x_active,y_active,2)
+        
+        # self.p.print_polynomial()        
     #   
 
         if ajuste:
-            y= poly1d(self.p.coef); y
-            x= []
+            y = poly1d(self.p.coef); y
+            x = []
             if self.nor:
                 x.append(1./3700.)
             else:
@@ -215,6 +218,7 @@ class Inter_Grafica:
                 x_active = []
                 y_active = []
                 
+                #Obtengo los puntos activos y los almaceno en 2 listas
                 x_active, y_active = zip(*[(point.x, point.y) for point in self.get_puntos() if point.get_activate()])
 
                 ajuste= self.p.minimos_cuadrados(x_active,y_active,1)
@@ -476,6 +480,7 @@ class Inter_Grafica:
         if len(parabolas_dibujadas) > 0:
             for p in parabolas_dibujadas:
                 p.set_color("gray")
+                p.set_last(False)
                 
         self.append_parable(parable)
         
@@ -502,9 +507,9 @@ class Inter_Grafica:
         self.parables = []
 
     def get_last_parable(self):
-        parable = []
+        parables = []
         for parable in self.get_parables():
             if parable.is_last():
-                self.parables.append(parable)
-        return self.parables
+                parables.append(parable)
+        return parables
     

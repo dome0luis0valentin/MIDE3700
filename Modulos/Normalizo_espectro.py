@@ -77,6 +77,14 @@ class Normalizo_espectro(Espectro.Espectro):
         self.yB_inf= []
         self.xH_inf= []
         self.yH_inf= []
+        
+        # Initialize a list to store the button instances
+        self.lines = []
+        self.line_buttons = []
+        
+        # Initialize a list to store the button instances
+        self.parables = []
+        self.parable_buttons = []
 #
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
@@ -120,7 +128,9 @@ class Normalizo_espectro(Espectro.Espectro):
             b_lambda= (c1 / pow(lambda_cm,5))/(math.exp(c2/(lambda_cm * self.T)) - 1.)
 #
 # Asi el flujo astrofisico estara en unidades de ergs/cm**2/s/A
-#
+#           
+            if (k < 10 ):
+                print("b_lambada_antes: ", b_lambda)
             b_lambda= (b_lambda * pow(10.,-8)) * 4. * pi 
 #
 #     El flujo normalizado de cuerpo negro es
@@ -132,6 +142,15 @@ class Normalizo_espectro(Espectro.Espectro):
         
             self.l_onda.append( 1. / i ) # en Angstroms, representa el eje x
             self.flujo.append( self.espectro.flujo[k] / b_nor ) #representa el eje y
+            if (k < 10):
+                print("#### Normalizando espectro ####")
+                print("l_onda : ", round(i, 8))  # Adjust the precision as needed
+                print("lambda_cm : ", round(lambda_cm, 8))  # Adjust the precision as needed
+                print("b_lambda : ", round(b_lambda, 8))  # Adjust the precision as needed
+                print("b_max : ", round(b_max, 8))  # Adjust the precision as needed
+                print ("lambda_max : ", lambda_max)
+                print(f"Puntos viejo: {round(self.espectro.flujo[k], 8)} \n Puntos nuevo: {round(self.flujo[k], 10)} \n B_nor = {round(b_nor, 10)}")
+
             k= k + 1
 #
         return
@@ -165,6 +184,14 @@ class Normalizo_espectro(Espectro.Espectro):
         for i in self.flujo:
             log_flujo.append( math.log(i,10) )
 #
+        print("#### Primer Punto del espectro ####")
+        print("Entrada: ", self.flujo[0])
+        print("Salida: ",math.log(self.flujo[0],10), " \n")
+        
+        
+        print("#### 100th Punto del espectro ####")
+        print("Entrada: ", self.flujo[100])
+        print("Salida: ",math.log(self.flujo[100],10), " \n")
         # Graficamos el espectro
 #
         # Utiliza los atributos axes y figure
@@ -194,7 +221,6 @@ class Normalizo_espectro(Espectro.Espectro):
                     for x, y in zip(self.xB_inf, self.yB_inf):
                         punto, = self.axes.plot(x, y, 'ro')
                         new_point = punto
-                        print("Punto por Pashen agregado automáticamente: ", punto, " Se agregoó a \n\n", puntos)
                     
                         puntos.append(Punto(x, y, new_point))   
                         
@@ -203,7 +229,6 @@ class Normalizo_espectro(Espectro.Espectro):
                 for x, y in zip(self.xB, self.yB):
                         punto, = self.axes.plot(x, y, 'ro')
                         new_point = punto
-                        print("Punto por Balmer agregado automáticamente: ", punto, " Se agregoó a \n\n", puntos)
                 
                         puntos.append(Punto(x, y, new_point))
                 
@@ -215,7 +240,6 @@ class Normalizo_espectro(Espectro.Espectro):
             for x, y in zip(self.xP, self.yP):
                 punto, = self.axes.plot(x, y, 'ro')
                 new_point = punto
-                print("Punto por Pashen agregado automáticamente: ", punto, " Se agregoó a \n\n", puntos)
             
                 puntos.append(Punto(x, y, new_point))
                 
@@ -253,6 +277,10 @@ class Normalizo_espectro(Espectro.Espectro):
         #Agregamos los puntos del espectro sin normalizar
         ajuste.xdatalist= copy.copy( self.xP )
         ajuste.ydatalist= copy.copy( self.yP )
+        
+        print("###Puntos###")
+        for i,j in zip(self.xP, self.yP):
+            print("Punto x: ", i, " Punto y: ",j)
 
         # Inter_Grafica.connect('button_press_event', ajuste.click)
         # Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
@@ -322,7 +350,13 @@ class Normalizo_espectro(Espectro.Espectro):
         f_est.close()
         
         #Configuración para Widgets
-        self.line_buttons = []
+        self.parable_buttons = []
+        
+        
+        print("\n-------------\n Todas las parabolas 1-\n")
+        for i in self.get_parables():
+                i.set_last(False) 
+                print(i, i.is_last())
         
         self.figure, self.axes= plt.subplots()
 #
@@ -348,6 +382,10 @@ class Normalizo_espectro(Espectro.Espectro):
         
         self.Grafico_espec(3, ajuste.points)
         
+        print("\n-------------\n Todas las parabolas 2- \n")
+        for i in self.get_parables():
+                print(i, i.is_last())
+                
         self.graficar_balmer_inferior_activa(ajuste.p)
         # self.balmer_inf.coef= copy.copy( ajuste.p.coef )
 #
@@ -414,3 +452,61 @@ class Normalizo_espectro(Espectro.Espectro):
 #
         return
 #-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------
+    def get_parable_buttons(self):
+        return self.parable_buttons
+
+#------------------------------------------------------------------------------------------
+    def get_line_buttons(self):
+        return self.line_buttons
+
+    def get_lines(self):
+        return self.lines
+
+    def get_parables(self):
+        return self.parables
+    
+    def get_last_line(self):
+        for line in self.get_lines():
+            if line.is_last():
+                return line
+            
+    def get_last_parable(self):
+        
+        print("\n Getting last parable of Normalized Espectrum ...\n")
+        print(" \n this are the all parables: ")
+        print("\n######Curvas graficadas de espectro normalizado######")
+        for i in self.get_parables():
+            print("Nombre: ", i, " is last(): ", i.is_last())
+                
+        for parable in self.get_parables():
+            if parable.is_last():
+                return parable
+            
+    def graficar_ajuste_pashen_activa(self, polinomio):
+        last_line = self.get_last_line()
+        coeficients = last_line.get_coeficient(polinomio)
+        x_last_line = last_line.get_x()
+        
+        #Guardo los valores de la recta activa para graficar 
+        self.paschen.coef= copy.copy( coeficients )
+        self.xP= copy.copy( x_last_line )
+        
+    def graficar_ajuste_balmer_activa(self, polinomio):
+        last_line = self.get_last_line()
+        coeficients = last_line.get_coeficient(polinomio)
+        x_last_line = last_line.get_x()
+        
+        #Guardo los valores de la recta activa para graficar 
+        self.balmer.coef= copy.copy( coeficients )
+        self.xB= copy.copy( x_last_line )
+        
+    def graficar_balmer_inferior_activa(self, polinomio):
+        last_parable = self.get_last_parable()
+        coeficients = last_parable.get_coeficient(polinomio)
+        x_last_parable = last_parable.get_x()
+        
+        #Guardo los valores de la recta activa para graficar 
+        
+        self.balmer_inf.coef= copy.copy( coeficients )
+        self.xB_inf= copy.copy( x_last_parable )

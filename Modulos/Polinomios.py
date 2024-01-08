@@ -16,6 +16,11 @@ class Polinomio:
         self.grado= int()
         self.coef= []
 #-------------------------------------------------------------------------------
+    
+    def print_polynomial(self):
+        print("\n\n####--- Polinomio ---####\n\n")
+        print(f' -Grado: {self.grado} \n -Coeficiente: {self.coef}\n\n')
+    
     def minimos_cuadrados(self, x, y, n):
         # x e y son los puntos a ajustar
         # n es el grado del polinomio

@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import os
 
 def maximizar_pantalla():
-   
     mng = plt.get_current_fig_manager()
     mng.resize(1846,1000)
     return

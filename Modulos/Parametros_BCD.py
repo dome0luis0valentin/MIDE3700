@@ -51,6 +51,9 @@ class Parametros:
         f_est.write( '--------------------------------\n' )
         f_est.write( '\n' )
 #
+        #Muestra los datos del coefciente a evaluar
+        # self.balmer_inf.print_polynomial()
+        
         if self.nor:
             yp= self.paschen.Evaluo_pol(self.paschen, 1./3700.)
             yb= self.balmer.Evaluo_pol(self.balmer, 1./3700.)
@@ -65,6 +68,12 @@ class Parametros:
         self.D_total= self.D_est + self.d
 #
         f_est.write( 'D= ' + '%1.2f' % self.D_total + '\n')
+        
+        print('D* = {} = {} - {}\n\n     d = {} = {} - {}\n\n      D_total = {} = {} + {}'.format(
+            self.D_est, yp, ybi,
+            self.d, ybi, yb,
+            self.D_total, self.D_est, self.d
+        ))
 #
 # El error de medicion es 0.02
 #

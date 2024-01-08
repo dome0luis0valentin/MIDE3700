@@ -43,14 +43,6 @@ class Espectro:
     xH_sup= []
     yH_sup= []
     
-    #Atributos para descativar/activar ajustes:
-    lines = []
-    line_buttons = []
-        
-    # Initialize a list to store the button instances
-    parables = []
-    parable_buttons = []
-    
     # Manejo los datos del gráfico
     axes = None
     figure = None
@@ -140,7 +132,16 @@ class Espectro:
         self.log_flujo= []
         for i in self.flujo:
             self.log_flujo.append( math.log(i,10) )
+            
     # Graficamos el espectro
+        print("#### Primer Punto del espectro Comun ####")
+        print("Entrada: ", self.flujo[0])
+        print("Salida: ",math.log(self.flujo[0],10), " \n")
+        
+        
+        print("#### 100th Punto del espectro Comun ####")
+        print("Entrada: ", self.flujo[100])
+        print("Salida: ", math.log(self.flujo[100],10), " \n")
     
     # Utiliza los atributos axes y figure
         self.axes.set_xlabel('$\lambda$ [$\AA$]')
@@ -375,10 +376,8 @@ class Espectro:
         
         self.Grafico_espec(1)
         
-        
         self.graficar_ajuste_pashen_activa(ajuste.p)
         self.parable_buttons = []
- 
 #
         return
 #-------------------------------------------------------------------------------
@@ -443,12 +442,27 @@ class Espectro:
 
         self.Grafico_espec(3, ajuste.points)
         
+        
+        print(f"Estas son las parabolas antes de graficar the last curve {self.get_parables()}")
+        
         self.graficar_balmer_inferior_activa(ajuste.p)
+        
+        self.clean_parables()
+        
+        print(f"Estas son las parabolas DESPUES de graficar the last curve {self.get_parables()}")
+        
+        
 #
         return
 #-------------------------------------------------------------------------------
+
+    def clean_parables(self):
+        self.parables = []
+        return
+    
     def Ajuste_Balmer_sup(self):
 #
+        print(f"Estas son las parabolas AL COMIENZO DE TODO de graficar the last curve {self.get_parables()}")
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DE LA ENVOLVENTE SUPERIOR\n' )
@@ -461,7 +475,11 @@ class Espectro:
 
         self.figure, self.axes= plt.subplots()
 #
+        
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
+        
+        print(f"Estas son las parabolas DESPUES DE INTERFAZ GRÁFICA DE TODO de graficar the last curve {self.get_parables()}")
+        
         ajuste.clean_puntos()
         
         maximizar_pantalla()
@@ -480,10 +498,17 @@ class Espectro:
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
         self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_parable)
         
-        self.graficar_balmer_inferior_activa(ajuste.p)
-        
+        print(f"Estas son las parabolas ANTES DE GRAFICO ESPECTRO {self.get_parables()}")
         self.Grafico_espec(4, ajuste.points)
-        self.balmer_sup.coef= ajuste.p.coef
+        
+        print(f"Estas son las parabolas antes de graficar the last curve {self.get_parables()}")
+        self.graficar_balmer_superior_activa(ajuste.p)
+        
+        self.clean_parables()
+        
+        print(f"Estas son las parabolas DESPUES de graficar the last curve {self.get_parables()}")
+        # self.balmer_sup.coef= ajuste.p.coef
+    
 #
         return
     
@@ -554,7 +579,6 @@ class Espectro:
         """
         self.colorear_botones(self.get_line_buttons(), "grey")
         
-        print(f'Lista de botones sobre el lado lateral: {self.get_line_buttons()}')
         self.lines = lines
         button_ax = plt.axes([0.91, 0.9 - len(self.get_line_buttons()) * 0.1, 0.08, 0.05])
         line_button = Button(button_ax, label+" "+str(len(self.get_line_buttons())+1), color="green")
@@ -599,12 +623,21 @@ class Espectro:
     def get_parables(self):
         return self.parables
     
-    def get_last_line(self):
+    def get_last_line(self):  
+        
+        print("\n######Lineas graficadas######")
+        for i in self.get_lines():
+            print("Nombre: ", i, " is last(): ", i.is_last())
+        
         for line in self.get_lines():
             if line.is_last():
                 return line
             
     def get_last_parable(self):
+        print("\n Getting last parable of Espectrum...\n")
+        print("\n######Curvas graficadas######")
+        for i in self.get_parables():
+            print("Nombre: ", i, " is last(): ", i.is_last())
         for parable in self.get_parables():
             if parable.is_last():
                 return parable
@@ -628,6 +661,7 @@ class Espectro:
         self.xB= copy.copy( x_last_line )
         
     def graficar_balmer_inferior_activa(self, polinomio):
+        print("\n lista de parabolas: \n:", self.get_parables())
         last_parable = self.get_last_parable()
         coeficients = last_parable.get_coeficient(polinomio)
         x_last_parable = last_parable.get_x()
@@ -638,5 +672,14 @@ class Espectro:
         self.xB_inf= copy.copy( x_last_parable )
         
         
+    def graficar_balmer_superior_activa(self, polinomio):
+        print("\n lista de parabolas: \n:", self.get_parables())
+        last_parable = self.get_last_parable()
+        coeficients = last_parable.get_coeficient(polinomio)
+        x_last_parable = last_parable.get_x()
+        
+        #Guardo los valores de la recta activa para graficar 
+        
+        self.balmer_sup.coef= copy.copy( coeficients )
         
         
