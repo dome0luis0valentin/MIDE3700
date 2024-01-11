@@ -74,7 +74,6 @@ for process in processes:
     process.join()
 
 # Accede a las curvas cargadas por su nombre
-print(curvas_dict)
 
 curvas_teff = curvas_dict["Teff"]
 curvas_te_c = curvas_dict["TE_c"]

@@ -4,6 +4,8 @@
 import numpy as np
 import math
 import Algebra
+import numpy as np
+import matplotlib.pyplot as plt
 
 class Curvas:
     # Atributos de la clase
@@ -287,11 +289,30 @@ class Curvas:
         return curvas_in
     """
 
+    def mostrar_matriz(self, matriz, titulo):
+        # Convert the matrix to a numpy array
+        matriz_np = np.array(matriz)
+
+        # Create a figure and axis
+        fig, ax = plt.subplots()
+
+        # Display the matrix using imshow with intensity-based color mapping
+        ax.imshow(matriz_np, cmap='viridis', vmin=np.min(matriz_np), vmax=np.max(matriz_np))
+
+        # Set the title
+        ax.set_title(titulo)
         
+        # Set the aspect ratio to 'equal'
+        ax.set_aspect('equal')
+
+        # Show the plot
+        plt.show()
     #---------------------------------------------------------------------------
     def Matriz_Curvas(self, curvas_in):
 
         # Parametrizamos el eje x
+        # i1 : primer punto del eje x
+        # i2 : ultimo punto del eje x
 
         if self.x0 >= 0.:
             i1= Algebra.Redondeo_int_mas_cerca( self.x0 * float(self.kx) )
@@ -318,12 +339,25 @@ class Curvas:
         """
        
         # Crear una matriz llena de 99999.0
+        
+        # Creo una matriz de solo flotantes
         self.matriz = np.full((i2+1, j2+1), 99999.0, dtype=float)
+        
+        #Creo una matriz que de tipo object para almacenar letras y flotanes
+        # self.matriz = np.full((i2+1, j2+1), 99999.0, dtype=object)
         # Leo todos los archivos de las curvas
-
+        
+        x_max = 0
+        y_max = 0
+        x_min = 0
+        y_min = 0
+        print(f"#### Puntos encuadrantes de {self.archivo_in}####")
         for i in range(self.nc):
             with open(curvas_in[i], 'r') as f_curva:
+                
+                curve_name = curvas_in[i].split( "/")[-1].split(".")[0]
                 next(f_curva)  # Saltar la primera línea
+                
                 for linea in f_curva:
 
                     xy = [float(j) for j in linea.split() if j]
@@ -333,7 +367,31 @@ class Curvas:
                     ii = Algebra.Redondeo_int_mas_cerca((xy[0] + abs(self.x0)) * float(self.kx)) if self.x0 < 0. else Algebra.Redondeo_int_mas_cerca(xy[0] * float(self.kx))
                     jj = Algebra.Redondeo_int_mas_cerca((xy[1] + abs(self.y0)) * float(self.ky)) if self.y0 < 0. else Algebra.Redondeo_int_mas_cerca(xy[1] * float(self.ky))
 
-                    self.matriz[ii][jj] = self.cte_curvas[i]
+                    # En esta posición de la matriz almaceno el valor que tiene la curva, que es un valor constante
+                    #Actualizo la celda
+                    if (self.matriz[ii][jj] == 99999.):
+                        self.matriz[ii][jj] = self.cte_curvas[i]
+                        
+                        # for index in range(jj, 851):
+                        #     # self.matriz[ii][index] = curve_name
+                            
+                        #     self.matriz[ii][index] = self.cte_curvas[i]
+                        
+                        
+                    if ii > x_max:
+                        x_max = ii
+                    if ii < x_min:
+                        x_min = ii
+                    if jj > y_max:
+                        y_max = jj
+                    if jj < y_min:
+                        y_min = jj
+        
+        
+        print(f" Dimension matrix : {self.matriz.shape}")
+        self.mostrar_matriz(self.matriz, self.archivo_in)
+        
+        print(f"\nMatriz de {x_min} a {x_max} en x y de {y_min} a {y_max} en y")
 
         #obsoleto?
         """
