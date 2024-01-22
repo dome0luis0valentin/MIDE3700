@@ -26,7 +26,6 @@ def maximizar_pantalla():
         print(f"Error: {e}")
     except Exception as e:
         print(f"Error inesperado: {e}")
-    print(tupla_resultante)
     mng.resize(tupla_resultante[0], tupla_resultante[1])
     return
 

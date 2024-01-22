@@ -131,14 +131,6 @@ class Espectro:
             self.log_flujo.append( math.log(i,10) )
             
     # Graficamos el espectro
-        print("#### Primer Punto del espectro Comun ####")
-        print("Entrada: ", self.flujo[0])
-        print("Salida: ",math.log(self.flujo[0],10), " \n")
-        
-        
-        print("#### 100th Punto del espectro Comun ####")
-        print("Entrada: ", self.flujo[100])
-        print("Salida: ", math.log(self.flujo[100],10), " \n")
     
     # Utiliza los atributos axes y figure
         self.axes.set_xlabel('$\lambda$ [$\AA$]')
@@ -200,7 +192,7 @@ class Espectro:
                 self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
         else:
             self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
-        
+
         plt.show()
 
 #-------------------------------------------------------------------------------
@@ -373,8 +365,11 @@ class Espectro:
         
         self.Grafico_espec(1)
         
-        self.graficar_ajuste_pashen_activa(ajuste.p)
-        self.parable_buttons = []
+        if ajuste.get_cant_lines() > 0:
+            self.graficar_ajuste_pashen_activa(ajuste.p)
+            self.parable_buttons = []
+        else:
+            raise Exception("No se graficaron lineas")
 #
         return
 #-------------------------------------------------------------------------------
@@ -403,6 +398,13 @@ class Espectro:
         self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_rect)
         
         self.Grafico_espec(2)
+        
+        print("Cantidad de lineas ", ajuste.get_cant_lines())
+        if ajuste.get_cant_lines() > 0:
+            self.graficar_ajuste_pashen_activa(ajuste.p)
+            self.parable_buttons = []
+        else:
+            raise Exception("No se graficaron lineas")
         
         self.graficar_ajuste_balmer_activa(ajuste.p)
 
