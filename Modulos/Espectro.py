@@ -43,13 +43,14 @@ class Espectro:
     xH_sup= []
     yH_sup= []
     
-    # Manejo los datos del gráfico
-    axes = None
-    figure = None
     
 #-------------------------------------------------------------------------------
     def __init__(self, nombre):# Genero el espectro
 #
+        # Manejo los datos del gráfico
+        self.axes = None
+        self.figure = None
+        
 # Inicializo los valores
         self.l_onda= []
         self.flujo= []
@@ -70,10 +71,6 @@ class Espectro:
         self.yH_inf= []
         self.xH_sup= []
         self.yH_sup= []
-        
-        # Manejo los datos del gráfico
-        axes = None
-        figure = None
         
         # Initialize a list to store the button instances
         self.lines = []
@@ -364,9 +361,9 @@ class Espectro:
         f_est.write( '------------------------------\n' )
         f_est.write( '\n' )
         f_est.close()
-        
         self.figure, self.axes= plt.subplots()
 #
+
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         ajuste.clean_puntos()
         maximizar_pantalla()

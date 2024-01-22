@@ -5,7 +5,7 @@ import os
 
 def maximizar_pantalla():
     mng = plt.get_current_fig_manager()
-    mng.resize(1846,1000)
+    mng.resize(1920,1080)
     return
 
 def distancia_euclidea(x1, x2, y1, y2):
