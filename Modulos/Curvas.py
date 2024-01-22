@@ -94,7 +94,10 @@ class Curvas:
             # G0 => 40
 
             self.cte_curvas.append( 25. )# => tipo espectral A5
-            self.cte_curvas.append( 37. )# => tipo espectral A7
+            
+            #MODIFICO WARNING AVISO ACA YAEL
+            # self.cte_curvas.append( 37. )# => tipo espectral A7 
+            self.cte_curvas.append( 27. )# => tipo espectral A7
             self.cte_curvas.append( 30. )# => tipo espectral F0
             self.cte_curvas.append( 32. )# => tipo espectral F2
             self.cte_curvas.append( 34. )# => tipo espectral F4
@@ -288,6 +291,46 @@ class Curvas:
         f_curva.close()
         return curvas_in
     """
+    
+    def save_matrix_to_file(self, matrix, filename):
+        """
+        Save a matrix to a file.
+
+        Parameters:
+        - matrix: 2D NumPy array or list of lists representing the matrix.
+        - filename: String, the name of the file to save the matrix.
+
+        Example:
+        >>> matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        >>> save_matrix_to_file(matrix, 'matrix.txt')
+        """
+        # Convert the matrix to a NumPy array if it's not already
+        matrix_array = np.array(matrix)
+
+        # Get the maximum value length in the matrix
+        max_length = len(str(np.max(matrix_array)))
+        
+        # Format each value to occupy the same space
+        formatted_matrix = [[f"{value:>{max_length}}" for value in row] for row in matrix_array]
+
+        # Save the formatted matrix to the specified file
+        np.savetxt(filename, formatted_matrix, fmt='%s', delimiter=', ')
+
+    def plot_matrix_intensity(self, matrix):
+        n = 850
+        # Resize the matrix to nxn using interpolation
+        resized_matrix = np.zeros((n, n))
+        for i in range(n):
+            for j in range(n):
+                row = int(i * (matrix.shape[0] / n))
+                col = int(j * (matrix.shape[1] / n))
+                resized_matrix[i, j] = matrix[row, col]
+
+        # Plot the resized matrix as an image
+        plt.imshow(resized_matrix, cmap='viridis', interpolation='nearest', origin='upper')
+        plt.colorbar()
+        plt.title('Matrix Intensity Plot')
+        plt.show()
 
     def mostrar_matriz(self, matriz, titulo):
         # Convert the matrix to a numpy array
@@ -307,9 +350,101 @@ class Curvas:
 
         # Show the plot
         plt.show()
+
+    def colorear_horizontal(self, matriz):
+        ancho_matriz = 850
+        
+        vacio = 99999.0
+        valor_actual = vacio
+        
+        for fila in matriz:
+            index = 0
+            
+            #busco el primer punto de la curva
+            while (fila[index] == vacio and index < ancho_matriz):
+                index += 1
+                    
+            #relleno con ese valor hasta la próxima curva
+            valor_actual = fila[index]
+                        
+            #no se termine la matriz
+            while (index < ancho_matriz):
+                
+                #no llegue a otra curva
+                while ( (fila[index] == vacio or fila[index] == valor_actual )and index < ancho_matriz):
+                    fila[index] = valor_actual
+                    index += 1
+                    
+                #cambio al nuevo valor de la curva
+                valor_actual = fila[index]
+    
+    def colorear_vertical(self, matriz):
+        ancho_matriz = 850
+        alto_matriz = len(matriz)-1
+        
+        vacio = 99999.0
+        valor_actual = vacio
+        
+        for col in range(ancho_matriz):
+            index = 0
+            
+            # busco el primer punto de la curva
+            while (matriz[index][col] == vacio and index < alto_matriz):
+                index += 1
+                    
+            # relleno con ese valor hasta la próxima curva
+            valor_actual = matriz[index][col]
+            
+            # no se termine la matriz
+            while (index < alto_matriz):
+                
+                # no llegue a otra curva
+                while ((matriz[index][col] == vacio or matriz[index][col] == valor_actual) and index < alto_matriz):
+                    matriz[index][col] = valor_actual
+                    index += 1
+                    
+                # cambio al nuevo valor de la curva
+                if index < alto_matriz:
+                    valor_actual = matriz[index][col]
+    
+    def colorear_matriz(self, matriz, titulo):
+        """ """
+        
+        if (titulo == "TE-Frias"):
+            self.save_matrix_to_file(matriz, "./tests/Curvas_en_text/MATRIZ "+titulo + ".txt") 
+            
+        if (titulo == "Logg" or titulo.startswith("CL") or (titulo == "Mbol") or (titulo.startswith("TE-C")) ):        
+            self.colorear_horizontal(matriz)      
+        else:
+            self.colorear_vertical(matriz)
+            # print(f" \n\n {fila} \n\n")
+        
+        self.save_matrix_to_file(matriz, "./tests/Curvas_en_text/"+titulo + ".txt")     
+    
+    def nombrar_archivo(self, curvas_in):
+        """
+        Dada la ruta de una archivo le devuelve el nombre
+        si es que tiene una carpeta en el medio el nombre sera  
+        la 2da carpeta.
+
+        Args:
+            curvas_in (list): lista de directorios
+
+        Returns:
+            sting : nombre del archivo
+            
+        """
+        titulo = ""
+        parseo_ruta = curvas_in[0].split("/")
+        if len(parseo_ruta) == 3:
+            titulo = parseo_ruta[1]
+        else:
+            titulo = parseo_ruta[1]+"-"+parseo_ruta[2]     
+            
+        return titulo
+        
     #---------------------------------------------------------------------------
     def Matriz_Curvas(self, curvas_in):
-
         # Parametrizamos el eje x
         # i1 : primer punto del eje x
         # i2 : ultimo punto del eje x
@@ -347,11 +482,14 @@ class Curvas:
         # self.matriz = np.full((i2+1, j2+1), 99999.0, dtype=object)
         # Leo todos los archivos de las curvas
         
+        titulo = self.nombrar_archivo(curvas_in)
+        
         x_max = 0
         y_max = 0
         x_min = 0
         y_min = 0
-        print(f"#### Puntos encuadrantes de {self.archivo_in}####")
+        
+        #Agrego cada curva a la matriz
         for i in range(self.nc):
             with open(curvas_in[i], 'r') as f_curva:
                 
@@ -380,6 +518,7 @@ class Curvas:
                         
                     if ii > x_max:
                         x_max = ii
+                        
                     if ii < x_min:
                         x_min = ii
                     if jj > y_max:
@@ -388,10 +527,10 @@ class Curvas:
                         y_min = jj
         
         
-        print(f" Dimension matrix : {self.matriz.shape}")
-        self.mostrar_matriz(self.matriz, self.archivo_in)
+          
+        self.colorear_matriz(self.matriz, titulo)
         
-        print(f"\nMatriz de {x_min} a {x_max} en x y de {y_min} a {y_max} en y")
+        print(f" {titulo} : Dimension matrix : {self.matriz.shape}, x : {x_max} y : {y_max}")
 
         #obsoleto?
         """
@@ -428,8 +567,204 @@ class Curvas:
         
         return
     #---------------------------------------------------------------------------
+    
+    
+    def Parametrizar(self, x, y):
+        """     
+        xx e yy son redimencionados para acceder a la matriz
+        devuelve en i1, i2 las dimensiones de la matriz en el eje x
+        devuelve en j1, j2 las dimensiones de la matriz en el eje y
+        """
+        
+        if self.x0 >= 0.:
+            i1= Algebra.Redondeo_int_mas_cerca( self.x0 * float(self.kx) )
+            i2= Algebra.Redondeo_int_mas_cerca( self.xn * float(self.kx) )
+            xx= x * float(self.kx)
+        else:
+            i1= 0
+            i2= Algebra.Redondeo_int_mas_cerca( (self.xn + abs(self.x0)) * float(self.kx) )
+            xx= (x + abs(self.x0)) * float(self.kx)
+
+        # Parametrizamos el eje y y la coordenada y del punto
+
+        if self.y0 >= 0.:
+            j1= Algebra.Redondeo_int_mas_cerca( self.y0 * float(self.ky) )
+            j2= Algebra.Redondeo_int_mas_cerca( self.yn * float(self.ky) )
+            yy= y * float(self.ky)
+        else:
+            j1= 0
+            j2= Algebra.Redondeo_int_mas_cerca( (self.yn + abs(self.y0)) * float(self.ky) )
+            yy= (y + abs(self.y0)) * float(self.ky)
+            
+        return i1, i2, xx, j1, j2, yy
+
+    def buscar_curvas(self, x, y):
+        curves = {
+    "CL-Calientes": {
+        "1.0" : (1.0 ,0.0 ),
+        "2.0" : (2.0 ,1.0 ),
+        "3.0" : (3.0 ,2.0 ),
+        "4.0" : (4.0 ,3.0 ),
+        "5.0" : (5.0 ,4.0 ),
+        "6.0" : (6.0 ,5.0 ),
+        "0.0" :  (None , None ),
+        "99999." :  (None , None ),
+        },
+    "CL-Frias": {
+        "2.0" : (2.0 ,1.0 ),
+        "3.0" : (3.0 ,2.0 ),
+        "4.0" : (4.0 ,3.0 ),
+        "5.0" : (5.0 ,4.0 ),
+        "1.0" :  (None , None ),
+        "99999." :  (None , None ),
+        },
+    "Landolt" : {},
+    "Logg" : {
+        "3.0" : (3.0 ,2.8 ),
+        "3.2" : (3.2 ,3.0 ),
+        "3.4000000000000004" : (3.4000000000000004 ,3.2 ),
+        "3.6000000000000005" : (3.6000000000000005 ,3.4000000000000004 ),
+        "3.8000000000000007" : (3.8000000000000007 ,3.6000000000000005 ),
+        "4.000000000000001" : (4.000000000000001 ,3.8000000000000007 ),
+        "4.1000000000000005" : (4.1000000000000005 ,4.000000000000001 ),
+        "4.2" : (4.2 ,4.1000000000000005 ),
+        "4.3" : (4.3 ,4.2 ),
+        "2.8" :  (None , None ),
+        "99999." :  (None , None ),       
+        },
+    "Mbol" : {
+        "-7.5" : (-7.5 ,-8.0 ),
+        "-7.0" : (-7.0 ,-7.5 ),
+        "-6.5" : (-6.5 ,-7.0 ),
+        "-6.0" : (-6.0 ,-6.5 ),
+        "-5.5" : (-5.5 ,-6.0 ),
+        "-5.0" : (-5.0 ,-5.5 ),
+        "-4.5" : (-4.5 ,-5.0 ),
+        "-4.0" : (-4.0 ,-4.5 ),
+        "-3.5" : (-3.5 ,-4.0 ),
+        "-3.0" : (-3.0 ,-3.5 ),
+        "-2.5" : (-2.5 ,-3.0 ),
+        "-2.0" : (-2.0 ,-2.5 ),
+        "-1.5" : (-1.5 ,-2.0 ),
+        "-1.0" : (-1.0 ,-1.5 ),
+        "-0.5" : (-0.5 ,-1.0 ),
+        "-8.0" :  (None , None ),
+        "99999." :  (None , None ),
+        },
+    "Mv" : {
+        "-5.0" : (-5.0 ,-6.0 ),
+        "-4.0" : (-4.0 ,-5.0 ),
+        "-3.0" : (-3.0 ,-4.0 ),
+        "-2.0" : (-2.0 ,-3.0 ),
+        "-1.0" : (-1.0 ,-2.0 ),
+        "-0.5" : (-0.5 ,-1.0 ),
+        "0.0" : (0.0 ,-0.5 ),
+        "0.5" : (0.5 ,0.0 ),
+        "-6.0" :  (None , None ),
+        "99999." :  (None , None ),
+        },
+    "PHIo-Calientes" : {
+        "0.67" : (0.67 ,0.66 ),
+        "0.68" : (0.68 ,0.67 ),
+        "0.69" : (0.69 ,0.68 ),
+        "0.7" : (0.7 ,0.69 ),
+        "0.72" : (0.72 ,0.7 ),
+        "0.76" : (0.76 ,0.72 ),
+        "0.8" : (0.8 ,0.76 ),
+        "0.86" : (0.86 ,0.8 ),
+        "0.93" : (0.93 ,0.86 ),
+        "1.05" : (1.05 ,0.93 ),
+        "1.12" : (1.12 ,1.05 ),
+        "1.27" : (1.27 ,1.12 ),
+        "0.66" :  (None , None ),
+        "99999." :  (None , None ),
+        },
+    "PHIo-Frias" : {
+        "1.62" : (1.62 ,1.45 ),
+        "1.77" : (1.77 ,1.62 ),
+        "1.97" : (1.97 ,1.77 ),
+        "2.14" : (2.14 ,1.97 ),
+        "2.27" : (2.27 ,2.14 ),
+        "2.4" : (2.4 ,2.27 ),
+        "2.65" : (2.65 ,2.4 ),
+        "1.45" :  (None , None ),
+        "99999." :  (None , None ),
+        },
+    "TE-Calientes" : {
+        "8.0" : (8.0 ,6.0 ),
+        "10.0" : (10.0 ,8.0 ),
+        "11.0" : (11.0 ,10.0 ),
+        "12.0" : (12.0 ,11.0 ),
+        "13.0" : (13.0 ,12.0 ),
+        "15.0" : (15.0 ,13.0 ),
+        "17.0" : (17.0 ,15.0 ),
+        "19.0" : (19.0 ,17.0 ),
+        "20.0" : (20.0 ,19.0 ),
+        "22.0" : (22.0 ,20.0 ),
+        "23.0" : (23.0 ,22.0 ),
+        "25.0" : (25.0 ,23.0 ),
+        "6.0" :  (None , None ),
+        "99999." :  (None , None ),
+        },
+    "TE-Frias" : {
+        "27.0" : (27.0 ,25.0 ),
+        "30.0" : (30.0 ,27.0 ),
+        "32.0" : (32.0 ,30.0 ),
+        "34.0" : (34.0 ,32.0 ),
+        "36.0" : (36.0 ,34.0 ),
+        "37.0" : (37.0 ,36.0 ),
+        "38.0" : (38.0 ,37.0 ),
+        "40.0" : (40.0 ,38.0 ),
+        "25.0" :  (None , None ),
+        "99999." :  (None , None ),
+        },
+    "Teff" : {
+        "10000.0" : (10000.0 ,9500.0 ),
+        "11000.0" : (11000.0 ,10000.0 ),
+        "12500.0" : (12500.0 ,11000.0 ),
+        "15000.0" : (15000.0 ,12500.0 ),
+        "17500.0" : (17500.0 ,15000.0 ),
+        "20000.0" : (20000.0 ,17500.0 ),
+        "22500.0" : (22500.0 ,20000.0 ),
+        "25000.0" : (25000.0 ,22500.0 ),
+        "30000.0" : (30000.0 ,25000.0 ),
+        "9500.0" :  (None , None ),
+        "99999." :  (None , None ),
+        },
+    
+}
+        
+        x = Algebra.Redondeo_int_mas_cerca(x)
+        y = Algebra.Redondeo_int_mas_cerca(y)
+        
+        valor_en_matriz = str(self.matriz[x][y])
+    
+        curvas_in = self.Leo_Archivo()
+        titulo = self.nombrar_archivo(curvas_in)
+        
+        dict_curvas = curves[titulo]
+        entre_curvas = dict_curvas[valor_en_matriz]
+                    
+        return entre_curvas
+            
+    #Interpolo versión 2 con matriz rellenada:
+    def Entre_que_curvas_esta_el_punto_x_e_y(self, x, y):
+        i1, i2, xx, j1, j2, yy = self.Parametrizar(x, y)
+        
+        
+        #buscar_curvas devuelve un diccionario: 
+        #  {curva_1 :  (valor Constante, posición en las curvas),
+        #  curva_2 :  (valor Constante, posición en las curvas),}
+        curve_1, curve_2 = self.buscar_curvas(xx, yy)
+        
+        lohice = True
+        magnitud = 0
+        extrapolo = False
+        # return lohice, magnitud, extrapolo
+    
     def Interpolo(self, x, y):
 
+        # self.Entre_que_curvas_esta_el_punto_x_e_y(x, y)
         # Parametrizamos el eje x y la cordenada x del punto
 
         if self.x0 >= 0.:
@@ -472,7 +807,7 @@ class Curvas:
                             cte_1= self.matriz[i][j]
                             x1= float(i) / float(self.kx)
                             y1= float(j) / float(self.ky)
-
+            
             key= True
             i= 0
             while key:
@@ -484,6 +819,7 @@ class Curvas:
 
             # Ahora busco el punto mas cercano en las curvas anterior y siguiente
 
+            #Si no es la primer ni la última curva -> Esta entre 2 curvas
             if n1 != 0 and n1 != (self.nc - 1):
                 dist_min_2= 1000.
                 dist_min_3= 1000.
@@ -534,19 +870,28 @@ class Curvas:
 
                 #  dist_13 > dist_min_3  y  dist_12 < dist_min_2
                 
+                curva1, curva2 = self.buscar_curvas(xx, yy)
+                curvas_in = self.Leo_Archivo()
+                titulo = self.nombrar_archivo(curvas_in)
+                print(titulo)
+                print(f"Metodo nuevo: {curva1} , {curva2}")
                 if dist_12 > dist_min_2 and dist_13 < dist_min_3:
-
+                    print(f"Metodo viejo: {cte_1} , {cte_2}")
+                    
                     # La distancia entre las curvas a la altura del punto es
-
                     dist_min= dist_min_1 + dist_min_2
                     magnitud= cte_1 - dist_min_1*(cte_1 - cte_2)/dist_min
                 else:
+                    print(f"Metodo viejo: {cte_1} , {cte_2}")
+                    
                     dist_min= dist_min_1 + dist_min_3
                     magnitud= cte_3 - dist_min_3*(cte_3 - cte_1)/dist_min
-
+                
+                
                 extrapolo= False
                 lohice= True
 
+            #Si es la primer curva
             elif n1 == 0:
                 dist_min_3= 1000.
                 for i in range(i1,i2):
@@ -579,6 +924,7 @@ class Curvas:
                     extrapolo= True
                 lohice= True
 
+            #Si es la última curva
             elif n1 == (self.nc - 1):
                 dist_min_2= 1000.
                 for i in range(i1,i2):
@@ -612,6 +958,7 @@ class Curvas:
                 lohice= True
 
         else:
+            print("Calcula Fallido")
             extrapolo= False
             lohice= False
             magnitud= 99999.

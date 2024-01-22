@@ -281,7 +281,6 @@ class Inter_Grafica:
     def handler_of_key_rect(self, event):
         key_pressed = event.key
         if key_pressed not in self.key_avaible: return 
-        print(f"Someone press the key {key_pressed} ")
         if key_pressed == "a":
             self.handler_graph_rect(event)
         elif key_pressed == "q":

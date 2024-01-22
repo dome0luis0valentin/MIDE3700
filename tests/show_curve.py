@@ -12,7 +12,11 @@ except IndexError:
 finally:
     print("No argument given, using Teff as default")
 
-file_list = glob.glob(f'/home/valen/pps/MIDE3700_v2/MIDE3700/Curvas/{dir}/*.dat')
+file_list = glob.glob(f'/home/valen/pps/MIDE3700_v2/MIDE3700/tests/output_folder/{dir}/*.dat')
+
+
+# file_list = glob.glob(f'/home/valen/pps/MIDE3700_v2/MIDE3700/Curvas/{dir}/*.dat')
+
 x_values = []
 y_values = []
 cant_files = len(file_list)
@@ -21,12 +25,14 @@ list_curves = []
 x_values = []
 y_values = []
 # Iterate over the files
+valores = []
 for file_path in file_list:
     # Open the file and read the coordinates
     with open(file_path, 'r') as f:
         
         for line in f:
             if line.startswith("#"):
+                valores.append(line.split()[5])
                 continue
             else:
                 x, y = map(float, line.strip().split())
@@ -35,7 +41,7 @@ for file_path in file_list:
                 
     # Create a scatter plot
 plt.scatter(x_values, y_values, color='blue', marker='.')
-
+print(len(x_values))
 
 # Add color between curve 0 and curve 1
 if len(list_curves) >= 2:
@@ -44,7 +50,16 @@ if len(list_curves) >= 2:
 # Set axis labels and title
 plt.xlabel('X-axis')
 plt.ylabel('Y-axis')
-plt.title('Scatter Plot of Data')
+print(file_list)
+plt.title(file_list[0].split('/')[-1].split('.')[0])
 
+print(valores)
+valores.sort()
+
+
+for i in range(0, len(valores)-1):
+    print('"'+valores[i]+f'" : ({valores[i]} ,{valores[i-1]} ),')
+
+print('"'+valores[i]+f'" : (None , None ')
 # Show the plot
 plt.show()

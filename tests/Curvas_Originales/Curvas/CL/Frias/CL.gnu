@@ -1,0 +1,1 @@
+plot [0:0.7][85:-10] 'CL_Ib.dat' u 1:2 w l,'CL_II.dat' u 1:2 w l,'CL_III.dat' u 1:2 w l,'CL_IV.dat' u 1:2 w l,'CL_V.dat' u 1:2 w l
