@@ -401,7 +401,7 @@ class Espectro:
         
         print("Cantidad de lineas ", ajuste.get_cant_lines())
         if ajuste.get_cant_lines() > 0:
-            self.graficar_ajuste_pashen_activa(ajuste.p)
+            self.graficar_ajuste_balmer_activa(ajuste.p)
             self.parable_buttons = []
         else:
             raise Exception("No se graficaron lineas")

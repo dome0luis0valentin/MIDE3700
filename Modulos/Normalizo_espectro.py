@@ -248,10 +248,8 @@ class Normalizo_espectro(Espectro.Espectro):
                 puntos.append(Punto(x, y, new_point))
                 
             self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
-        var = input("antes del show")   
 
         plt.show()
-        var = input("despues del show")
 #-------------------------------------------------------------------------------
     def Ajuste_Paschen(self):
 #
