@@ -7,6 +7,8 @@ import Algebra
 import numpy as np
 import matplotlib.pyplot as plt
 
+from tests.generar_matriz_desde_texto import cargar_matriz_desde_archivo, matrices_son_iguales
+
 class Curvas:
     # Atributos de la clase
     archivo_in= ""    # Nombre del archivo que tiene la lista de curvas
@@ -27,7 +29,8 @@ class Curvas:
         self.Cargo_Curva(magnitud)
         return
     #---------------------------------------------------------------------------
-    def Cargo_Curva(self, magnitud):
+    
+    def cargo_curvas_rellenas(self, magnitud):
 
         print("Cargo curvas de ", magnitud," \ Load ", magnitud, " curves\n")
 
@@ -267,7 +270,245 @@ class Curvas:
         return
     #---------------------------------------------------------------------------
     
+    def Cargo_Curva(self, magnitud):
 
+        print("Cargo curvas de ", magnitud," \ Load ", magnitud, " curves\n")
+
+        if magnitud == "Teff":
+
+            self.nc= 11
+
+            self.cte_curvas.append( 9500. )
+            self.cte_curvas.append( 10000. )
+            self.cte_curvas.append( 11000. )
+            self.cte_curvas.append( 12500. )
+            self.cte_curvas.append( 15000. )
+            self.cte_curvas.append( 17500. )
+            self.cte_curvas.append( 20000. )
+            self.cte_curvas.append( 22500. )
+            self.cte_curvas.append( 25000. )
+            self.cte_curvas.append( 30000. )
+            self.cte_curvas.append( 35000. )
+
+            self.x0= 0.
+            self.xn= 0.55
+            self.y0= -5.
+            self.yn= 80.
+            self.kx= 100
+            self.ky= 10
+
+        elif magnitud == "TE_c":
+
+            self.nc= 13
+
+            # A cada tipo espectral le asignamos le asignamos un numero entero:
+            # O0 => 0
+            # B0 => 10
+            # A0 => 20
+
+            self.cte_curvas.append(  6. )# => tipo espectral O6
+            self.cte_curvas.append(  8. )# => tipo espectral O8
+            self.cte_curvas.append( 10. )# => tipo espectral B0
+            self.cte_curvas.append( 11. )# => tipo espectral B1
+            self.cte_curvas.append( 12. )# => tipo espectral B2
+            self.cte_curvas.append( 13. )# => tipo espectral B3
+            self.cte_curvas.append( 15. )# => tipo espectral B5
+            self.cte_curvas.append( 17. )# => tipo espectral B7
+            self.cte_curvas.append( 19. )# => tipo espectral B9
+            self.cte_curvas.append( 20. )# => tipo espectral A0
+            self.cte_curvas.append( 22. )# => tipo espectral A2
+            self.cte_curvas.append( 23. )# => tipo espectral A3
+            self.cte_curvas.append( 25. )# => tipo espectral A5
+
+            self.x0= 0.
+            self.xn= 0.70
+            self.y0= -5.
+            self.yn= 80.
+            self.kx= 10000
+            self.ky= 10
+
+        elif magnitud == "TE_f":
+
+            self.nc= 9
+
+            # A cada tipo espectral le asignamos le asignamos un numero entero:
+            # A0 => 20
+            # F0 => 30
+            # G0 => 40
+
+            self.cte_curvas.append( 25. )# => tipo espectral A5
+            
+            #MODIFICO WARNING AVISO ACA YAEL
+            # self.cte_curvas.append( 37. )# => tipo espectral A7 
+            self.cte_curvas.append( 27. )# => tipo espectral A7
+            self.cte_curvas.append( 30. )# => tipo espectral F0
+            self.cte_curvas.append( 32. )# => tipo espectral F2
+            self.cte_curvas.append( 34. )# => tipo espectral F4
+            self.cte_curvas.append( 36. )# => tipo espectral F6
+            self.cte_curvas.append( 37. )# => tipo espectral F7
+            self.cte_curvas.append( 38. )# => tipo espectral F8
+            self.cte_curvas.append( 40. )# => tipo espectral G0
+
+            self.x0= 0.
+            self.xn= 0.70
+            self.y0= -5.
+            self.yn= 80.
+            self.kx= 100
+            self.ky= 10
+
+        elif magnitud == "CL_c":
+
+            self.nc= 7
+
+            # A cada clase de luminosidad le asignamos le asignamos un numero entero:
+            # Ia => 0
+            # Ib => 1
+            # II => 2
+            # III => 3
+            # IV => 4
+            # V => 5
+            # VI => 6
+
+            self.cte_curvas.append( 0. )
+            self.cte_curvas.append( 1. )
+            self.cte_curvas.append( 2. )
+            self.cte_curvas.append( 3. )
+            self.cte_curvas.append( 4. )
+            self.cte_curvas.append( 5. )
+            self.cte_curvas.append( 6. )
+
+            self.x0= 0.
+            self.xn= 0.70
+            self.y0= -5.
+            self.yn= 80.
+            self.kx= 100
+            self.ky= 10
+
+        elif magnitud == "CL_f":
+
+            self.nc= 5
+
+            # A cada clase de luminosidad le asignamos le asignamos un numero entero:
+            # Ia => 0
+            # Ib => 1
+            # II => 2
+            # III => 3
+            # IV => 4
+            # V => 5
+            # VI => 6
+
+            self.cte_curvas.append( 1. )
+            self.cte_curvas.append( 2. )
+            self.cte_curvas.append( 3. )
+            self.cte_curvas.append( 4. )
+            self.cte_curvas.append( 5. )
+
+            self.x0= 0.
+            self.xn= 0.70
+            self.y0= -5.
+            self.yn= 80.
+            self.kx= 100
+            self.ky= 10
+
+        elif magnitud == "Logg":
+
+            self.nc= 10
+
+            self.cte_curvas.append( 2.8 )
+            for i in range( 1, 7):
+                self.cte_curvas.append( self.cte_curvas[i-1] + 0.2 )
+            for i in range( 7, self.nc):
+                self.cte_curvas.append( self.cte_curvas[i-1] + 0.1 )
+
+            self.x0= 0.
+            self.xn= 0.7
+            self.y0= -5.
+            self.yn= 80.
+            self.kx= 100
+            self.ky= 10
+
+        elif magnitud == "Mv":
+
+            self.nc= 9
+
+            for i in range( -6, 0):
+                self.cte_curvas.append( float(i) )
+                
+            self.cte_curvas.append( -0.5 )
+            self.cte_curvas.append( 0.0 )
+            self.cte_curvas.append( 0.5 )
+
+            self.x0= 0.
+            self.xn= 0.7
+            self.y0= -5.
+            self.yn= 80.
+            self.kx= 100
+            self.ky= 10
+
+        elif magnitud == "Mbol":
+
+            self.nc= 16
+
+            self.cte_curvas.append( -8.0 )
+            for i in range( 1, self.nc):
+                self.cte_curvas.append( self.cte_curvas[i-1] + 0.5 )
+
+            self.x0= 0.
+            self.xn= 0.7
+            self.y0= -5.
+            self.yn= 80.
+            self.kx= 100
+            self.ky= 10
+        elif magnitud == "PHIo_c":
+
+            self.nc= 13
+
+            self.cte_curvas.append( 0.66 )
+            self.cte_curvas.append( 0.67 )
+            self.cte_curvas.append( 0.68 )
+            self.cte_curvas.append( 0.69 )
+            self.cte_curvas.append( 0.70 )
+            self.cte_curvas.append( 0.72 )
+            self.cte_curvas.append( 0.76 )
+            self.cte_curvas.append( 0.80 )
+            self.cte_curvas.append( 0.86 )
+            self.cte_curvas.append( 0.93 )
+            self.cte_curvas.append( 1.05 )
+            self.cte_curvas.append( 1.12 )
+            self.cte_curvas.append( 1.27 )
+
+            self.x0= 0.
+            self.xn= 0.70
+            self.y0= -8.
+            self.yn= 80.
+            self.kx= 100
+            self.ky= 10
+
+        elif magnitud == "PHIo_f":
+
+            self.nc= 9
+
+            self.cte_curvas.append( 1.27 )
+            self.cte_curvas.append( 1.45 )
+            self.cte_curvas.append( 1.62 )
+            self.cte_curvas.append( 1.77 )
+            self.cte_curvas.append( 1.97 )
+            self.cte_curvas.append( 2.14 )
+            self.cte_curvas.append( 2.27 )
+            self.cte_curvas.append( 2.40 )
+            self.cte_curvas.append( 2.65 )
+
+            self.x0= 0.
+            self.xn= 0.70
+            self.y0= -5.
+            self.yn= 80.
+            self.kx= 100
+            self.ky= 10
+
+        curvas_in= self.Leo_Archivo()
+        self.Matriz_Curvas(curvas_in)
+        return
+    #---------------------------------------------------------------------------
     def Leo_Archivo(self):
         with open(self.archivo_in, 'r') as f_curva:
             return [linea.split()[0] for linea in f_curva if linea.strip()]
@@ -409,10 +650,6 @@ class Curvas:
     
     def colorear_matriz(self, matriz, titulo):
         """ """
-        
-        if (titulo == "TE-Frias"):
-            self.save_matrix_to_file(matriz, "./tests/Curvas_en_text/MATRIZ "+titulo + ".txt") 
-            
         if (titulo == "Logg" or titulo.startswith("CL") or (titulo == "Mbol") or (titulo.startswith("TE-C")) ):        
             self.colorear_horizontal(matriz)      
         else:
@@ -444,6 +681,14 @@ class Curvas:
         return titulo
         
     #---------------------------------------------------------------------------
+    def Matriz_Curvas_Rellenas(self, titulo):
+        """
+        Version: 2.0
+        Carga la matriz de curvas desde un archivo de texto
+        """
+        matriz = cargar_matriz_desde_archivo("./tests/Curvas_en_text/"+titulo + ".txt")
+        return matriz
+    
     def Matriz_Curvas(self, curvas_in):
         # Parametrizamos el eje x
         # i1 : primer punto del eje x
@@ -477,23 +722,15 @@ class Curvas:
         
         # Creo una matriz de solo flotantes
         self.matriz = np.full((i2+1, j2+1), 99999.0, dtype=float)
-        
-        #Creo una matriz que de tipo object para almacenar letras y flotanes
-        # self.matriz = np.full((i2+1, j2+1), 99999.0, dtype=object)
+
         # Leo todos los archivos de las curvas
         
         titulo = self.nombrar_archivo(curvas_in)
-        
-        x_max = 0
-        y_max = 0
-        x_min = 0
-        y_min = 0
-        
+
         #Agrego cada curva a la matriz
         for i in range(self.nc):
             with open(curvas_in[i], 'r') as f_curva:
                 
-                curve_name = curvas_in[i].split( "/")[-1].split(".")[0]
                 next(f_curva)  # Saltar la primera línea
                 
                 for linea in f_curva:
@@ -509,28 +746,11 @@ class Curvas:
                     #Actualizo la celda
                     if (self.matriz[ii][jj] == 99999.):
                         self.matriz[ii][jj] = self.cte_curvas[i]
-                        
-                        # for index in range(jj, 851):
-                        #     # self.matriz[ii][index] = curve_name
-                            
-                        #     self.matriz[ii][index] = self.cte_curvas[i]
-                        
-                        
-                    if ii > x_max:
-                        x_max = ii
-                        
-                    if ii < x_min:
-                        x_min = ii
-                    if jj > y_max:
-                        y_max = jj
-                    if jj < y_min:
-                        y_min = jj
-        
-        
-          
+
         self.colorear_matriz(self.matriz, titulo)
-        
-        print(f" {titulo} : Dimension matrix : {self.matriz.shape}, x : {x_max} y : {y_max}")
+
+        # iguales = matrices_son_iguales(self.matriz, cargar_matriz_desde_archivo("./tests/Curvas_en_text/"+titulo + ".txt"))   
+        # print(f" {titulo} es igual a la matriz cargada? {iguales} \n\n")
 
         #obsoleto?
         """
