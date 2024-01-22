@@ -169,6 +169,12 @@ class Inter_Grafica:
         This function graph the parable, depend of the points, graph a parable that adjust at there.
         If not there are sufficient points, show error.
         """
+        
+        if self.get_cant_active_points() < 5:
+            self.cambiar_titulo(f"Error: No hay suficientes puntos activos, deben ser al menos 5, faltan {5-self.get_cant_active_points()}")
+            return
+        else: 
+            self.espectro.figure.texts.clear()  # Eliminar todos los textos existentes en el gráfico
         x_active, y_active = self.get_active_points()
 
         ajuste = self.p.minimos_cuadrados(x_active,y_active,2)
