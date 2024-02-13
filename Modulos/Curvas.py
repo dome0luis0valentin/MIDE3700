@@ -593,7 +593,8 @@ class Curvas:
         plt.show()
 
     def colorear_horizontal(self, matriz):
-        ancho_matriz = 850
+        print(f"Tamaño de la matriz a rellenar: {matriz.shape}")
+        ancho_matriz = matriz.shape[1]-1
         
         vacio = 99999.0
         valor_actual = vacio
@@ -620,7 +621,8 @@ class Curvas:
                 valor_actual = fila[index]
     
     def colorear_vertical(self, matriz):
-        ancho_matriz = 850
+
+        ancho_matriz = matriz.shape[1]
         alto_matriz = len(matriz)-1
         
         vacio = 99999.0
@@ -653,6 +655,8 @@ class Curvas:
         if (titulo == "Logg" or titulo.startswith("CL") or (titulo == "Mbol") or (titulo.startswith("TE-C")) ):        
             self.colorear_horizontal(matriz)      
         else:
+            if (titulo.startswith("PHIo-Ca")):
+                print(f" \n\n {titulo} tiene una dimensión de: {matriz.shape} \n\n")
             self.colorear_vertical(matriz)
             # print(f" \n\n {fila} \n\n")
         
