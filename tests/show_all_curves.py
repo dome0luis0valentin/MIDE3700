@@ -39,7 +39,7 @@ def graficar(dir):
     plt.close()
 # Ejemplo de uso:
 
-path = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Curvas_Densas_Graph/PHIo-Frias')
+path = glob.glob(f'/home/valen/PPS/MIDE3700/tests/output_folder/Mbol')
 
 
 for dir in path:

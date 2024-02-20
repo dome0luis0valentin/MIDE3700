@@ -49,8 +49,10 @@ for file in path:
     np.save(f'./Matrices_Numpy/{file.split("/")[-1].split(".")[0]}.npy', matriz_resultante)
 
     # Guarda la matriz en una imagen
+    print(file.split("/")[-1].split(".")[0])
     plt.matshow(matriz_resultante)
-    
+    plt.show()
+    plt.close()
     plt.savefig(f'./Imagenes_Curvas_Rellenas/{file.split("/")[-1].split(".")[0]}.png')
         
 # matriz_resultante = cargar_matriz_desde_archivo("/home/valen/PPS/MIDE3700/tests/Curvas_en_text/TE-Frias.txt")

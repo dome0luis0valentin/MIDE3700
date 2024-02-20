@@ -32,13 +32,14 @@ def interpolate_files(input_directory, output_directory, num_points):
         with open(output_filepath, 'w') as output_file:
             output_file.write(lines[0])  # Write the header
 
+            primer_valor = lines[1].split()
+            x = float(primer_valor[0])
+            y = float(primer_valor[1])
+            
+            output_file.write(f"{x:.5f}     {y:.5f}\n")
+
             for i in range(1, len(lines)):
                 line = lines[i].split()
-                
-                primer_valor = lines[1].split()
-                x = float(primer_valor[0])
-                y = float(primer_valor[1])
-                output_file.write(f"{x:.5f}     {y:.5f}\n")
                 
                 x1, y1 = float(line[0]), float(line[1])
 
@@ -57,12 +58,14 @@ def main(input_directory, output_directory, num_points):
     interpolate_files(input_directory, output_directory, num_points)
 
 if __name__ == "__main__":
-    lista_input = ["TE/Calientes", "TE/Frias"]
+    lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
     
-    dir_input = "./Curvas_Inter/"
+    dir_input = "./Curvas_Originales/Curvas/"
     dir_output = "./output_folder/" 
     
+    print(dir_input)
     for case in lista_input:
+        print(case)
         input_directory = dir_input+case  # Replace with your input directory
         
         output_directory = dir_output+case  # Replace with your output directory
