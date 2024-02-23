@@ -14,7 +14,7 @@ finally:
 
 #file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Curvas_Densas/{dir}/*.dat')
 
-file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/output_relleno_fino/Mv/*.dat')
+file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/output_relleno_fino/TE/Frias/*.dat')
     
 # file_list = glob.glob(f'/home/valen/pps/MIDE3700_v2/MIDE3700/Curvas/{dir}/*.dat')
 
@@ -57,10 +57,5 @@ plt.title(file_list[0].split('/')[-1].split('.')[0])
 print(valores)
 valores.sort()
 
-
-for i in range(0, len(valores)-1):
-    print('"'+valores[i]+f'" : ({valores[i]} ,{valores[i-1]} ),')
-
-print('"'+valores[i]+f'" : (None , None ')
 # Show the plot
 plt.show()
