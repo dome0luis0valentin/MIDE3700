@@ -37,7 +37,7 @@ def matrices_son_iguales(matriz1, matriz2):
 
 # Ejemplo de uso:
 
-path = glob.glob(f'./Curvas_en_text/*')
+path = glob.glob(f'./Curvas_en_text/T*')
 for file in path:
     matriz_resultante = cargar_matriz_desde_archivo(file)
     if file.split("/")[-1].split(".")[0] == "Logg":

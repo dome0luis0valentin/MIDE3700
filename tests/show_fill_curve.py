@@ -14,7 +14,7 @@ except IndexError:
 finally:
     print("No argument given, using Teff as default")
 
-file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Curvas_Densas/{dir}/*.dat')
+file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Curvas_Densas/TE/Calientes/*.dat')
 
 
 # file_list = glob.glob(f'/home/valen/pps/MIDE3700_v2/MIDE3700/Curvas/{dir}/*.dat')

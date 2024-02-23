@@ -299,7 +299,7 @@ class Curvas:
 
         elif magnitud == "TE_c":
 
-            self.nc= 13
+            self.nc= 12
 
             # A cada tipo espectral le asignamos le asignamos un numero entero:
             # O0 => 0
@@ -318,13 +318,14 @@ class Curvas:
             self.cte_curvas.append( 20. )# => tipo espectral A0
             self.cte_curvas.append( 22. )# => tipo espectral A2
             self.cte_curvas.append( 23. )# => tipo espectral A3
-            self.cte_curvas.append( 25. )# => tipo espectral A5
+            # self.cte_curvas.append( 25. )# => tipo espectral A5
 
             self.x0= 0.
             self.xn= 0.70
             self.y0= -5.
             self.yn= 80.
-            self.kx= 10000
+            # self.kx= 10000
+            self.kx= 100
             self.ky= 10
 
         elif magnitud == "TE_f":
@@ -698,6 +699,11 @@ class Curvas:
         # i1 : primer punto del eje x
         # i2 : ultimo punto del eje x
 
+        titulo = self.nombrar_archivo(curvas_in)
+
+        if (titulo == "TE-Calientes"):
+            print(f"\nPara TE_C: {self.x0} -- \ni2 vale {self.xn * float(self.kx)} o {(self.xn + abs(self.x0)) * float(self.kx)} ")
+            print(f"\n\n {self.xn} * {float(self.kx)}")
         if self.x0 >= 0.:
             i1= Algebra.Redondeo_int_mas_cerca( self.x0 * float(self.kx) )
             i2= Algebra.Redondeo_int_mas_cerca( self.xn * float(self.kx) )
@@ -729,8 +735,8 @@ class Curvas:
 
         # Leo todos los archivos de las curvas
         
-        titulo = self.nombrar_archivo(curvas_in)
-
+        
+        print(f"Tamaño de la matriz {titulo} a rellenar: {self.matriz.shape}")
         #Agrego cada curva a la matriz
         for i in range(self.nc):
             with open(curvas_in[i], 'r') as f_curva:
