@@ -8,6 +8,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import multiprocessing
 
+from Modulos import Landolt
+
 from tests.generar_matriz_desde_texto import cargar_matriz_desde_archivo, matrices_son_iguales
 
 class Curvas:
