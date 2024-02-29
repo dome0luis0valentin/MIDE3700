@@ -1244,3 +1244,39 @@ class Curvas:
         return error
 #-----------------------------------------------------------------------------------------
 
+
+def cargar_curvas(nombre, curvas_dict):
+        curvas = Curvas(nombre)
+        curvas_dict[nombre] = curvas
+        
+def cargar_curvas_multiproceso():
+    # Cargo curvas
+    # Load curves
+    
+    # Crear una lista de nombres de curvas
+    nombres_curvas = ["Teff", "TE_c", "TE_f", "CL_c", "CL_f", "Logg", "Mv", "Mbol", "PHIo_c", "PHIo_f"]
+
+    # Crear un diccionario para almacenar las curvas
+    manager = multiprocessing.Manager()
+    curvas_dict = manager.dict()
+
+    # Crear una lista de procesos
+    processes = []
+
+
+    # Crear un proceso para cargar cada curva
+    for nombre in nombres_curvas:
+        process = multiprocessing.Process(target=cargar_curvas, args=(nombre, curvas_dict))
+        processes.append(process)
+        process.start()
+
+    # Esperar a que todos los procesos terminen
+    for process in processes:
+        process.join()
+
+    # Accede a las curvas cargadas por su nombre
+    
+    # Crear el objeto Landolt
+    landolt = Landolt.Landolt()
+    
+    return curvas_dict, landolt

@@ -85,6 +85,10 @@ class Normalizo_espectro(Espectro.Espectro):
         # Initialize a list to store the button instances
         self.parables = []
         self.parable_buttons = []
+        
+        # Manejo los datos del gráfico
+        self.axes = None
+        self.figure = None
 #
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
@@ -226,7 +230,7 @@ class Normalizo_espectro(Espectro.Espectro):
                 puntos.append(Punto(x, y, new_point))
                 
             self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
-            
+
         plt.show()
 #-------------------------------------------------------------------------------
     def Ajuste_Paschen(self):
@@ -243,6 +247,7 @@ class Normalizo_espectro(Espectro.Espectro):
         self.line_buttons = []
         
         #Definimos los datos del grafico que utilizaremos
+        plt.close('all')
         self.figure, self.axes= plt.subplots()
 #
 #     Traemos los puntos con los que hicimos el ajuste
@@ -250,8 +255,8 @@ class Normalizo_espectro(Espectro.Espectro):
         for i in self.espectro.xP:
             k, x= Algebra.Busco_elemento(self.l_onda, 1./i)
             self.xP.append( x )
-            self.yP.append( math.log( self.flujo[k],10) )
-            
+            self.yP.append( math.log( self.flujo[k],10) )     
+        
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, True, self)
         ajuste.clean_puntos()
         maximizar_pantalla()
@@ -264,11 +269,9 @@ class Normalizo_espectro(Espectro.Espectro):
         # Inter_Grafica.connect('key_press_event', ajuste.ajuste_recta)
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
         self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_rect)
-
+        
         self.Grafico_espec(1, ajuste.points)
-
         self.graficar_ajuste_pashen_activa(ajuste.p)
-        # self.paschen.coef= copy.copy( ajuste.p.coef )
 #
         return
 #-------------------------------------------------------------------------------

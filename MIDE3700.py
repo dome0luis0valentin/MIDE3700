@@ -16,6 +16,8 @@
 import math
 import numpy as np
 import sys
+import matplotlib.pyplot as plt
+
 sys.path.append('./Modulos')
 
 from Modulos import Archivos_in_out
@@ -26,9 +28,8 @@ from Modulos import Algebra
 from Modulos import Parametros_BCD
 from Modulos import Parametros_FUN
 from Modulos import Normalizo_espectro
-from Modulos import Curvas
+from Modulos.Curvas import cargar_curvas_multiproceso
 #import Allen
-from Modulos import Landolt
 from Modulos import Distancia
 #######################################################################
 #######################################################################
@@ -42,38 +43,8 @@ Archivos_in_out.Genero_BCD_out()
 Archivos_in_out.Genero_ParFun_out()
 Archivos_in_out.Genero_Dist_out()
 #-------------------------------------------------------------------------------
-# Cargo curvas
-# Load curves
-import time
 
-import multiprocessing
-
-def cargar_curvas(nombre, curvas_dict):
-    curvas = Curvas.Curvas(nombre)
-    curvas_dict[nombre] = curvas
-
-# Crear una lista de nombres de curvas
-nombres_curvas = ["Teff", "TE_c", "TE_f", "CL_c", "CL_f", "Logg", "Mv", "Mbol", "PHIo_c", "PHIo_f"]
-
-# Crear un diccionario para almacenar las curvas
-manager = multiprocessing.Manager()
-curvas_dict = manager.dict()
-
-# Crear una lista de procesos
-processes = []
-
-
-# Crear un proceso para cargar cada curva
-for nombre in nombres_curvas:
-    process = multiprocessing.Process(target=cargar_curvas, args=(nombre, curvas_dict))
-    processes.append(process)
-    process.start()
-
-# Esperar a que todos los procesos terminen
-for process in processes:
-    process.join()
-
-# Accede a las curvas cargadas por su nombre
+curvas_dict, landolt = cargar_curvas_multiproceso()
 
 curvas_teff = curvas_dict["Teff"]
 curvas_te_c = curvas_dict["TE_c"]
@@ -86,8 +57,6 @@ curvas_mbol = curvas_dict["Mbol"]
 curvas_phio_c = curvas_dict["PHIo_c"]
 curvas_phio_f = curvas_dict["PHIo_f"]
 
-# Crear el objeto Landolt
-landolt = Landolt.Landolt()
 
 #obsoleto?
 """
@@ -182,7 +151,9 @@ for nom_est in lista_estrellas:
 # Creation of the black body corresponds to the calculated teff_bb temperature
 #          
         espectro_nor= Normalizo_espectro.Normalizo_espectro(estrella_1.teff, espectro)
+        
         espectro_nor.Normalizo()
+        
 #
 # Ajusto el continuo de Paschen
 # Fitting Paschen continuum

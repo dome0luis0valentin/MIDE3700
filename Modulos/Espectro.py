@@ -43,13 +43,14 @@ class Espectro:
     xH_sup= []
     yH_sup= []
     
-    # Manejo los datos del gráfico
-    axes = None
-    figure = None
     
 #-------------------------------------------------------------------------------
     def __init__(self, nombre):# Genero el espectro
 #
+        # Manejo los datos del gráfico
+        self.axes = None
+        self.figure = None
+        
 # Inicializo los valores
         self.l_onda= []
         self.flujo= []
@@ -70,10 +71,6 @@ class Espectro:
         self.yH_inf= []
         self.xH_sup= []
         self.yH_sup= []
-        
-        # Manejo los datos del gráfico
-        axes = None
-        figure = None
         
         # Initialize a list to store the button instances
         self.lines = []
@@ -195,7 +192,7 @@ class Espectro:
                 self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Balmer\n' + 'Fit the Balmer continuum')
         else:
             self.axes.set_title(self.nombre + '\n' + 'Ajuste el continuo de Paschen\n' + 'Fit the Paschen continuum')
-        
+
         plt.show()
 
 #-------------------------------------------------------------------------------
@@ -356,9 +353,9 @@ class Espectro:
         f_est.write( '------------------------------\n' )
         f_est.write( '\n' )
         f_est.close()
-        
         self.figure, self.axes= plt.subplots()
 #
+
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
         ajuste.clean_puntos()
         maximizar_pantalla()
@@ -368,8 +365,11 @@ class Espectro:
         
         self.Grafico_espec(1)
         
-        self.graficar_ajuste_pashen_activa(ajuste.p)
-        self.parable_buttons = []
+        if ajuste.get_cant_lines() > 0:
+            self.graficar_ajuste_pashen_activa(ajuste.p)
+            self.parable_buttons = []
+        else:
+            raise Exception("No se graficaron lineas")
 #
         return
 #-------------------------------------------------------------------------------
@@ -398,6 +398,13 @@ class Espectro:
         self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_rect)
         
         self.Grafico_espec(2)
+        
+        print("Cantidad de lineas ", ajuste.get_cant_lines())
+        if ajuste.get_cant_lines() > 0:
+            self.graficar_ajuste_balmer_activa(ajuste.p)
+            self.parable_buttons = []
+        else:
+            raise Exception("No se graficaron lineas")
         
         self.graficar_ajuste_balmer_activa(ajuste.p)
 
