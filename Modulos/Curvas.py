@@ -6,6 +6,7 @@ import math
 import Algebra
 import numpy as np
 import matplotlib.pyplot as plt
+import multiprocessing
 
 from tests.generar_matriz_desde_texto import cargar_matriz_desde_archivo, matrices_son_iguales
 
