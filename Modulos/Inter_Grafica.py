@@ -169,6 +169,12 @@ class Inter_Grafica:
         This function graph the parable, depend of the points, graph a parable that adjust at there.
         If not there are sufficient points, show error.
         """
+        
+        if self.get_cant_active_points() < 5:
+            self.cambiar_titulo(f"Error: No hay suficientes puntos activos, deben ser al menos 5, faltan {5-self.get_cant_active_points()}")
+            return
+        else: 
+            self.espectro.figure.texts.clear()  # Eliminar todos los textos existentes en el gráfico
         x_active, y_active = self.get_active_points()
 
         ajuste = self.p.minimos_cuadrados(x_active,y_active,2)
@@ -215,6 +221,14 @@ class Inter_Grafica:
                 
     def handler_graph_rect(self, event):
         #Armo la recta sobre los puntos que estan activos
+                cant_puntos_activos = self.get_cant_active_points()
+                if cant_puntos_activos < 3:
+                    self.cambiar_titulo(f"Error: No hay suficientes puntos activos, deben ser al menos 3, faltan {3-cant_puntos_activos}")
+                    return
+                else:
+                    #Borro la advertencia si la hubiera
+                    self.espectro.figure.texts.clear()
+                
                 x_active = []
                 y_active = []
                 
@@ -223,7 +237,6 @@ class Inter_Grafica:
 
                 ajuste= self.p.minimos_cuadrados(x_active,y_active,1)
     #
-
                 if ajuste:
                     y= poly1d(self.p.coef); y
                     x= []
@@ -248,7 +261,8 @@ class Inter_Grafica:
                     self.agregar_linea(new_line)
     #
                     self.Print_puntos('recta')
-                else: 
+                else:
+                    print("error")
                     self.show_error_rect
 
     def show_error_rect(self):
@@ -257,16 +271,30 @@ class Inter_Grafica:
             if n == 1:
                 texto = 'Agregue 1 punto \ Add 1 point'
                 self.espectro.figure.text(0.50, 0.85, texto)
+                self.espectro.figure.text(0.50, 0.80, "Subtítulo del gráfico")
                 draw()
             else:
                 texto = f'Agregue {n} puntos \ Add {n} points'
                 self.figure.text(0.50, 0.85, texto)
+                self.figure.text(0.50, 0.80, "Subtítulo del gráfico")
                 draw()
             self.key1 = False    
 
-    def handler_rect_next_stage(self, event):
-        plt.close(event.canvas.figure)
+    def cambiar_titulo(self, titulo):
+        """
+        Cambiar el subtitulo del gráfico
+        """
+        self.espectro.figure.texts.clear()  # Eliminar todos los textos existentes en el gráfico
+        self.espectro.figure.text(0.50, 0.85, titulo)  # Agregar el nuevo subtítulo al gráfico
+        draw()
+        
         return
+    
+    def handler_rect_next_stage(self, event):
+        if self.get_cant_lines() > 0:
+            plt.close(event.canvas.figure)
+        else:
+            self.cambiar_titulo("Error: No hay rectas graficadas, agregue al menos 3 puntos  grafique una recta con la letra 'a'")
 
     def handler_make_point_customice(self, event):
         x = event.xdata
@@ -281,7 +309,7 @@ class Inter_Grafica:
     def handler_of_key_rect(self, event):
         key_pressed = event.key
         if key_pressed not in self.key_avaible: return 
-        print(f"Someone press the key {key_pressed} ")
+
         if key_pressed == "a":
             self.handler_graph_rect(event)
         elif key_pressed == "q":
@@ -355,6 +383,7 @@ class Inter_Grafica:
                     self.key2= False
 #
         else:
+            print("crrenado")
             plt.close(event.canvas.figure)
 # Guardo los valores
             self.Print_pol('parabola')
@@ -376,6 +405,7 @@ class Inter_Grafica:
             f.write('Recta: ' + '%s' %y + '\n')
         else:
             f.write( 'Parabola: ' + '%s' %y + '\n' )
+        
         f.close()
         return
 #-------------------------------------------------------------------------------
@@ -417,6 +447,13 @@ class Inter_Grafica:
     def clean_puntos(self):
         self.points = []
 
+    def get_cant_active_points(self):
+        cant = 0
+        for point in self.get_puntos():
+            if point.get_activate():
+                cant += 1
+        return cant
+    
     def get_active_points(self):
         x_active = []
         y_active = []
@@ -447,8 +484,9 @@ class Inter_Grafica:
         
         self.espectro.create_line_button(self.espectro.axes, 'Ajuste', lineas_dibujadas, linea)
         
-        
-
+    def get_cant_lines(self):
+        return len(self.lines)
+    
     def get_lines(self):
         return self.lines
     

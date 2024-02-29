@@ -5,7 +5,28 @@ import os
 
 def maximizar_pantalla():
     mng = plt.get_current_fig_manager()
-    mng.resize(1846,1000)
+    file = "/home/valen/pps/MIDE3700_v2/MIDE3700/Configuraciones/resolucion.txt"
+    tupla_resultante = (1000, 1000)
+    
+    try:
+        with open(file, 'r') as file:
+            contenido = file.read()
+            valores = contenido.strip().split(',')
+            
+            # Asegurarse de que haya exactamente dos valores
+            if len(valores) != 2:
+                raise ValueError("El archivo debe contener dos valores separados por coma.")
+            
+            # Convertir los valores a enteros
+            tupla_resultante = tuple(map(int, valores))
+
+    except FileNotFoundError:
+        print(f"Error: El archivo '{file}' no se encontró.")
+    except ValueError as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"Error inesperado: {e}")
+    mng.resize(tupla_resultante[0], tupla_resultante[1])
     return
 
 def distancia_euclidea(x1, x2, y1, y2):
