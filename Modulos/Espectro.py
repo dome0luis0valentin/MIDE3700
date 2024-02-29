@@ -447,9 +447,7 @@ class Espectro:
         self.graficar_balmer_inferior_activa(ajuste.p)
         
         self.clean_parables()
-        
-        print(f"Estas son las parabolas DESPUES de graficar the last curve {self.get_parables()}")
-        
+                
         
 #
         return
@@ -497,15 +495,12 @@ class Espectro:
         self.figure.canvas.mpl_connect('button_press_event', ajuste.click)
         self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_parable)
         
-        print(f"Estas son las parabolas ANTES DE GRAFICO ESPECTRO {self.get_parables()}")
         self.Grafico_espec(4, ajuste.points)
         
-        print(f"Estas son las parabolas antes de graficar the last curve {self.get_parables()}")
         self.graficar_balmer_superior_activa(ajuste.p)
         
         self.clean_parables()
         
-        print(f"Estas son las parabolas DESPUES de graficar the last curve {self.get_parables()}")
         # self.balmer_sup.coef= ajuste.p.coef
     
 #
@@ -622,21 +617,12 @@ class Espectro:
     def get_parables(self):
         return self.parables
     
-    def get_last_line(self):  
-        
-        print("\n######Lineas graficadas######")
-        for i in self.get_lines():
-            print("Nombre: ", i, " is last(): ", i.is_last())
-        
+    def get_last_line(self):          
         for line in self.get_lines():
             if line.is_last():
                 return line
             
     def get_last_parable(self):
-        print("\n Getting last parable of Espectrum...\n")
-        print("\n######Curvas graficadas######")
-        for i in self.get_parables():
-            print("Nombre: ", i, " is last(): ", i.is_last())
         for parable in self.get_parables():
             if parable.is_last():
                 return parable
@@ -660,7 +646,6 @@ class Espectro:
         self.xB= copy.copy( x_last_line )
         
     def graficar_balmer_inferior_activa(self, polinomio):
-        print("\n lista de parabolas: \n:", self.get_parables())
         last_parable = self.get_last_parable()
         coeficients = last_parable.get_coeficient(polinomio)
         x_last_parable = last_parable.get_x()

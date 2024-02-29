@@ -84,8 +84,6 @@ for nom_est in lista_estrellas:
     espectro= Espectro.Espectro(nom_est)
     espectro.Leo_archivo()
     
-    print("#### L_onda ####")
-    print("Primer elemento de l onda: ", espectro.l_onda[0])
 #
 # Ajuste del continuo de Paschen
 # Fitting Paschen continuum
@@ -118,7 +116,6 @@ for nom_est in lista_estrellas:
 # D is the total jump: D= D* + d
 #
 
-    print("\n CREANDO BCD:\n",espectro.balmer_inf)
     BCD= Parametros_BCD.Parametros(espectro, False)
     
     BCD.Calculo_D()
@@ -185,7 +182,6 @@ for nom_est in lista_estrellas:
 # d is the distance between Paschen's continuum and Balmer's continuum
 # D is the total jump: D= D* + d
 #
-        print("\n CREANDO BCD:\n",espectro.balmer_inf)
         BCD_nor= Parametros_BCD.Parametros(espectro_nor, True)
         BCD_nor.Calculo_D()
 #
