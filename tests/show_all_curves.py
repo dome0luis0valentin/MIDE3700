@@ -38,17 +38,21 @@ def graficar(dir):
     # plt.savefig(f"./Imagenes_Curvas_Sin_Rellenar/{dir.split('/')[-1]}.png") 
     plt.close()
 # Ejemplo de uso:
+    
+def main(paths):
+    path = glob.glob(f'/home/valen/PPS/MIDE3700/tests/output_folder/Mbol')
+    for dir in paths:
+        try:
+            print(dir)
+            graficar(dir)
+        except Exception as e:
+            print(f"Error al cargar la matriz desde el archivo: {e}")
+            continue
 
-path = glob.glob(f'/home/valen/PPS/MIDE3700/tests/output_folder/Mbol')
+if __name__ == "main":
+    main([""])
 
 
-for dir in path:
-    try:
-        print(dir)
-        graficar(dir)
-    except Exception as e:
-        print(f"Error al cargar la matriz desde el archivo: {e}")
-        continue
 #Checkea si hay otro directorio dentro
 
 # for file in path:

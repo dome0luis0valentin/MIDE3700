@@ -7,6 +7,7 @@ import Algebra
 import numpy as np
 import matplotlib.pyplot as plt
 
+from Funciones_auxiliares import point_in_triangle, calcular_min_distance
 from tests.generar_matriz_desde_texto import cargar_matriz_desde_archivo, matrices_son_iguales
 
 class Curvas:
@@ -701,9 +702,6 @@ class Curvas:
 
         titulo = self.nombrar_archivo(curvas_in)
 
-        if (titulo == "TE-Calientes"):
-            print(f"\nPara TE_C: {self.x0} -- \ni2 vale {self.xn * float(self.kx)} o {(self.xn + abs(self.x0)) * float(self.kx)} ")
-            print(f"\n\n {self.xn} * {float(self.kx)}")
         if self.x0 >= 0.:
             i1= Algebra.Redondeo_int_mas_cerca( self.x0 * float(self.kx) )
             i2= Algebra.Redondeo_int_mas_cerca( self.xn * float(self.kx) )
@@ -827,7 +825,112 @@ class Curvas:
             yy= (y + abs(self.y0)) * float(self.ky)
             
         return i1, i2, xx, j1, j2, yy
+    
+    def leer_curva(self, file):
+        """
+        Dada la dirección de un archivo, lo lee y devuelve sus filas en una lista de tuplas
+        """
+        with open(file, 'r') as f_curva:
+                
+            next(f_curva)  # Saltar la primera línea
 
+            lista_puntos = []
+
+            for linea in f_curva:
+                xy = tuple(map(float, linea.split()))
+                lista_puntos.append((xy))
+
+        return lista_puntos
+
+    def get_puntos_curva(self,curvas_in, curva):
+        
+        lista_puntos = []
+        index_file = -1
+
+        constantes = self.cte_curvas
+        for i in range(len(constantes)):
+            if ( constantes[i] == curva ):
+                index_file = i
+                break
+        from tests.show_all_curves import main as graficar_curva
+
+        lista_puntos = self.leer_curva(curvas_in[index_file])
+        graficar_curva(lista_puntos)
+
+        return lista_puntos
+
+    def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2):
+        dist1 = float("inf")
+        dist2 = float("inf")
+
+        #Busco en los archivos las 2 curvas, con las coordenadas x e y de cada punto
+        c1 = self.get_puntos_curva(curvas_in, curva1)
+        c2 = self.get_puntos_curva(curvas_in, curva2)
+
+        base_comun = math.gcd(len(c1), len(c2))
+        #tomo solo el 5% del total de la curva para recorrerla
+        porenteje = 5
+        print(f"""
+              
+            c1 largo = {len(c1)}\
+            c2 largo = {len(c2)}\
+            GCD = {base_comun}\
+            ( len(c1) / ( base_comun * 100) ) = {( len(c1) / ( base_comun * 100) )}\
+            
+        """)
+
+        print(f" Antes {( len(c1) / ( base_comun * 100) ) * porenteje}, Después {int(( len(c1) / ( base_comun * 100) ) * porenteje)}")
+        base_c1 = int(( len(c1) / 100)  * porenteje)
+        base_c2 = int(( len(c2) / 100)  * porenteje)
+
+        #Mientras no encuentre la distancia minima, buscar
+
+            #Crear un triangulo de x puntos de base
+        mover_v1 = False
+
+        pos_punto_v1 = 0
+        pos_punto_v2 = 0
+
+        v1 = c1[0]
+        v2 = c2[0]
+        v3 = c2[0+base_c2]
+            #Evaluar si el punto esta dentro del triangulo
+        
+        within_triangle = point_in_triangle(xy, v1, v2, v3)
+                #Si no esta, mover el punto 1 o el punto 2
+        while not ( within_triangle ):
+            if mover_v1:
+                pos_punto_v1 += base_c1
+
+                nuevo_v3 = c1[pos_punto_v1]
+                v1 = v3
+                v3 = nuevo_v3
+
+                mover_v1 = False
+
+            else:
+                pos_punto_v2 += base_c2
+                print(f"Esto dentro de esto {len(c2), pos_punto_v2}")
+                nuevo_v3 = c2[pos_punto_v2]
+                v2 = v3
+                v3 = nuevo_v3
+
+                mover_v1 = True
+
+            within_triangle = point_in_triangle(xy, v1, v2, v3)
+        
+                #Si esta, tomo un rango y calculo la mimina destancia de cada punto de la curva al punto.
+        
+                #Tomo 3 veces el porcentaje a izquierda y a derecha, y calculo el 30% de los puntos de la curva
+        inicio = max(0, pos_punto_v1 - (base_c1 * 3))
+        fin  = min(len(c1), pos_punto_v1 + (base_c1 * 3))
+        dist1 = calcular_min_distance(xy, c1[inicio:fin])
+        inicio = max(0, pos_punto_v2 - (base_c2 * 3))
+        fin  = min(len(c1), pos_punto_v2 + (base_c2 * 3))
+        dist2 = calcular_min_distance(xy, c2[inicio:fin])
+                
+        return dist1, dist2
+    
     def buscar_curvas(self, x, y):
         curves = {
     "CL-Calientes": {
@@ -1025,9 +1128,12 @@ class Curvas:
 
         if i1 <= xx and xx <= i2 and j1 <= yy and yy <= j2:
             dist_min_1= 1000.
+
             for i in range(i1,i2):
                 for j in range(j1,j2):
+
                     if self.matriz[i][j] != 99999.:
+                        #Calculo la distancia euclidea
                         di= (float(i) - xx) * (float(i) - xx)/ float(self.kx)/ float(self.kx)
                         dj= (float(j) - yy) * (float(j) - yy)/ float(self.ky)/ float(self.ky)
                         dist= math.sqrt(di + dj)
@@ -1099,20 +1205,23 @@ class Curvas:
                 # en cambio, si el punto se encuentra entre las curvas ni y ni+1
 
                 #  dist_13 > dist_min_3  y  dist_12 < dist_min_2
-                
-                curva1, curva2 = self.buscar_curvas(xx, yy)
+
                 curvas_in = self.Leo_Archivo()
                 titulo = self.nombrar_archivo(curvas_in)
                 print(titulo)
-                print(f"Metodo nuevo: {curva1} , {curva2}")
+
+                curva1, curva2 = self.buscar_curvas(xx, yy)
+                distancia1, distancia2 = self.calcular_minimas_distancias_entre_curvas((xx, yy), curvas_in, curva1, curva2)
+                
+                print(f"Metodo nuevo: {curva1} , {curva2}, dist = {distancia1, distancia2}")
                 if dist_12 > dist_min_2 and dist_13 < dist_min_3:
-                    print(f"Metodo viejo: {cte_1} , {cte_2}")
+                    print(f"Metodo viejo: {cte_1} , {cte_2}, dist = {dist_min_1, dist_min_2}")
                     
                     # La distancia entre las curvas a la altura del punto es
                     dist_min= dist_min_1 + dist_min_2
                     magnitud= cte_1 - dist_min_1*(cte_1 - cte_2)/dist_min
                 else:
-                    print(f"Metodo viejo: {cte_1} , {cte_2}")
+                    print(f"Metodo viejo: {cte_1} , {cte_2}, dist = {dist_min_1, dist_min_3}")
                     
                     dist_min= dist_min_1 + dist_min_3
                     magnitud= cte_3 - dist_min_3*(cte_3 - cte_1)/dist_min

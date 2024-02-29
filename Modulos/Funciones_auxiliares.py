@@ -3,6 +3,37 @@ import math
 import matplotlib.pyplot as plt
 import os
 
+#https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+def sign(p1, p2, p3):
+    return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1]);
+
+def point_in_triangle(pt, v1, v2, v3):
+    d1 = (0,0)
+    d2 = (0,0)
+    d3 = (0,0)
+    has_neg = False
+    has_pos = False
+
+    d1 = sign(pt, v1, v2);
+    d2 = sign(pt, v2, v3);
+    d3 = sign(pt, v3, v1);
+
+    has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0);
+    has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0);
+
+    return not (has_neg and has_pos)
+
+def calcular_min_distance(xy, curva):
+    min_distance = float("inf")
+
+    for punto in curva:
+        
+        distance = distancia_euclidea(xy[0], punto[0], xy[1], punto[1])
+        if distance < min_distance:
+            min_distance = distance
+
+    return min_distance
+
 def maximizar_pantalla():
     mng = plt.get_current_fig_manager()
     mng.resize(1846,1000)

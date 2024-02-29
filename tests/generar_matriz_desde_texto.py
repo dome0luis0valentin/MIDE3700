@@ -37,7 +37,7 @@ def matrices_son_iguales(matriz1, matriz2):
 
 # Ejemplo de uso:
 
-path = glob.glob(f'./Curvas_en_text/T*')
+path = glob.glob(f'./Curvas_en_text/TE*')
 for file in path:
     matriz_resultante = cargar_matriz_desde_archivo(file)
     if file.split("/")[-1].split(".")[0] == "Logg":
@@ -50,11 +50,12 @@ for file in path:
 
     # Guarda la matriz en una imagen
     print(file.split("/")[-1].split(".")[0])
+    
     plt.matshow(matriz_resultante)
+    
     plt.show()
-    plt.close()
     plt.savefig(f'./Imagenes_Curvas_Rellenas/{file.split("/")[-1].split(".")[0]}.png')
-        
+    plt.close()   
 # matriz_resultante = cargar_matriz_desde_archivo("/home/valen/PPS/MIDE3700/tests/Curvas_en_text/TE-Frias.txt")
 # #Reemplazar 99999.9 por 0
 # matriz_resultante[matriz_resultante == 99999.0] = 0
