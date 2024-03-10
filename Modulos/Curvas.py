@@ -6,8 +6,9 @@ import math
 import Algebra
 import numpy as np
 import matplotlib.pyplot as plt
+from pylab import *
 
-from Funciones_auxiliares import point_in_triangle, calcular_min_distance
+from Funciones_auxiliares import point_in_triangle, calcular_min_distance, distancia_euclidea
 from tests.generar_matriz_desde_texto import cargar_matriz_desde_archivo, matrices_son_iguales
 
 class Curvas:
@@ -842,8 +843,58 @@ class Curvas:
 
         return lista_puntos
 
-    def get_puntos_curva(self,curvas_in, curva):
+    def graficar_curvas(self, curvas_in, curvas, axes):
+        """
+        Dibuja 2 curvas en un plano, para representar graficamente el problema
+        """
+
+        index_files = []
+
+        for constante in curvas:
+            constantes = self.cte_curvas
+            for i in range(len(constantes)):
+                if ( constantes[i] == constante ):
+                    index_files.append(curvas_in[i])
+                    break
+
+        x_v, y_v =  self.dibujar_dos_curvas(index_files, axes)
+
+        return x_v, y_v
+    
+    def dibujar_dos_curvas(self, file_list, axes):
+        """
+        Grafica la curva que se pasa como parametro
+        """
+
+        x_values = []
+        y_values = []
         
+        list_curves = []
+        
+        # Iterate over the files
+        valores = []
+        for file_path in file_list:
+            # Open the file and read the coordinates
+            with open("/home/valen/PPS/MIDE3700/"+file_path, 'r') as f:
+                
+                for line in f:
+                    if line.startswith("#"):
+                        continue
+                    else:
+                        x, y = map(float, line.strip().split())
+                        x_values.append(x)
+                        y_values.append(y)
+                        
+            # Create a scatter plot
+        
+        plt.scatter(x_values, y_values, color='blue', marker='.')  
+
+        return x_values, y_values
+
+    def get_puntos_curva(self,curvas_in, curva):
+        """
+        Dada una constante, devuelve una lista de pares x, y con los puntos que representan la curva 
+        """
         lista_puntos = []
         index_file = -1
 
@@ -852,84 +903,109 @@ class Curvas:
             if ( constantes[i] == curva ):
                 index_file = i
                 break
-        from tests.show_all_curves import main as graficar_curva
-
+        
         lista_puntos = self.leer_curva(curvas_in[index_file])
-        graficar_curva(lista_puntos)
-
+        
         return lista_puntos
 
+    def graficar_punto(self, axes, xy, color="red"):
+        plt.scatter([xy[0]],[xy[1]],color=color, marker="x")
+
+    def elegir_derecha(self, xy, p1, p2):
+        """
+        Dado un punto (x, y), devuelve True si p1, esta más cerca que p2 a (x, y)
+        """
+
+        x1 = xy[0]
+        y1 = xy[1]
+        x2 = p1[0]
+        y2 = p1[1]
+
+        distancia_p1 = distancia_euclidea(x1, x2, y1, y2)
+
+        x2 = p2[0]
+        y2 = p2[1]
+
+        distancia_p2 = distancia_euclidea(x1, x2, y1, y2)
+
+        print(f"La distancia minima es: {distancia_p1}")
+
+        return distancia_p1 < distancia_p2
+
     def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2):
+        """
+        Esta función, dado:
+        xy: un par con coordenadas x e y en el plano
+        curvas_in: la lista de archivos que contienen las curvas almacenadas en conjuntos de puntos x,y
+        curva1 y curva2, contienen el valor constante que representa la curva, una curva en el planto es un conjunto de puntos x,y -> z, donde z es el valor constante
+        """
+        
         dist1 = float("inf")
-        dist2 = float("inf")
+
+        plt.close()
+        fig, axes = plt.subplots()
+        self.graficar_curvas(curvas_in, [curva1, curva2], axes)
 
         #Busco en los archivos las 2 curvas, con las coordenadas x e y de cada punto
         c1 = self.get_puntos_curva(curvas_in, curva1)
-        c2 = self.get_puntos_curva(curvas_in, curva2)
-
-        base_comun = math.gcd(len(c1), len(c2))
-        #tomo solo el 5% del total de la curva para recorrerla
-        porenteje = 5
-        print(f"""
-              
-            c1 largo = {len(c1)}\
-            c2 largo = {len(c2)}\
-            GCD = {base_comun}\
-            ( len(c1) / ( base_comun * 100) ) = {( len(c1) / ( base_comun * 100) )}\
-            
-        """)
-
-        print(f" Antes {( len(c1) / ( base_comun * 100) ) * porenteje}, Después {int(( len(c1) / ( base_comun * 100) ) * porenteje)}")
-        base_c1 = int(( len(c1) / 100)  * porenteje)
-        base_c2 = int(( len(c2) / 100)  * porenteje)
 
         #Mientras no encuentre la distancia minima, buscar
 
-            #Crear un triangulo de x puntos de base
-        mover_v1 = False
-
-        pos_punto_v1 = 0
-        pos_punto_v2 = 0
-
-        v1 = c1[0]
-        v2 = c2[0]
-        v3 = c2[0+base_c2]
-            #Evaluar si el punto esta dentro del triangulo
+        index_curva = int(len(c1)/2)
+        largo_segmento = int(len(c1)/2)
+        umbral_busqueda = int((len(c1)/100) / 5)
         
-        within_triangle = point_in_triangle(xy, v1, v2, v3)
-                #Si no esta, mover el punto 1 o el punto 2
-        while not ( within_triangle ):
-            if mover_v1:
-                pos_punto_v1 += base_c1
+        punto_actual = c1[index_curva]
+        punto_der = c1[index_curva-1]
+        
+        mover_derecha = self.elegir_derecha(xy, punto_actual, punto_der)
 
-                nuevo_v3 = c1[pos_punto_v1]
-                v1 = v3
-                v3 = nuevo_v3
+        punto_anterior = punto_actual
 
-                mover_v1 = False
+        self.graficar_punto(axes, punto_actual)
+        self.graficar_punto(axes, xy)
+        self.graficar_punto(axes, c1[0], color="green")
 
+        #Mientras el tamaño del segmento no sea lo suficientemente pequeño sigo buscando
+        #Pequeño será el 5% del total de los puntos en la curva
+        while (largo_segmento > umbral_busqueda):
+
+            largo_segmento /= 2
+            punto_anterior = punto_actual
+            #Buscar a derecha
+            if mover_derecha:
+                index_curva = int(index_curva + largo_segmento)
+
+                punto_actual = c1[index_curva]
+                punto_der = c1[index_curva-1]
+
+            #Buscar a la izquierda
             else:
-                pos_punto_v2 += base_c2
-                print(f"Esto dentro de esto {len(c2), pos_punto_v2}")
-                nuevo_v3 = c2[pos_punto_v2]
-                v2 = v3
-                v3 = nuevo_v3
+                index_curva = int(index_curva - largo_segmento)
 
-                mover_v1 = True
+                punto_actual = c1[index_curva]
+                punto_der = c1[index_curva-1]
 
-            within_triangle = point_in_triangle(xy, v1, v2, v3)
+            mover_derecha = self.elegir_derecha(xy, punto_actual, punto_der)
+
+            self.graficar_curvas(curvas_in, [curva1, curva2], axes)
+            self.graficar_punto(axes, xy, color="blue")
+            self.graficar_punto(axes, punto_anterior, color="green")
+            self.graficar_punto(axes, punto_actual)
+
+            plt.draw()
+            plt.show()
         
-                #Si esta, tomo un rango y calculo la mimina destancia de cada punto de la curva al punto.
+        #Si esta, tomo un rango y calculo la mimina destancia de cada punto de la curva al punto.
         
-                #Tomo 3 veces el porcentaje a izquierda y a derecha, y calculo el 30% de los puntos de la curva
-        inicio = max(0, pos_punto_v1 - (base_c1 * 3))
-        fin  = min(len(c1), pos_punto_v1 + (base_c1 * 3))
+        #Tomo 3 veces el porcentaje a izquierda y a derecha, y calculo el 30% de los puntos de la curva
+
+        inicio = int(index_curva - ( largo_segmento * 3 ))
+        fin  = int(index_curva + ( largo_segmento * 3 ))
+        print(f"El rango para evaluar son los siguientes: desde {inicio} hasta {fin}")
         dist1 = calcular_min_distance(xy, c1[inicio:fin])
-        inicio = max(0, pos_punto_v2 - (base_c2 * 3))
-        fin  = min(len(c1), pos_punto_v2 + (base_c2 * 3))
-        dist2 = calcular_min_distance(xy, c2[inicio:fin])
                 
-        return dist1, dist2
+        return dist1
     
     def buscar_curvas(self, x, y):
         curves = {
@@ -1129,6 +1205,7 @@ class Curvas:
         if i1 <= xx and xx <= i2 and j1 <= yy and yy <= j2:
             dist_min_1= 1000.
 
+            #Comparo las distancias de cada punto en la matriz
             for i in range(i1,i2):
                 for j in range(j1,j2):
 
@@ -1146,6 +1223,8 @@ class Curvas:
             
             key= True
             i= 0
+
+            #Busco a que curva pertence el punto más cercano
             while key:
                 if cte_1 == self.cte_curvas[i]:
                     n1= i
@@ -1210,18 +1289,21 @@ class Curvas:
                 titulo = self.nombrar_archivo(curvas_in)
                 print(titulo)
 
-                curva1, curva2 = self.buscar_curvas(xx, yy)
-                distancia1, distancia2 = self.calcular_minimas_distancias_entre_curvas((xx, yy), curvas_in, curva1, curva2)
+                x1= float(i) / float(self.kx)
+                y1= float(j) / float(self.ky)
                 
-                print(f"Metodo nuevo: {curva1} , {curva2}, dist = {distancia1, distancia2}")
+                curva1, curva2 = self.buscar_curvas(xx, yy)
+                distancia1 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
+                
+                print(f"Metodo nuevo para curva 1: {curva1}  dist = {distancia1}")
                 if dist_12 > dist_min_2 and dist_13 < dist_min_3:
-                    print(f"Metodo viejo: {cte_1} , {cte_2}, dist = {dist_min_1, dist_min_2}")
+                    print(f"Metodo viejo para curva 1: {cte_1} dist = {dist_min_1}")
                     
                     # La distancia entre las curvas a la altura del punto es
                     dist_min= dist_min_1 + dist_min_2
                     magnitud= cte_1 - dist_min_1*(cte_1 - cte_2)/dist_min
                 else:
-                    print(f"Metodo viejo: {cte_1} , {cte_2}, dist = {dist_min_1, dist_min_3}")
+                    print(f"Metodo viejo para curva 1: {cte_1} , dist = {dist_min_1}")
                     
                     dist_min= dist_min_1 + dist_min_3
                     magnitud= cte_3 - dist_min_3*(cte_3 - cte_1)/dist_min
