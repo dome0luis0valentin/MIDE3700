@@ -596,7 +596,6 @@ class Curvas:
         plt.show()
 
     def colorear_horizontal(self, matriz):
-        print(f"Tamaño de la matriz a rellenar: {matriz.shape}")
         ancho_matriz = matriz.shape[1]-1
         
         vacio = 99999.0
@@ -940,12 +939,12 @@ class Curvas:
         x2 = p1[0]
         y2 = p1[1]
 
-        distancia_p1 = distancia_euclidea_v2(x1, x2, y1, y2)
+        distancia_p1 = distancia_euclidea(x1, x2, y1, y2)
 
         x2 = p2[0]
         y2 = p2[1]
 
-        distancia_p2 = distancia_euclidea_v2(x1, x2, y1, y2)
+        distancia_p2 = distancia_euclidea(x1, x2, y1, y2)
 
         return distancia_p1 < distancia_p2
 
@@ -1030,13 +1029,13 @@ class Curvas:
         if fin > len( curva_completa ):
             fin = len( curva_completa )
 
-        print(f"Calcular en curva completa desde {inicio} hasta {fin}, el archivo tiene {len(curva_completa)} puntos")
+        # print(f"Calcular en curva completa desde {inicio} hasta {fin}, el archivo tiene {len(curva_completa)} puntos")
         
         dist1 = calcular_min_distance(xy, curva_completa[inicio:fin])
         
         minima_distancia = calcular_min_distance(xy, curva_completa)      
 
-        print(f"Esta es la minima distancia {minima_distancia} y esta es la distancia calculada {dist1}")
+        # print(f"Esta es la minima distancia {minima_distancia} y esta es la distancia calculada {dist1}")
 
         return dist1
     
@@ -1257,7 +1256,7 @@ class Curvas:
                             y1= float(j) / float(self.ky)
 
             
-            print(f"\n\n -------------------------- \n x: {xx}\n y: {yy} \n{dist_min_1} \n--------------------------\n\n")
+            # print(f"\n\n -------------------------- \n x: {xx}\n y: {yy} \n{dist_min_1} \n--------------------------\n\n")
             key= True
             i= 0
 
@@ -1324,7 +1323,7 @@ class Curvas:
 
                 curvas_in = self.Leo_Archivo()
                 titulo = self.nombrar_archivo(curvas_in)
-                print(titulo)
+                # print(titulo)
                 
                 curva1, curva2 = self.buscar_curvas(xx, yy)
                 distancia1 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2, x1 = x1, y1 = y1)
@@ -1334,14 +1333,14 @@ class Curvas:
                 output.write(f"{distancia1}")
                 print(f"Metodo nuevo para curva 1: {curva1}  dist = {distancia1}")
                 if dist_12 > dist_min_2 and dist_13 < dist_min_3:
-                    print(f"Metodo viejo para curva 1: {cte_1} dist = {dist_min_1}|{dist_min_2}")
-                    output.write(f" {dist_min_1}")
+                    # print(f"Metodo viejo para curva 1: {cte_1} dist = {dist_min_1}|{dist_min_2}")
+                    # output.write(f" {dist_min_1}")
                         # La distancia entre las curvas a la altura del punto es
                     dist_min= dist_min_1 + dist_min_2
                     magnitud= cte_1 - dist_min_1*(cte_1 - cte_2)/dist_min
                 else:
-                    print(f"Metodo viejo para curva 1: {cte_1} , dist = {dist_min_1}|{dist_min_3}")
-                    output.write(f" {dist_min_1}")
+                    # print(f"Metodo viejo para curva 1: {cte_1} , dist = {dist_min_1}|{dist_min_3}")
+                    # output.write(f" {dist_min_1}")
                     dist_min= dist_min_1 + dist_min_3
                     magnitud= cte_3 - dist_min_3*(cte_3 - cte_1)/dist_min
                 output.close()

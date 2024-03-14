@@ -34,7 +34,7 @@ def calcular_min_distance(xy, curva):
             min_point = punto
             min_distance = distance
 
-    print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
+    # print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
     plt.scatter(x = min_point[0], y = min_point[1], c = "black", marker = "x", s = 100)
     plt.draw()
     plt.show()

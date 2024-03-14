@@ -433,10 +433,7 @@ class Espectro:
         self.figure.canvas.mpl_connect('key_press_event', ajuste.handler_of_key_parable)
 
         self.Grafico_espec(3, ajuste.points)
-        
-        
-        print(f"Estas son las parabolas antes de graficar the last curve {self.get_parables()}")
-        
+                
         self.graficar_balmer_inferior_activa(ajuste.p)
         
         self.clean_parables()
@@ -452,7 +449,6 @@ class Espectro:
     
     def Ajuste_Balmer_sup(self):
 #
-        print(f"Estas son las parabolas AL COMIENZO DE TODO de graficar the last curve {self.get_parables()}")
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DE LA ENVOLVENTE SUPERIOR\n' )
@@ -467,9 +463,7 @@ class Espectro:
 #
         
         ajuste= Inter_Grafica.Inter_Grafica(self.archivo_out, False, self)
-        
-        print(f"Estas son las parabolas DESPUES DE INTERFAZ GRÁFICA DE TODO de graficar the last curve {self.get_parables()}")
-        
+                
         ajuste.clean_puntos()
         
         maximizar_pantalla()
@@ -650,7 +644,6 @@ class Espectro:
         
         
     def graficar_balmer_superior_activa(self, polinomio):
-        print("\n lista de parabolas: \n:", self.get_parables())
         last_parable = self.get_last_parable()
         coeficients = last_parable.get_coeficient(polinomio)
         x_last_parable = last_parable.get_x()
