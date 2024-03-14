@@ -5,12 +5,11 @@ import matplotlib
 matplotlib.use('TkAgg')
 import glob
 
-def graficar():
+def graficar(dir):
     # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/{dir}')
     # file_list = dir
-
-
-    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Suavisar/output_relleno_fino/Mbol/*.dat')
+    print((f'/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar{dir}*.dat'))  
+    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar/{dir}*.dat')
 
     x_values = []
     y_values = []
@@ -29,7 +28,11 @@ def graficar():
                 if line.startswith("#"):
                     continue
                 else:
-                    x, y = map(float, line.strip().split())
+                    l = list(map(float, line.strip().split()))
+                    if len(l) == 2:
+                        x, y = map(float, line.strip().split())
+                    else:
+                        x, y, index= map(float, line.strip().split())
                     x_values.append(x)
                     y_values.append(y)
                     
@@ -42,9 +45,10 @@ def graficar():
 # Ejemplo de uso:
     
 def main():
-    path = glob.glob(f'/home/valen/PPS/MIDE3700/')
-
-    graficar()
-    print("jj")
-
+    
+    lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
+    for path in lista_input:
+        print(path)
+        graficar(path)
+    
 main()

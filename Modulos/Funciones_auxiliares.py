@@ -25,19 +25,34 @@ def point_in_triangle(pt, v1, v2, v3):
 
 def calcular_min_distance(xy, curva):
     min_distance = float("inf")
+    min_point = (0, 0)
 
     for punto in curva:
         
-        distance = distancia_euclidea(xy[0], punto[0], xy[1], punto[1])
+        distance = distancia_euclidea_v2(xy[0], punto[0], xy[1], punto[1])
         if distance < min_distance:
+            min_point = punto
             min_distance = distance
 
+    print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
+    plt.scatter(x = min_point[0], y = min_point[1], c = "black", marker = "x", s = 100)
+    plt.draw()
+    plt.show()
     return min_distance
 
 def maximizar_pantalla():
     mng = plt.get_current_fig_manager()
     mng.resize(1846,1000)
     return
+
+def distancia_euclidea_v2(x1, x2, y1, y2):
+    d1 = math.sqrt((x1 - x2) ** 2)
+
+    d2 = math.sqrt((y1 - y2) ** 2)
+
+    return (d1 / 100 / 100) + (d2 / 10 / 10)
+    
+    return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
 
 def distancia_euclidea(x1, x2, y1, y2):
     return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))

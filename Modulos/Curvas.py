@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pylab import *
 
-from Funciones_auxiliares import point_in_triangle, calcular_min_distance, distancia_euclidea
+from Funciones_auxiliares import point_in_triangle, calcular_min_distance, distancia_euclidea, distancia_euclidea_v2
 from tests.generar_matriz_desde_texto import cargar_matriz_desde_archivo, matrices_son_iguales
 
 class Curvas:
@@ -659,7 +659,7 @@ class Curvas:
             self.colorear_horizontal(matriz)      
         else:
             if (titulo.startswith("PHIo-Ca")):
-                print(f" \n\n {titulo} tiene una dimensión de: {matriz.shape} \n\n")
+                print("")
             self.colorear_vertical(matriz)
             # print(f" \n\n {fila} \n\n")
         
@@ -735,7 +735,6 @@ class Curvas:
         # Leo todos los archivos de las curvas
         
         
-        print(f"Tamaño de la matriz {titulo} a rellenar: {self.matriz.shape}")
         #Agrego cada curva a la matriz
         for i in range(self.nc):
             with open(curvas_in[i], 'r') as f_curva:
@@ -854,7 +853,7 @@ class Curvas:
             constantes = self.cte_curvas
             for i in range(len(constantes)):
                 if ( constantes[i] == constante ):
-                    index_files.append(curvas_in[i])
+                    index_files.append(curvas_in[i].replace("Curvas/", "/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar/"))
                     break
 
         x_v, y_v =  self.dibujar_dos_curvas(index_files, axes)
@@ -875,13 +874,15 @@ class Curvas:
         valores = []
         for file_path in file_list:
             # Open the file and read the coordinates
-            with open("/home/valen/PPS/MIDE3700/"+file_path, 'r') as f:
+            with open(file_path, 'r') as f:
                 
                 for line in f:
                     if line.startswith("#"):
                         continue
                     else:
-                        x, y = map(float, line.strip().split())
+                        valores = list(map(float, line.strip().split()))
+                       
+                        x, y = valores[0], valores[1]
                         x_values.append(x)
                         y_values.append(y)
                         
@@ -890,8 +891,8 @@ class Curvas:
         plt.scatter(x_values, y_values, color='blue', marker='.')  
 
         return x_values, y_values
-
-    def get_puntos_curva(self,curvas_in, curva):
+    
+    def get_puntos_curva_completa(self, curvas_in, curva):
         """
         Dada una constante, devuelve una lista de pares x, y con los puntos que representan la curva 
         """
@@ -905,6 +906,24 @@ class Curvas:
                 break
         
         lista_puntos = self.leer_curva(curvas_in[index_file])
+        
+        return lista_puntos
+    
+    def get_puntos_curva(self,curvas_in, curva):
+        """
+        Dada una constante, devuelve una lista de pares x, y con los puntos que representan la curva 
+        """
+
+        lista_puntos = []
+        index_file = -1
+
+        constantes = self.cte_curvas
+        for i in range(len(constantes)):
+            if ( constantes[i] == curva ):
+                index_file = i
+                break
+        
+        lista_puntos = self.leer_curva(curvas_in[index_file].replace("Curvas/", "/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar/"))
         
         return lista_puntos
 
@@ -921,18 +940,16 @@ class Curvas:
         x2 = p1[0]
         y2 = p1[1]
 
-        distancia_p1 = distancia_euclidea(x1, x2, y1, y2)
+        distancia_p1 = distancia_euclidea_v2(x1, x2, y1, y2)
 
         x2 = p2[0]
         y2 = p2[1]
 
-        distancia_p2 = distancia_euclidea(x1, x2, y1, y2)
-
-        print(f"La distancia minima es: {distancia_p1}")
+        distancia_p2 = distancia_euclidea_v2(x1, x2, y1, y2)
 
         return distancia_p1 < distancia_p2
 
-    def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2):
+    def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2, x1 = None, y1 = None):
         """
         Esta función, dado:
         xy: un par con coordenadas x e y en el plano
@@ -953,7 +970,7 @@ class Curvas:
 
         index_curva = int(len(c1)/2)
         largo_segmento = int(len(c1)/2)
-        umbral_busqueda = int((len(c1)/100) / 5)
+        umbral_busqueda = int((len(c1)/100) * 10)
         
         punto_actual = c1[index_curva]
         punto_der = c1[index_curva-1]
@@ -968,6 +985,7 @@ class Curvas:
 
         #Mientras el tamaño del segmento no sea lo suficientemente pequeño sigo buscando
         #Pequeño será el 5% del total de los puntos en la curva
+        
         while (largo_segmento > umbral_busqueda):
 
             largo_segmento /= 2
@@ -993,18 +1011,33 @@ class Curvas:
             self.graficar_punto(axes, punto_anterior, color="green")
             self.graficar_punto(axes, punto_actual)
 
-            plt.draw()
-            plt.show()
+            # plt.draw()
+            # plt.show()
         
         #Si esta, tomo un rango y calculo la mimina destancia de cada punto de la curva al punto.
         
         #Tomo 3 veces el porcentaje a izquierda y a derecha, y calculo el 30% de los puntos de la curva
+        plt.scatter(x = x1, y = y1, c = "red", marker = "o", s = 100)
+        curva_completa = self.get_puntos_curva_completa(curvas_in, curva1)
 
-        inicio = int(index_curva - ( largo_segmento * 3 ))
-        fin  = int(index_curva + ( largo_segmento * 3 ))
-        print(f"El rango para evaluar son los siguientes: desde {inicio} hasta {fin}")
-        dist1 = calcular_min_distance(xy, c1[inicio:fin])
-                
+        medio = int( punto_actual[2] )
+
+        inicio  = medio - int( (len( curva_completa ) / 10) )
+        if inicio < 0:
+            inicio = 0
+
+        fin     = medio + int( (len( curva_completa ) / 10) )
+        if fin > len( curva_completa ):
+            fin = len( curva_completa )
+
+        print(f"Calcular en curva completa desde {inicio} hasta {fin}, el archivo tiene {len(curva_completa)} puntos")
+        
+        dist1 = calcular_min_distance(xy, curva_completa[inicio:fin])
+        
+        minima_distancia = calcular_min_distance(xy, curva_completa)      
+
+        print(f"Esta es la minima distancia {minima_distancia} y esta es la distancia calculada {dist1}")
+
         return dist1
     
     def buscar_curvas(self, x, y):
@@ -1202,6 +1235,7 @@ class Curvas:
 
         # Primero busco la curva de nivel mas cercana al punto
 
+        # print(f"valores de entrada: {i1} <= {xx} and {xx} <= {i2} and {j1} <= {yy} and {yy} <= {j2}")
         if i1 <= xx and xx <= i2 and j1 <= yy and yy <= j2:
             dist_min_1= 1000.
 
@@ -1211,16 +1245,19 @@ class Curvas:
 
                     if self.matriz[i][j] != 99999.:
                         #Calculo la distancia euclidea
-                        di= (float(i) - xx) * (float(i) - xx)/ float(self.kx)/ float(self.kx)
-                        dj= (float(j) - yy) * (float(j) - yy)/ float(self.ky)/ float(self.ky)
+                        di = (float(i) - xx) * (float(i) - xx)/ float(self.kx)/ float(self.kx)
+                        dj = (float(j) - yy) * (float(j) - yy)/ float(self.ky)/ float(self.ky)
                         dist= math.sqrt(di + dj)
 
                         if dist < dist_min_1:
+                
                             dist_min_1= dist
                             cte_1= self.matriz[i][j]
                             x1= float(i) / float(self.kx)
                             y1= float(j) / float(self.ky)
+
             
+            print(f"\n\n -------------------------- \n x: {xx}\n y: {yy} \n{dist_min_1} \n--------------------------\n\n")
             key= True
             i= 0
 
@@ -1288,26 +1325,26 @@ class Curvas:
                 curvas_in = self.Leo_Archivo()
                 titulo = self.nombrar_archivo(curvas_in)
                 print(titulo)
-
-                x1= float(i) / float(self.kx)
-                y1= float(j) / float(self.ky)
                 
                 curva1, curva2 = self.buscar_curvas(xx, yy)
-                distancia1 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
+                distancia1 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2, x1 = x1, y1 = y1)
                 
+                output = open("/home/valen/PPS/MIDE3700/tests/resultados_interpolación/resultados.txt", "a")
+                output.write(f"\n# {x}, {y} \n")
+                output.write(f"{distancia1}")
                 print(f"Metodo nuevo para curva 1: {curva1}  dist = {distancia1}")
                 if dist_12 > dist_min_2 and dist_13 < dist_min_3:
-                    print(f"Metodo viejo para curva 1: {cte_1} dist = {dist_min_1}")
-                    
-                    # La distancia entre las curvas a la altura del punto es
+                    print(f"Metodo viejo para curva 1: {cte_1} dist = {dist_min_1}|{dist_min_2}")
+                    output.write(f" {dist_min_1}")
+                        # La distancia entre las curvas a la altura del punto es
                     dist_min= dist_min_1 + dist_min_2
                     magnitud= cte_1 - dist_min_1*(cte_1 - cte_2)/dist_min
                 else:
-                    print(f"Metodo viejo para curva 1: {cte_1} , dist = {dist_min_1}")
-                    
+                    print(f"Metodo viejo para curva 1: {cte_1} , dist = {dist_min_1}|{dist_min_3}")
+                    output.write(f" {dist_min_1}")
                     dist_min= dist_min_1 + dist_min_3
                     magnitud= cte_3 - dist_min_3*(cte_3 - cte_1)/dist_min
-                
+                output.close()
                 
                 extrapolo= False
                 lohice= True

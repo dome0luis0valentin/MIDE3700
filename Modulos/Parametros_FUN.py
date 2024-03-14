@@ -7,6 +7,7 @@ import Parametros_BCD
 import Curvas
 import Landolt
 import Algebra
+from tests.pruebas_interpolación import probar
 #######################################################################
 #######################################################################
 #############                FUNCION                     ##############
@@ -54,6 +55,9 @@ class Parametros:
 #
         if n == 1:
             if self.c_o_f == 'c':# para estrellas calientes
+                print(f"\n\n\n#################### para interpolar, estos parametros {self.BCD.D_est, self.BCD.lambda1}")
+                probar(curvas=curvas)    
+                
                 self.lohice_teff, temp, self.extra_teff= curvas.Interpolo(self.BCD.D_est, self.BCD.lambda1)
 #
             else:# para estrellas frias
