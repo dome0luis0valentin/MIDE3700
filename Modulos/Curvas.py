@@ -1016,7 +1016,6 @@ class Curvas:
         #Si esta, tomo un rango y calculo la mimina destancia de cada punto de la curva al punto.
         
         #Tomo 3 veces el porcentaje a izquierda y a derecha, y calculo el 30% de los puntos de la curva
-        plt.scatter(x = x1, y = y1, c = "red", marker = "o", s = 100)
         curva_completa = self.get_puntos_curva_completa(curvas_in, curva1)
 
         medio = int( punto_actual[2] )
@@ -1326,7 +1325,7 @@ class Curvas:
                 # print(titulo)
                 
                 curva1, curva2 = self.buscar_curvas(xx, yy)
-                distancia1 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2, x1 = x1, y1 = y1)
+                distancia1 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
                 
                 output = open("/home/valen/PPS/MIDE3700/tests/resultados_interpolación/resultados.txt", "a")
                 output.write(f"\n# {x}, {y} \n")
