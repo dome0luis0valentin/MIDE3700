@@ -26,10 +26,10 @@ def point_in_triangle(pt, v1, v2, v3):
 def calcular_min_distance(xy, curva):
     min_distance = float("inf")
     min_point = (0, 0)
-
+    print("Punto a buscar ",xy)
     for punto in curva:
         
-        distance = distancia_euclidea_v2(xy[0], punto[0], xy[1], punto[1])
+        distance = distancia_euclidea_v2(xy[0]*100, punto[0]*100, xy[1]*10, punto[1]*10)
         if distance < min_distance:
             min_point = punto
             min_distance = distance
@@ -46,6 +46,15 @@ def maximizar_pantalla():
     return
 
 def distancia_euclidea_v2(x1, x2, y1, y2):
+    # print(x1, y1, x2, y2)
+    di = ((x1 - x2) ** 2)/100/100
+    dj = ((y1 - y2) ** 2)/10/10
+    # print(f"di: {di}")
+    # print(f"dj: {dj}")
+    # print("Distancia: ", math.sqrt( di + dj ))
+    
+    return math.sqrt( di + dj )
+
     d1 = math.sqrt((x1 - x2) ** 2)
 
     d2 = math.sqrt((y1 - y2) ** 2)

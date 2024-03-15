@@ -958,7 +958,6 @@ class Curvas:
         
         dist1 = float("inf")
 
-       
         fig, axes = plt.subplots()
         self.graficar_curvas(curvas_in, [curva1, curva2], axes)
 
