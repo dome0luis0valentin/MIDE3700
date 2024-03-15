@@ -958,7 +958,7 @@ class Curvas:
         
         dist1 = float("inf")
 
-        plt.close()
+       
         fig, axes = plt.subplots()
         self.graficar_curvas(curvas_in, [curva1, curva2], axes)
 
@@ -1328,9 +1328,9 @@ class Curvas:
                 distancia1 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
                 
                 output = open("/home/valen/PPS/MIDE3700/tests/resultados_interpolación/resultados.txt", "a")
-                output.write(f"\n# {x}, {y} \n")
-                output.write(f"{distancia1}")
-                print(f"Metodo nuevo para curva 1: {curva1}  dist = {distancia1}")
+                output.write(f"# ({x}, {y}) -> ( {x1},{y1} )\n")
+                output.write(f"{distancia1}\n")
+                print(f"- Nuevo: {curva1}  dist = {distancia1}")
                 if dist_12 > dist_min_2 and dist_13 < dist_min_3:
                     # print(f"Metodo viejo para curva 1: {cte_1} dist = {dist_min_1}|{dist_min_2}")
                     # output.write(f" {dist_min_1}")
