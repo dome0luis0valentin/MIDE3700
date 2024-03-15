@@ -49,8 +49,13 @@ def distancia_euclidea_v2(x1, x2, y1, y2):
     d1 = math.sqrt((x1 - x2) ** 2)
 
     d2 = math.sqrt((y1 - y2) ** 2)
+    print(x1, y1, x2, y2)
+    print(f"d1: {d1}")
+    print(f"d2: {d2}")
 
-    return (d1 / 100 / 100) + (d2 / 10 / 10)
+    dist = (d1) + (d2)
+    print(dist)
+    return dist
     
     return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
 

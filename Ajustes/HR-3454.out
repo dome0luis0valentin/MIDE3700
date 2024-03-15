@@ -4,20 +4,20 @@ FIT OF THE PASCHEN CONTINUUM
 ------------------------------
 
 Puntos ajustados
-x = 3858.39545363761 and y = -9.642012964605522
-x = 4047.19833390696 and y = -9.704108015387176
-x = 4224.62754669019 and y = -9.76156671899708
-Recta: -0.0003264686891300612 * x**2 -8.382516747048218
+x = 3908.43959057647 and y = -9.653527122049958
+x = 4054.02253439862 and y = -9.702113047756875
+x = 4238.27594767352 and y = -9.770589260463819
+Recta: -0.0003556369624889885 * x**2 -8.262398667330046
 
 AJUSTE DEL CONTINUO DE BALMER
 FIT OF THE BALMER CONTINUUM
 ------------------------------
 
 Puntos ajustados
-x = 3476.24022610448 and y = -9.713689741888112
+x = 3471.6907591100394 and y = -9.71167452241064
 x = 3555.85589850722 and y = -9.736138913937385
 x = 3635.47157090995 and y = -9.759969968994284
-Recta: -0.00029064771865462913 * x**2 -8.703098136840865
+Recta: -0.00029483851189417664 * x**2 -8.68797165951429
 
 AJUSTE DE LA ENVOLVENTE INFERIOR
 FIT OF THE BOTTOM ENVELOPE
@@ -68,7 +68,7 @@ CALCULO D= D* + d
 CALCULATE D= D* + d
 --------------------------------
 
-D= 0.19
+D= 0.20
 La estrella no presenta un segundo salto
 The star does not present a second jump
 
@@ -76,21 +76,10 @@ CALCULO LAMBDA_1
 CALCULATE LAMBDA_1
 --------------------------------
 
-lambda_1=  45
+lambda_1=  47
 
 CALCULO EL GRADIENTE DE COLOR
 CALCULATE THE COLOR GRADIENT
 --------------------------------
 
-Phi= 0.76
-
-################################
-NORMALIZO EL ESPECTRO
-SPECTRUM NORMALIZATION
---------------------------------
-
-
-AJUSTE DEL CONTINUO DE PASCHEN
-FIT OF THE PASCHEN CONTINUUM
-------------------------------
-
+Phi= 0.64
