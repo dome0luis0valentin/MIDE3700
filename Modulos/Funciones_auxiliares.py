@@ -26,7 +26,7 @@ def point_in_triangle(pt, v1, v2, v3):
 def calcular_min_distance(xy, curva):
     min_distance = float("inf")
     min_point = (0, 0)
-    print("Punto a buscar ",xy)
+    # print("Punto a buscar ",xy)
     for punto in curva:
         
         distance = distancia_euclidea_v2(xy[0], punto[0], xy[1], punto[1])
@@ -34,10 +34,10 @@ def calcular_min_distance(xy, curva):
             min_point = punto
             min_distance = distance
 
-    output = open("/home/valen/PPS/MIDE3700/tests/resultados_interpolación/resultados.txt", "a")
-    output.write(f"# {xy[0]} {xy[1]} {min_point[0]} {min_point[1]}\n")
-    output.write(f"{min_distance}\n")
-    output.close()
+    # output = open("/home/valen/PPS/MIDE3700/tests/resultados_interpolación/resultados.txt", "a")
+    # output.write(f"# {xy[0]} {xy[1]} {min_point[0]} {min_point[1]}\n")
+    # output.write(f"{min_distance}\n")
+    # output.close()
 
     # print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
     plt.scatter(x = min_point[0], y = min_point[1], c = "black", marker = "o", s = 100)

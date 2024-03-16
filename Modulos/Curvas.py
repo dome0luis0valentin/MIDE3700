@@ -927,7 +927,7 @@ class Curvas:
         return lista_puntos
 
     def graficar_punto(self, axes, xy, color="red"):
-        plt.scatter([xy[0]],[xy[1]],color=color, marker="x")
+        plt.scatter([xy[0]],[xy[1]],color=color, marker="x", s=100)
 
     def elegir_derecha(self, xy, p1, p2):
         """
@@ -948,21 +948,11 @@ class Curvas:
 
         return distancia_p1 < distancia_p2
 
-    def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2, x1 = None, y1 = None):
+    def buscar_medio(self, xy, c1, curvas_in = None, curva1 = None, curva2 = None):
         """
-        Esta función, dado:
-        xy: un par con coordenadas x e y en el plano
-        curvas_in: la lista de archivos que contienen las curvas almacenadas en conjuntos de puntos x,y
-        curva1 y curva2, contienen el valor constante que representa la curva, una curva en el planto es un conjunto de puntos x,y -> z, donde z es el valor constante
+        Dada unas coordenadas x e y, retorna el indice de la curva que más se acerca al punto
         """
-        
-        dist1 = float("inf")
-
-        fig, axes = plt.subplots()
-        self.graficar_curvas(curvas_in, [curva1, curva2], axes)
-
-        #Busco en los archivos las 2 curvas, con las coordenadas x e y de cada punto
-        c1 = self.get_puntos_curva(curvas_in, curva1)
+        #Busco en los archivos las 2 curvas, con las coordenadas x e y de cada punto 
 
         #Mientras no encuentre la distancia minima, buscar
 
@@ -977,9 +967,9 @@ class Curvas:
 
         punto_anterior = punto_actual
 
-        self.graficar_punto(axes, punto_actual)
-        self.graficar_punto(axes, xy)
-        self.graficar_punto(axes, c1[0], color="green")
+        # self.graficar_punto(axes, punto_actual)
+        # self.graficar_punto(axes, xy)
+        # self.graficar_punto(axes, c1[0], color="green")
 
         #Mientras el tamaño del segmento no sea lo suficientemente pequeño sigo buscando
         #Pequeño será el 5% del total de los puntos en la curva
@@ -1004,38 +994,62 @@ class Curvas:
 
             mover_derecha = self.elegir_derecha(xy, punto_actual, punto_der)
 
-            self.graficar_curvas(curvas_in, [curva1, curva2], axes)
-            self.graficar_punto(axes, xy, color="blue")
-            self.graficar_punto(axes, punto_anterior, color="green")
-            self.graficar_punto(axes, punto_actual)
+            # self.graficar_curvas(curvas_in, [curva1, curva2], axes)
+            # self.graficar_punto(axes, xy, color="blue")
+            # self.graficar_punto(axes, punto_anterior, color="green")
+            # self.graficar_punto(axes, punto_actual)
 
             # plt.draw()
             # plt.show()
-        
-        #Si esta, tomo un rango y calculo la mimina destancia de cada punto de la curva al punto.
-        
-        #Tomo 3 veces el porcentaje a izquierda y a derecha, y calculo el 30% de los puntos de la curva
-        curva_completa = self.get_puntos_curva_completa(curvas_in, curva1)
-
         medio = int( punto_actual[2] )
 
+        return medio
+    
+    def fijar_rango(self, medio, curva_completa):
         inicio  = medio - int( (len( curva_completa ) / 10) )
         if inicio < 0:
             inicio = 0
 
-        fin     = medio + int( (len( curva_completa ) / 10) )
+        fin     = medio + int( (len( curva_completa ) / 10) * 2 )
         if fin > len( curva_completa ):
             fin = len( curva_completa )
 
-        # print(f"Calcular en curva completa desde {inicio} hasta {fin}, el archivo tiene {len(curva_completa)} puntos")
+        return inicio, fin
+    
+    def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2):
+        """
+        Esta función, dado:
+        xy: un par con coordenadas x e y en el plano
+        curvas_in: la lista de archivos que contienen las curvas almacenadas en conjuntos de puntos x,y
+        curva1 y curva2, contienen el valor constante que representa la curva, una curva en el planto es un conjunto de puntos x,y -> z, donde z es el valor constante
+        """
+        
+        fig, axes = plt.subplots()
+        self.graficar_curvas(curvas_in, [curva1, curva2], axes)
+        
+        c1 = self.get_puntos_curva(curvas_in, curva1)
+
+        curva_completa = self.get_puntos_curva_completa(curvas_in, curva1)
+
+        medio = self.buscar_medio(xy, c1, curvas_in, curva1=curva1, curva2=curva2)
+
+        inicio, fin = self.fijar_rango(medio, curva_completa)
         
         dist1 = calcular_min_distance(xy, curva_completa[inicio:fin])
         
         minima_distancia = calcular_min_distance(xy, curva_completa)      
-
-        # print(f"Esta es la minima distancia {minima_distancia} y esta es la distancia calculada {dist1}")
-
-        return minima_distancia
+        
+        dif = minima_distancia - dist1
+        if abs(dif) > 0.001:
+            print(f"{minima_distancia} - {dist1} = {minima_distancia - dist1}") 
+            print("Caso: ",xy, " rango : ", curva_completa[inicio]," ", curva_completa[fin], " ", curva_completa[medio])
+            self.graficar_punto(axes,xy, color="blue")
+            self.graficar_punto(axes,curva_completa[inicio], color="red")
+            self.graficar_punto(axes,curva_completa[fin], color="grey")
+            self.graficar_punto(axes,curva_completa[medio], color="green")
+            plt.draw()
+            plt.show()
+        return dist1
     
     def buscar_curvas(self, x, y):
         curves = {
@@ -1330,7 +1344,7 @@ class Curvas:
                 curva1, curva2 = self.buscar_curvas(xx, yy)
                 distancia1 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
                 
-                print(f"- Nuevo: {curva1}  dist = {distancia1}")
+                # print(f"- Nuevo: {curva1}  dist = {distancia1}")
                 if dist_12 > dist_min_2 and dist_13 < dist_min_3:
                     # print(f"Metodo viejo para curva 1: {cte_1} dist = {dist_min_1}|{dist_min_2}")
                     # output.write(f" {dist_min_1}")
