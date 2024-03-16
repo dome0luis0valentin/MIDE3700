@@ -7,11 +7,11 @@ import glob
 
 def graficar(dir):
     # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/{dir}')
-    file_list = dir
+    # file_list = dir
 
 
-# file_list = glob.glob(f'/home/valen/pps/MIDE3700_v2/MIDE3700/Curvas/{dir}/*.dat')
-
+    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/{dir}/*.dat')
+    print(file_list)
     x_values = []
     y_values = []
     
@@ -20,8 +20,9 @@ def graficar(dir):
     # Iterate over the files
     valores = []
     for file_path in file_list:
+        print(file_path)
         # Open the file and read the coordinates
-        with open("/home/valen/PPS/MIDE3700/"+file_path, 'r') as f:
+        with open(file_path, 'r') as f:
             
             for line in f:
                 if line.startswith("#"):
@@ -40,10 +41,10 @@ def graficar(dir):
 # Ejemplo de uso:
     
 def main(paths):
-    path = glob.glob(f'/home/valen/PPS/MIDE3700/')
-
-    print("Estos son los paths = ", paths)
-    graficar(paths)
+    lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
+    lista_input = ["Teff/"]
+    for dir in lista_input:
+        graficar(dir)
     # for dir in paths:
     #     try:
     #         graficar(dir)
@@ -51,7 +52,7 @@ def main(paths):
     #         print(f"Error al cargar la matriz desde el archivo: {e}")
     #         continue
 
-if __name__ == "main":
+if __name__ == "__main__":
     main([""])
 
 
