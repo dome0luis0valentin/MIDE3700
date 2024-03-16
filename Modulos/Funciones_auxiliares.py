@@ -29,15 +29,19 @@ def calcular_min_distance(xy, curva):
     print("Punto a buscar ",xy)
     for punto in curva:
         
-        distance = distancia_euclidea_v2(xy[0]*100, punto[0]*100, xy[1]*10, punto[1]*10)
+        distance = distancia_euclidea_v2(xy[0], punto[0], xy[1], punto[1])
         if distance < min_distance:
             min_point = punto
             min_distance = distance
 
+    output = open("/home/valen/PPS/MIDE3700/tests/resultados_interpolación/resultados.txt", "a")
+    output.write(f"# {xy[0]} {xy[1]} {min_point[0]} {min_point[1]}\n")
+    output.write(f"{min_distance}\n")
+    output.close()
+
     # print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
     plt.scatter(x = min_point[0], y = min_point[1], c = "black", marker = "o", s = 100)
-    plt.draw()
-    plt.show()
+    
     return min_distance
 
 def maximizar_pantalla():
@@ -46,9 +50,14 @@ def maximizar_pantalla():
     return
 
 def distancia_euclidea_v2(x1, x2, y1, y2):
-    # print(x1, y1, x2, y2)
-    di = ((x1 - x2) ** 2)/100/100
-    dj = ((y1 - y2) ** 2)/10/10
+    # print("\n",x1, y1, x2, y2)
+
+    di = ((x1 - x2) ** 2)
+    dj = ((y1 - y2) ** 2)
+    
+    # print("\n di ", di)
+    # print(" dj ", dj)
+
     # print(f"di: {di}")
     # print(f"dj: {dj}")
     # print("Distancia: ", math.sqrt( di + dj ))

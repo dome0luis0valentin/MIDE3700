@@ -1035,7 +1035,7 @@ class Curvas:
 
         # print(f"Esta es la minima distancia {minima_distancia} y esta es la distancia calculada {dist1}")
 
-        return dist1
+        return minima_distancia
     
     def buscar_curvas(self, x, y):
         curves = {
@@ -1242,6 +1242,10 @@ class Curvas:
 
                     if self.matriz[i][j] != 99999.:
                         #Calculo la distancia euclidea
+                        # ( un valor * 100 - x * 100 ) ** 2
+                        #  un valor de 0-58 * 100 - ( x + (algo) * 100  ) **2 -> (100 * ( un valor de 0-58 - (x+algo))) **2
+                        # (100) **2 * (un valor 0-58 - (x+algo)) **2
+                        # (100)*100 * (un valor 0-58 - (x+algo)) **2
                         di = (float(i) - xx) * (float(i) - xx)/ float(self.kx)/ float(self.kx)
                         dj = (float(j) - yy) * (float(j) - yy)/ float(self.ky)/ float(self.ky)
                         dist= math.sqrt(di + dj)
@@ -1326,9 +1330,6 @@ class Curvas:
                 curva1, curva2 = self.buscar_curvas(xx, yy)
                 distancia1 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
                 
-                output = open("/home/valen/PPS/MIDE3700/tests/resultados_interpolación/resultados.txt", "a")
-                output.write(f"# ({x}, {y}) -> ( {x1},{y1} )\n")
-                output.write(f"{distancia1}\n")
                 print(f"- Nuevo: {curva1}  dist = {distancia1}")
                 if dist_12 > dist_min_2 and dist_13 < dist_min_3:
                     # print(f"Metodo viejo para curva 1: {cte_1} dist = {dist_min_1}|{dist_min_2}")
@@ -1341,7 +1342,6 @@ class Curvas:
                     # output.write(f" {dist_min_1}")
                     dist_min= dist_min_1 + dist_min_3
                     magnitud= cte_3 - dist_min_3*(cte_3 - cte_1)/dist_min
-                output.close()
                 
                 extrapolo= False
                 lohice= True
