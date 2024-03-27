@@ -8,8 +8,9 @@ import glob
 def graficar(dir):
     # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/{dir}')
     # file_list = dir
-    print((f'/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar{dir}*.dat'))  
-    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar/{dir}*.dat')
+    print((f'/home/valen/PPS/MIDE3700/tests/Suavisar/Input_Suavisar{dir}*.dat'))  
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar/{dir}*.dat')
+    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/Teff/*.dat')
 
     x_values = []
     y_values = []
@@ -47,6 +48,7 @@ def graficar(dir):
 def main():
     
     lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
+    lista_input = ["Teff/"]
     for path in lista_input:
         print(path)
         graficar(path)
