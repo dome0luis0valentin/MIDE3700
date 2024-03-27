@@ -37,16 +37,23 @@ def matrices_son_iguales(matriz1, matriz2):
 
 # Ejemplo de uso:
 
-path = glob.glob(f'./Curvas_en_text/TE*')
+path = glob.glob(f'./Curvas_en_text/*')
 for file in path:
     matriz_resultante = cargar_matriz_desde_archivo(file)
+
+    numpy_file = file.split("/")[-1].split(".")[0]
+
+    matriz_numpy = np.load(f'./Curvas_Numpy/{numpy_file}.npy')
+
+    print(matrices_son_iguales(matriz_resultante, matriz_numpy))
+
+    print(file.split("/")[-1].split(".")[0])
+
     if file.split("/")[-1].split(".")[0] == "Logg":
-        matriz_resultante[matriz_resultante == 99999.0] = 1
-        # plt.matshow(matriz_resultante)
-        # plt.show()    
+        matriz_resultante[matriz_resultante == 99999.0] = 1   
     else:
         matriz_resultante[matriz_resultante == 99999.0] = 0
-    np.save(f'./Matrices_Numpy/{file.split("/")[-1].split(".")[0]}.npy', matriz_resultante)
+    # np.save(f'./Matrices_Numpy/{file.split("/")[-1].split(".")[0]}.npy', matriz_resultante)
 
     # Guarda la matriz en una imagen
     print(file.split("/")[-1].split(".")[0])
@@ -54,8 +61,8 @@ for file in path:
     plt.matshow(matriz_resultante)
     
     plt.show()
-    plt.savefig(f'./Imagenes_Curvas_Rellenas/{file.split("/")[-1].split(".")[0]}.png')
-    plt.close()   
+    # plt.savefig(f'./Imagenes_Curvas_Rellenas/{file.split("/")[-1].split(".")[0]}.png')
+    # plt.close()   
 # matriz_resultante = cargar_matriz_desde_archivo("/home/valen/PPS/MIDE3700/tests/Curvas_en_text/TE-Frias.txt")
 # #Reemplazar 99999.9 por 0
 # matriz_resultante[matriz_resultante == 99999.0] = 0

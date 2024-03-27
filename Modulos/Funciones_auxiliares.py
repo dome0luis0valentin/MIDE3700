@@ -50,17 +50,8 @@ def maximizar_pantalla():
     return
 
 def distancia_euclidea_v2(x1, x2, y1, y2):
-    # print("\n",x1, y1, x2, y2)
-
     di = ((x1 - x2) ** 2)
     dj = ((y1 - y2) ** 2)
-    
-    # print("\n di ", di)
-    # print(" dj ", dj)
-
-    # print(f"di: {di}")
-    # print(f"dj: {dj}")
-    # print("Distancia: ", math.sqrt( di + dj ))
     
     return math.sqrt( di + dj )
 

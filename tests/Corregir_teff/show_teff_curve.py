@@ -6,11 +6,11 @@ matplotlib.use('TkAgg')
 import glob
 
 def graficar(dir):
-    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/{dir}')
+    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar/Teff/*.dat')
     # file_list = dir
 
 
-    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Corregir_teff/*.dat')
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Corregir_teff/*.dat')
     print(file_list)
     x_values = []
     y_values = []
@@ -42,7 +42,7 @@ def graficar(dir):
     
 def main(paths):
     lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
-    lista_input = ["Teff/"]
+    lista_input = ["TE/Calientes/"]
     for dir in lista_input:
         graficar(dir)
     # for dir in paths:

@@ -43,11 +43,11 @@ if __name__ == "__main__":
     print("hola")
 
 
-    punto_inicio = (0.22990, 55.55500)
-    punto_fin = (0.23000, 60.70010)
-    distancia = 0.000005
+    punto_inicio = (0.22981, 55.08741)
+    punto_fin = (0.23020, 61.05440)
+    distancia = 0.000002
     lista = crear_linea(punto_inicio, punto_fin, distancia)
 
     for i in lista:
         print(f"{i[0]:.5f}     {i[1]:.5f}")
-    # [(1, 1), (2, 2), (3, 3), (4, 4)]
+    # [(1, 1), (2, 2), (3, 3), (4, 4)]tests/Corregir_teff/Teff_17500.dat

@@ -622,6 +622,33 @@ class Curvas:
                 #cambio al nuevo valor de la curva
                 valor_actual = fila[index]
     
+    def colorear_horizontal_inverso(self, matriz):
+        ancho_matriz = matriz.shape[1]-1
+            
+        vacio = 99999.0
+        valor_actual = vacio
+            
+        for fila in matriz:
+            index = ancho_matriz
+                
+            #busco el primer punto de la curva
+            while (fila[index] == vacio and index > 0):
+                index -= 1
+                        
+                #relleno con ese valor hasta la próxima curva
+            valor_actual = fila[index]
+                            
+                #no se termine la matriz
+            while (index > 0):
+                    
+                    #no llegue a otra curva
+                while ( (fila[index] == vacio or fila[index] == valor_actual )and index > 0):
+                    fila[index] = valor_actual
+                    index -= 1
+                        
+                    #cambio al nuevo valor de la curva
+                valor_actual = fila[index]
+
     def colorear_vertical(self, matriz):
 
         ancho_matriz = matriz.shape[1]
@@ -654,15 +681,25 @@ class Curvas:
     
     def colorear_matriz(self, matriz, titulo):
         """ """
-        if (titulo == "Logg" or titulo.startswith("CL") or (titulo == "Mbol") or (titulo.startswith("TE-C")) ):        
+        print(titulo)
+        if (titulo == "PHIo-Calientes"):
+            np.savetxt("Phio-Calientes.txt", matriz, fmt='%s', delimiter=', ')
+
+        if (titulo == "Logg" or titulo.startswith("CL-C") or (titulo == "Mbol") or (titulo.startswith("TE-C")) ):        
             self.colorear_horizontal(matriz)      
         else:
-            if (titulo.startswith("PHIo-Ca")):
-                print("")
-            self.colorear_vertical(matriz)
+            if (titulo.startswith("CL-F")):
+                self.colorear_horizontal_inverso(matriz)
+            else:
+                self.colorear_vertical(matriz)
             # print(f" \n\n {fila} \n\n")
         
-        self.save_matrix_to_file(matriz, "./tests/Curvas_en_text/"+titulo + ".txt")     
+        self.save_matrix_to_file(matriz, "./tests/Curvas_en_text/"+titulo + ".txt")    
+
+        with open("./tests/Curvas_Numpy/"+titulo+".npy", 'wb') as f:
+            np.save(f, matriz) 
+
+        # self.mostrar_matriz(matriz, titulo)
     
     def nombrar_archivo(self, curvas_in):
         """
@@ -687,13 +724,15 @@ class Curvas:
         return titulo
         
     #---------------------------------------------------------------------------
-    def Matriz_Curvas_Rellenas(self, titulo):
+    def Matriz_Curvas_Rellenas(self, curvas_in):
         """
         Version: 2.0
         Carga la matriz de curvas desde un archivo de texto
         """
-        matriz = cargar_matriz_desde_archivo("./tests/Curvas_en_text/"+titulo + ".txt")
-        return matriz
+        
+        titulo = self.nombrar_archivo(curvas_in)
+        # matriz = cargar_matriz_desde_archivo("./tests/Curvas_en_text/"+titulo + ".txt")
+        self.matriz = np.load("./tests/Curvas_Numpy/"+titulo+".npy")
     
     def Matriz_Curvas(self, curvas_in):
         # Parametrizamos el eje x
@@ -910,7 +949,8 @@ class Curvas:
     
     def get_puntos_curva(self,curvas_in, curva):
         """
-        Dada una constante, devuelve una lista de pares x, y con los puntos que representan la curva 
+        Dada una constante, devuelve una lista de pares x, y con los puntos que representan una
+        aproximación de la curva.
         """
 
         lista_puntos = []
@@ -997,7 +1037,7 @@ class Curvas:
             # self.graficar_curvas(curvas_in, [curva1, curva2], axes)
             # self.graficar_punto(axes, xy, color="blue")
             # self.graficar_punto(axes, punto_anterior, color="green")
-            # self.graficar_punto(axes, punto_actual)
+            self.graficar_punto(axes, punto_actual, color="red")
 
             # plt.draw()
             # plt.show()
@@ -1016,7 +1056,7 @@ class Curvas:
 
         return inicio, fin
     
-    def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2):
+    def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2, punto_viejo):
         """
         Esta función, dado:
         xy: un par con coordenadas x e y en el plano
@@ -1030,26 +1070,30 @@ class Curvas:
         c1 = self.get_puntos_curva(curvas_in, curva1)
 
         curva_completa = self.get_puntos_curva_completa(curvas_in, curva1)
+        curva_2_completa = self.get_puntos_curva_completa(curvas_in, curva2)
 
-        medio = self.buscar_medio(xy, c1, curvas_in, curva1=curva1, curva2=curva2)
+        medio = self.buscar_medio(xy, c1, curvas_in)
 
         inicio, fin = self.fijar_rango(medio, curva_completa)
+        inicio_2, fin_2 = self.fijar_rango(medio, curva_2_completa)
         
         dist1 = calcular_min_distance(xy, curva_completa[inicio:fin])
+        dist2 = calcular_min_distance(xy, curva_2_completa[inicio_2:fin_2])
         
         minima_distancia = calcular_min_distance(xy, curva_completa)      
         
         dif = minima_distancia - dist1
-        if abs(dif) > 0.001:
+        if True:
             print(f"{minima_distancia} - {dist1} = {minima_distancia - dist1}") 
             print("Caso: ",xy, " rango : ", curva_completa[inicio]," ", curva_completa[fin], " ", curva_completa[medio])
             self.graficar_punto(axes,xy, color="blue")
             self.graficar_punto(axes,curva_completa[inicio], color="red")
             self.graficar_punto(axes,curva_completa[fin], color="grey")
             self.graficar_punto(axes,curva_completa[medio], color="green")
+            plt.scatter([punto_viejo[0]],[punto_viejo[1]],color="orange", marker="o", s=100)
             plt.draw()
             plt.show()
-        return dist1
+        return dist1, dist2
     
     def buscar_curvas(self, x, y):
         curves = {
@@ -1271,7 +1315,11 @@ class Curvas:
                             x1= float(i) / float(self.kx)
                             y1= float(j) / float(self.ky)
 
-            
+                            x_min = float(i) / float(self.kx) if self.x0 <= 0. else (i - abs(self.x0)) / float(self.kx)
+                            y_min = float(j) / float(self.ky) if self.y0 <= 0. else (j - abs(self.y0)) / float(self.ky)
+
+                            punto_minimo = (x_min, y_min)
+
             # print(f"\n\n -------------------------- \n x: {xx}\n y: {yy} \n{dist_min_1} \n--------------------------\n\n")
             key= True
             i= 0
@@ -1342,8 +1390,10 @@ class Curvas:
                 # print(titulo)
                 
                 curva1, curva2 = self.buscar_curvas(xx, yy)
-                distancia1 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
+                distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2, punto_minimo)
                 
+                #Mostrar punto más cercano encontrado del primer algoritmo:
+
                 # print(f"- Nuevo: {curva1}  dist = {distancia1}")
                 if dist_12 > dist_min_2 and dist_13 < dist_min_3:
                     # print(f"Metodo viejo para curva 1: {cte_1} dist = {dist_min_1}|{dist_min_2}")
@@ -1351,11 +1401,32 @@ class Curvas:
                         # La distancia entre las curvas a la altura del punto es
                     dist_min= dist_min_1 + dist_min_2
                     magnitud= cte_1 - dist_min_1*(cte_1 - cte_2)/dist_min
+
+                    #Calculo la nueva magnitud:
+                    distancia_entre_curvas = distancia_1 + distancia_2
+                    magnitud_nueva = cte_1 - distancia_1 * (cte_1 - cte_2) / distancia_entre_curvas
+                    print(f"Los valores de magnitud son: \n {cte_1} - {dist_min_1}*({cte_1} - {cte_2})/{dist_min} " )
+                    print(f"Los valores nuevos son: \n {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_entre_curvas}" )
+
+                    #Compruebo que la diferencia sea 0
+                    print(f"La diferencia entre magnitudes es: {magnitud} - {magnitud_nueva} ={magnitud - magnitud_nueva}")
+
+                    #Reviso las diferencias
+                    print(f"los valores de la distancias son: {dist_min} - {distancia_entre_curvas} = {dist_min-distancia_entre_curvas}")
+                    print(f"distancias {dist_min_1} - {distancia_1} = {dist_min_1 - distancia_1}")
+
                 else:
                     # print(f"Metodo viejo para curva 1: {cte_1} , dist = {dist_min_1}|{dist_min_3}")
                     # output.write(f" {dist_min_1}")
                     dist_min= dist_min_1 + dist_min_3
                     magnitud= cte_3 - dist_min_3*(cte_3 - cte_1)/dist_min
+
+                    #Calculo la nueva magnitud:
+                    ditancia_entre_curvas = distancia_1 + distancia_2
+                    magnitud_nueva = cte_3 - distancia_2 * (cte_3 - cte_1) / ditancia_entre_curvas
+
+                    #Compruebo que la diferencia sea 0
+                    print(f"La diferencia entre magnitudes es: {magnitud - magnitud_nueva}")
                 
                 extrapolo= False
                 lohice= True
