@@ -966,7 +966,7 @@ class Curvas:
         
         return lista_puntos
 
-    def graficar_punto(self, axes, xy, color="red"):
+    def graficar_punto(self, axes, xy, color="red", marker="x"):
         plt.scatter([xy[0]],[xy[1]],color=color, marker="x", s=100)
 
     def elegir_derecha(self, xy, p1, p2):
@@ -1037,7 +1037,7 @@ class Curvas:
             # self.graficar_curvas(curvas_in, [curva1, curva2], axes)
             # self.graficar_punto(axes, xy, color="blue")
             # self.graficar_punto(axes, punto_anterior, color="green")
-            self.graficar_punto(axes, punto_actual, color="red")
+            # self.graficar_punto(axes, punto_actual, color="red")
 
             # plt.draw()
             # plt.show()
@@ -1056,7 +1056,7 @@ class Curvas:
 
         return inicio, fin
     
-    def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2, punto_viejo):
+    def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2):
         """
         Esta función, dado:
         xy: un par con coordenadas x e y en el plano
@@ -1084,15 +1084,12 @@ class Curvas:
         
         dif = minima_distancia - dist1
         if True:
-            print(f"{minima_distancia} - {dist1} = {minima_distancia - dist1}") 
-            print("Caso: ",xy, " rango : ", curva_completa[inicio]," ", curva_completa[fin], " ", curva_completa[medio])
-            self.graficar_punto(axes,xy, color="blue")
-            self.graficar_punto(axes,curva_completa[inicio], color="red")
-            self.graficar_punto(axes,curva_completa[fin], color="grey")
+            plt.title(f"Caso {xy[0]} {xy[1]}")
+            self.graficar_punto(axes,xy, color="black",marker="o")
             self.graficar_punto(axes,curva_completa[medio], color="green")
-            plt.scatter([punto_viejo[0]],[punto_viejo[1]],color="orange", marker="o", s=100)
-            plt.draw()
-            plt.show()
+            # plt.draw()
+            # plt.show()
+            plt.savefig(f"/home/valen/Casos_MIDE3700/Versión nueva/{xy[0]},{xy[1]}.png")
         return dist1, dist2
     
     def buscar_curvas(self, x, y):
@@ -1309,16 +1306,10 @@ class Curvas:
                         dist= math.sqrt(di + dj)
 
                         if dist < dist_min_1:
-                
                             dist_min_1= dist
                             cte_1= self.matriz[i][j]
                             x1= float(i) / float(self.kx)
                             y1= float(j) / float(self.ky)
-
-                            x_min = float(i) / float(self.kx) if self.x0 <= 0. else (i - abs(self.x0)) / float(self.kx)
-                            y_min = float(j) / float(self.ky) if self.y0 <= 0. else (j - abs(self.y0)) / float(self.ky)
-
-                            punto_minimo = (x_min, y_min)
 
             # print(f"\n\n -------------------------- \n x: {xx}\n y: {yy} \n{dist_min_1} \n--------------------------\n\n")
             key= True
@@ -1390,7 +1381,7 @@ class Curvas:
                 # print(titulo)
                 
                 curva1, curva2 = self.buscar_curvas(xx, yy)
-                distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2, punto_minimo)
+                distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
                 
                 #Mostrar punto más cercano encontrado del primer algoritmo:
 
@@ -1409,11 +1400,11 @@ class Curvas:
                     print(f"Los valores nuevos son: \n {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_entre_curvas}" )
 
                     #Compruebo que la diferencia sea 0
-                    print(f"La diferencia entre magnitudes es: {magnitud} - {magnitud_nueva} ={magnitud - magnitud_nueva}")
+                    # print(f"La diferencia entre magnitudes es: {magnitud} - {magnitud_nueva} ={magnitud - magnitud_nueva}")
 
                     #Reviso las diferencias
-                    print(f"los valores de la distancias son: {dist_min} - {distancia_entre_curvas} = {dist_min-distancia_entre_curvas}")
-                    print(f"distancias {dist_min_1} - {distancia_1} = {dist_min_1 - distancia_1}")
+                    # print(f"los valores de la distancias son: {dist_min} - {distancia_entre_curvas} = {dist_min-distancia_entre_curvas}")
+                    # print(f"distancias {dist_min_1} - {distancia_1} = {dist_min_1 - distancia_1}")
 
                 else:
                     # print(f"Metodo viejo para curva 1: {cte_1} , dist = {dist_min_1}|{dist_min_3}")
@@ -1426,7 +1417,7 @@ class Curvas:
                     magnitud_nueva = cte_3 - distancia_2 * (cte_3 - cte_1) / ditancia_entre_curvas
 
                     #Compruebo que la diferencia sea 0
-                    print(f"La diferencia entre magnitudes es: {magnitud - magnitud_nueva}")
+                    # print(f"La diferencia entre magnitudes es: {magnitud - magnitud_nueva}")
                 
                 extrapolo= False
                 lohice= True
@@ -1503,7 +1494,7 @@ class Curvas:
             lohice= False
             magnitud= 99999.
 
-        return lohice, magnitud, extrapolo
+        return lohice, magnitud_nueva, extrapolo
 #-------------------------------------------------------------------------------
     def Error(self, D, L, M):
 #

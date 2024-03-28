@@ -87,6 +87,6 @@ def probar(curvas):
             magnitudes.append(b)
 
     plt.scatter(ejex, ejey, color="red", marker=".")
-    # print(f"Esta son la lista de magnitudes: ", magnitudes)
-    # for i in magnitudes:
-    #     print(i)
+    print(f"Esta son la lista de magnitudes: ", magnitudes)
+    for i in magnitudes:
+        print(i)
