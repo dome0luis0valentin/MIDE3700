@@ -1080,9 +1080,8 @@ class Curvas:
         dist1 = calcular_min_distance(xy, curva_completa[inicio:fin])
         dist2 = calcular_min_distance(xy, curva_2_completa[inicio_2:fin_2])
         
-        minima_distancia = calcular_min_distance(xy, curva_completa)      
+        # minima_distancia = calcular_min_distance(xy, curva_completa)      
         
-        dif = minima_distancia - dist1
         if True:
             plt.title(f"Caso {xy[0]} {xy[1]}")
             self.graficar_punto(axes,xy, color="black",marker="o")
@@ -1396,9 +1395,9 @@ class Curvas:
                     #Calculo la nueva magnitud:
                     distancia_entre_curvas = distancia_1 + distancia_2
                     magnitud_nueva = cte_1 - distancia_1 * (cte_1 - cte_2) / distancia_entre_curvas
-                    print(f"Los valores de magnitud son: \n {cte_1} - {dist_min_1}*({cte_1} - {cte_2})/{dist_min} " )
-                    print(f"Los valores nuevos son: \n {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_entre_curvas}" )
-
+                    # print(f"Los valores de magnitud son: \n {cte_1} - {dist_min_1}*({cte_1} - {cte_2})/{dist_min} " )
+                    # print(f"Los valores nuevos son: \n {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_entre_curvas}" )
+                    print(f"Magnitud: {magnitud_nueva} = {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_1} + {distancia_2}")
                     #Compruebo que la diferencia sea 0
                     # print(f"La diferencia entre magnitudes es: {magnitud} - {magnitud_nueva} ={magnitud - magnitud_nueva}")
 
@@ -1415,7 +1414,7 @@ class Curvas:
                     #Calculo la nueva magnitud:
                     ditancia_entre_curvas = distancia_1 + distancia_2
                     magnitud_nueva = cte_3 - distancia_2 * (cte_3 - cte_1) / ditancia_entre_curvas
-
+                    print(f"Magnitud: {magnitud_nueva} = {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_1} + {distancia_2}")
                     #Compruebo que la diferencia sea 0
                     # print(f"La diferencia entre magnitudes es: {magnitud - magnitud_nueva}")
                 

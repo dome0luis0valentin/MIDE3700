@@ -30,7 +30,7 @@ def calcular_min_distance(xy, curva):
     for punto in curva:
         
         distance = distancia_euclidea_v2(xy[0], punto[0], xy[1], punto[1])
-        if distance < min_distance:
+        if distance < min_distance: 
             min_point = punto
             min_distance = distance
 
@@ -41,6 +41,8 @@ def calcular_min_distance(xy, curva):
 
     # print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
     plt.scatter(x = min_point[0], y = min_point[1], c = "pink", marker = "o", s = 50)
+
+    print(f"Punto minimo: {min_point}")
     
     return min_distance
 
