@@ -28,8 +28,10 @@ def calcular_min_distance(xy, curva):
     min_point = (0, 0)
     # print("Punto a buscar ",xy)
     for punto in curva:
-        
-        distance = distancia_euclidea_v2(xy[0], punto[0], xy[1], punto[1])
+        x2 = round(punto[0],2)
+        y2 = round(punto[1],1)
+       
+        distance = distancia_euclidea_v2(xy[0], x2, xy[1], y2)
         if distance < min_distance: 
             min_point = punto
             min_distance = distance
@@ -44,7 +46,7 @@ def calcular_min_distance(xy, curva):
 
     print(f"Punto minimo: {min_point}")
     
-    return min_distance
+    return round(min_distance, 3)
 
 def maximizar_pantalla():
     mng = plt.get_current_fig_manager()
