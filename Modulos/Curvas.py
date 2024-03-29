@@ -1394,10 +1394,11 @@ class Curvas:
 
                     #Calculo la nueva magnitud:
                     distancia_entre_curvas = distancia_1 + distancia_2
-                    magnitud_nueva = cte_1 - distancia_1 * (cte_1 - cte_2) / distancia_entre_curvas
+                    resta = distancia_1 * (cte_1 - cte_2) / distancia_entre_curvas
+                    magnitud_nueva = cte_1 - (distancia_1 * (cte_1 - cte_2) / distancia_entre_curvas)
                     # print(f"Los valores de magnitud son: \n {cte_1} - {dist_min_1}*({cte_1} - {cte_2})/{dist_min} " )
                     # print(f"Los valores nuevos son: \n {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_entre_curvas}" )
-                    print(f"Magnitud: {magnitud_nueva} = {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_1} + {distancia_2}")
+                    print(f"Magnitud: {magnitud_nueva} = {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_1} + {distancia_2}, la resta es {resta}")
                     #Compruebo que la diferencia sea 0
                     # print(f"La diferencia entre magnitudes es: {magnitud} - {magnitud_nueva} ={magnitud - magnitud_nueva}")
 
@@ -1413,8 +1414,8 @@ class Curvas:
 
                     #Calculo la nueva magnitud:
                     ditancia_entre_curvas = distancia_1 + distancia_2
-                    magnitud_nueva = cte_3 - distancia_2 * (cte_3 - cte_1) / ditancia_entre_curvas
-                    print(f"Magnitud: {magnitud_nueva} = {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_1} + {distancia_2}")
+                    magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / ditancia_entre_curvas
+                    print(f"Magnitud: {magnitud_nueva} = {curva1} - {distancia_1} * ({curva1} - {curva2}) / {distancia_1} + {distancia_2}")
                     #Compruebo que la diferencia sea 0
                     # print(f"La diferencia entre magnitudes es: {magnitud - magnitud_nueva}")
                 
