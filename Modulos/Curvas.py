@@ -1064,8 +1064,8 @@ class Curvas:
         curva1 y curva2, contienen el valor constante que representa la curva, una curva en el planto es un conjunto de puntos x,y -> z, donde z es el valor constante
         """
         
-        fig, axes = plt.subplots()
-        self.graficar_curvas(curvas_in, [curva1, curva2], axes)
+        # fig, axes = plt.subplots()
+        # self.graficar_curvas(curvas_in, [curva1, curva2], axes)
         
         c1 = self.get_puntos_curva(curvas_in, curva1)
 
@@ -1082,13 +1082,13 @@ class Curvas:
         
         # minima_distancia = calcular_min_distance(xy, curva_completa)      
         
-        if True:
-            plt.title(f"Caso {xy[0]} {xy[1]}")
-            self.graficar_punto(axes,xy, color="black",marker="o")
-            self.graficar_punto(axes,curva_completa[medio], color="green")
+        # if True:
+            # plt.title(f"Caso {xy[0]} {xy[1]}")
+            # self.graficar_punto(axes,xy, color="black",marker="o")
+            # self.graficar_punto(axes,curva_completa[medio], color="green")
             # plt.draw()
             # plt.show()
-            plt.savefig(f"/home/valen/Casos_MIDE3700/Versión nueva/{xy[0]},{xy[1]}.png")
+            # plt.savefig(f"/home/valen/Casos_MIDE3700/Versión nueva/{xy[0]},{xy[1]}.png")
         return dist1, dist2
     
     def buscar_curvas(self, x, y):
