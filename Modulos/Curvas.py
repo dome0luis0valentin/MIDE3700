@@ -581,7 +581,7 @@ class Curvas:
         matriz_np = np.array(matriz)
 
         # Create a figure and axis
-        fig, ax = plt.subplots()
+        # fig, ax = plt.subplots()
 
         # Display the matrix using imshow with intensity-based color mapping
         ax.imshow(matriz_np, cmap='viridis', vmin=np.min(matriz_np), vmax=np.max(matriz_np))
