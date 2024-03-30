@@ -1065,9 +1065,10 @@ class Curvas:
         """
         
         # fig, axes = plt.subplots()
-        # self.graficar_curvas(curvas_in, [curva1, curva2], axes)
+        self.graficar_curvas(curvas_in, [curva1, curva2], axes)
         
         c1 = self.get_puntos_curva(curvas_in, curva1)
+        c2 = self.get_puntos_curva(curvas_in, curva2)
 
         curva_completa = self.get_puntos_curva_completa(curvas_in, curva1)
         curva_2_completa = self.get_puntos_curva_completa(curvas_in, curva2)
@@ -1075,6 +1076,9 @@ class Curvas:
         medio = self.buscar_medio(xy, c1, curvas_in)
 
         inicio, fin = self.fijar_rango(medio, curva_completa)
+
+        medio = self.buscar_medio(xy, c2, curvas_in)
+
         inicio_2, fin_2 = self.fijar_rango(medio, curva_2_completa)
         
         dist1 = calcular_min_distance(xy, curva_completa[inicio:fin])
@@ -1082,9 +1086,9 @@ class Curvas:
         
         # minima_distancia = calcular_min_distance(xy, curva_completa)      
         
-        # if True:
-            # plt.title(f"Caso {xy[0]} {xy[1]}")
-            # self.graficar_punto(axes,xy, color="black",marker="o")
+        if True:
+            plt.title(f"Caso {xy[0]} {xy[1]}")
+            self.graficar_punto(axes,xy, color="black",marker="o")
             # self.graficar_punto(axes,curva_completa[medio], color="green")
             # plt.draw()
             # plt.show()

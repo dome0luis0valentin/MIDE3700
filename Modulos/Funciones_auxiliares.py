@@ -23,17 +23,43 @@ def point_in_triangle(pt, v1, v2, v3):
 
     return not (has_neg and has_pos)
 
+def Redondeo_int_mas_cerca(x):
+    """
+    Redondea un número al entero más cercano.
+    """
+    y= ( x - round(x) ) * 10
+    if x >= 0.:
+        if y < 5.:
+            x_int= int( round(x) )
+        else:
+            x_int= int( round(x) + 1 )
+    else:
+        if abs(y) < 5.:
+            x_int= int( round(x) )
+        else:
+            x_int= int( round(x) - 1 )        
+    return x_int
+
+# Fuente: https://stackoverflow.com/a/52617883/2116607
+def redondear(n: float, decimals: int = 0) -> float:
+    expoN = n * 10 ** decimals
+    if abs(expoN) - abs(math.floor(expoN)) < 0.5:
+        return math.floor(expoN) / 10 ** decimals
+    return math.ceil(expoN) / 10 ** decimals
+
 def calcular_min_distance(xy, curva):
     min_distance = float("inf")
     min_point = (0, 0)
-    # print("Punto a buscar ",xy)
+
     for punto in curva:
-        x2 = round(punto[0],2)
-        y2 = round(punto[1],1)
-       
+        x2 = redondear(punto[0], 2)
+        y2 = redondear(punto[1], 1)
+
         distance = distancia_euclidea_v2(xy[0], x2, xy[1], y2)
+
         if distance < min_distance: 
-            min_point = punto
+            min_point = (x2, y2)
+            min_punto_real = punto
             min_distance = distance
 
     # output = open("/home/valen/PPS/MIDE3700/tests/resultados_interpolación/resultados.txt", "a")
@@ -42,9 +68,9 @@ def calcular_min_distance(xy, curva):
     # output.close()
 
     # print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
-    # plt.scatter(x = min_point[0], y = min_point[1], c = "pink", marker = "o", s = 50)
+    plt.scatter(x = min_point[0], y = min_point[1], c = "pink", marker = "o", s = 50)
 
-    # print(f"Punto minimo: {min_point}")
+    print(f"Punto minimo: {min_point}, que es {min_punto_real}, distance {min_distance}")
     
     return round(min_distance, 3)
 
