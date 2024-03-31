@@ -1086,9 +1086,9 @@ class Curvas:
         
         # minima_distancia = calcular_min_distance(xy, curva_completa)      
         
-        if True:
-            plt.title(f"Caso {xy[0]} {xy[1]}")
-            self.graficar_punto(axes,xy, color="black",marker="o")
+        # if True:
+        #     plt.title(f"Caso {xy[0]} {xy[1]}")
+            # self.graficar_punto(axes,xy, color="black",marker="o")
             # self.graficar_punto(axes,curva_completa[medio], color="green")
             # plt.draw()
             # plt.show()
