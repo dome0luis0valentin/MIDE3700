@@ -1260,7 +1260,7 @@ class Curvas:
         # return lohice, magnitud, extrapolo
     
     def Interpolo(self, x, y):
-
+        magnitud_nueva = 99999.
         # self.Entre_que_curvas_esta_el_punto_x_e_y(x, y)
         # Parametrizamos el eje x y la cordenada x del punto
 
@@ -1497,6 +1497,7 @@ class Curvas:
             extrapolo= False
             lohice= False
             magnitud= 99999.
+            magnitud_nueva = 99999.
 
         return lohice, magnitud_nueva, extrapolo
 #-------------------------------------------------------------------------------
