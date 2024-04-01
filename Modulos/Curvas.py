@@ -509,7 +509,9 @@ class Curvas:
             self.ky= 10
 
         curvas_in= self.Leo_Archivo()
-        self.Matriz_Curvas(curvas_in)
+        # m1 = self.Matriz_Curvas(curvas_in)
+        self.Matriz_Curvas_Rellenas(curvas_in)
+        # print("Matrices iguales: ", matrices_son_iguales(m1, m2))
         return
     #---------------------------------------------------------------------------
     def Leo_Archivo(self):
@@ -734,6 +736,8 @@ class Curvas:
         # matriz = cargar_matriz_desde_archivo("./tests/Curvas_en_text/"+titulo + ".txt")
         self.matriz = np.load("./tests/Curvas_Numpy/"+titulo+".npy")
     
+        return self.matriz
+    
     def Matriz_Curvas(self, curvas_in):
         # Parametrizamos el eje x
         # i1 : primer punto del eje x
@@ -831,7 +835,7 @@ class Curvas:
         
         """
         
-        return
+        return self.matriz
     #---------------------------------------------------------------------------
     
     
@@ -1086,9 +1090,9 @@ class Curvas:
         
         # minima_distancia = calcular_min_distance(xy, curva_completa)      
         
-        # if True:
+        if True:
         #     plt.title(f"Caso {xy[0]} {xy[1]}")
-            # self.graficar_punto(axes,xy, color="black",marker="o")
+            self.graficar_punto(axes,xy, color="black",marker="o")
             # self.graficar_punto(axes,curva_completa[medio], color="green")
             # plt.draw()
             # plt.show()
@@ -1096,6 +1100,7 @@ class Curvas:
         return dist1, dist2
     
     def buscar_curvas(self, x, y):
+        print("buscar_curvas: ", x,y)
         curves = {
     "CL-Calientes": {
         "1.0" : (1.0 ,0.0 ),
@@ -1233,7 +1238,7 @@ class Curvas:
         
         x = Algebra.Redondeo_int_mas_cerca(x)
         y = Algebra.Redondeo_int_mas_cerca(y)
-        
+        print("ahora valen; ", x, y)
         valor_en_matriz = str(self.matriz[x][y])
     
         curvas_in = self.Leo_Archivo()

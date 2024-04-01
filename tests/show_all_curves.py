@@ -41,8 +41,8 @@ def graficar(dir):
 # Ejemplo de uso:
     
 def main(paths):
-    lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
-    # lista_input = ["Teff/"]
+    # lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
+    lista_input = ["Teff/"]
     for dir in lista_input:
         graficar(dir)
     # for dir in paths:

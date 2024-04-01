@@ -151,26 +151,24 @@ def matrices_son_iguales(matriz1, matriz2):
 
 # Ejemplo de uso:
 
-path = glob.glob(f'./Curvas_Numpy/*')
+path = glob.glob(f'../Curvas_Numpy/*')
 for numpy_file in path:
 
     #Cargar Matriz
     matriz_numpy = np.load(numpy_file)
     print(numpy_file)
-    #Corregirla
-    if (numpy_file == "./Curvas_Numpy/TE-Calientes.npy"):
-        colorear_vertical_inverso(matriz_numpy)
-    elif(numpy_file == "./Curvas_Numpy/Mbol.npy"):
-        colorear_vertical(matriz_numpy)
-    elif(numpy_file == "./Curvas_Numpy/PHIo-Calientes.npy"):
-        colorear_horizontal_inverso(matriz_numpy)
-    elif(numpy_file == "./Curvas_Numpy/CL-Frias.npy"):
-        pass
-    else:
-        continue
+    # Corregirla
+    # if (numpy_file == "./Curvas_Numpy/TE-Calientes.npy"):
+    #     colorear_vertical_inverso(matriz_numpy)
+    # elif(numpy_file == "./Curvas_Numpy/Mbol.npy"):
+    #     colorear_vertical(matriz_numpy)
+    # elif(numpy_file == "./Curvas_Numpy/PHIo-Calientes.npy"):
+    #     colorear_horizontal_inverso(matriz_numpy)
+    # elif(numpy_file == "./Curvas_Numpy/CL-Frias.npy"):
+    #     pass
 
-    #Guardarla 
-    #np.save(f'./output/{numpy_file.split("/")[-1].split(".")[0]}.npy', matriz_numpy)   
+    # Guardarla 
+    # np.save(f'./output/{numpy_file.split("/")[-1].split(".")[0]}.npy', matriz_numpy)   
 
     #Mostrarla
     if numpy_file.split("/")[-1].split(".")[0] == "Logg":
@@ -180,11 +178,12 @@ for numpy_file in path:
 
     # Guarda la matriz en una imagen
     print(numpy_file.split("/")[-1].split(".")[0])
-    
     plt.matshow(matriz_numpy)
     
+    
+    
     plt.show()
-    # plt.savefig(f'./Imagenes_Curvas_Rellenas/{file.split("/")[-1].split(".")[0]}.png')
+    # plt.savefig(f'./Imagenes_Curvas_Rellenas_Cuadradas/{numpy_file.split("/")[-1].split(".")[0]}.png')
     # plt.close()   
 # matriz_resultante = cargar_matriz_desde_archivo("/home/valen/PPS/MIDE3700/tests/Curvas_en_text/TE-Frias.txt")
 # #Reemplazar 99999.9 por 0
