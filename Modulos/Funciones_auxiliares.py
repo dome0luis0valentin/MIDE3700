@@ -158,7 +158,7 @@ def encontrar_punto_mas_cercano( x_norm, y_norm, x_spectro_norm, y_spectro_norm)
         
         #Los valores del eje x se multiplican por 10000 para trabajar con valores en una escala aproximada
         
-        distance = distancia_euclidea(x_spectro_norm[i]*10000, x_norm*10000, y_spectro_norm[i], y_norm)
+        distance = distancia_euclidea(x_spectro_norm[i], x_norm, y_spectro_norm[i], y_norm)
         if distance < min_distance:
             min_distance = distance
             closest_spectrum_index = i
