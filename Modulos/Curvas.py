@@ -1094,8 +1094,8 @@ class Curvas:
         #     plt.title(f"Caso {xy[0]} {xy[1]}")
             self.graficar_punto(axes,xy, color="black",marker="o")
             # self.graficar_punto(axes,curva_completa[medio], color="green")
-            # plt.draw()
-            # plt.show()
+            plt.draw()
+            plt.show()
             # plt.savefig(f"/home/valen/Casos_MIDE3700/Versión nueva/{xy[0]},{xy[1]}.png")
         return dist1, dist2
     
@@ -1154,17 +1154,17 @@ class Curvas:
         "99999." :  (None , None ),
         },
     "Mv" : {
-        "-5.0" : (-5.0 ,-6.0 ),
-        "-4.0" : (-4.0 ,-5.0 ),
-        "-3.0" : (-3.0 ,-4.0 ),
-        "-2.0" : (-2.0 ,-3.0 ),
-        "-1.0" : (-1.0 ,-2.0 ),
-        "-0.5" : (-0.5 ,-1.0 ),
-        "0.0" : (0.0 ,-0.5 ),
-        "0.5" : (0.5 ,0.0 ),
-        "-6.0" :  (None , None ),
-        "99999." :  (None , None ),
-        },
+        "-6.0" : (-5.0 ,-6.0 ),
+        "-5.0" : (-4.0 ,-5.0 ),
+        "-4.0" : (-3.0 ,-4.0 ),
+        "-3.0" : (-2.0 ,-3.0 ),
+        "-2.0" : (-1.0 ,-2.0 ),
+        "-1.0" : (-0.5 ,-1.0 ),
+        "-0.5" : (0.0  ,-0.5 ),
+        "0.0" :  (0.5  ,0.0  ),
+        "0.5" :  (None , None ),
+        "99999.":(None , None ),
+    },
     "PHIo-Calientes" : {
         "0.67" : (0.67 ,0.66 ),
         "0.68" : (0.68 ,0.67 ),
@@ -1240,6 +1240,7 @@ class Curvas:
         y = Algebra.Redondeo_int_mas_cerca(y)
         print("ahora valen; ", x, y)
         valor_en_matriz = str(self.matriz[x][y])
+        print("valor en matriz: ", valor_en_matriz)
     
         curvas_in = self.Leo_Archivo()
         titulo = self.nombrar_archivo(curvas_in)
@@ -1392,8 +1393,20 @@ class Curvas:
                 distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
                 
                 #Mostrar punto más cercano encontrado del primer algoritmo:
-
                 # print(f"- Nuevo: {curva1}  dist = {distancia1}")
+
+                #Calculo la nueva magnitud:
+                distancia_entre_curvas = distancia_1 + distancia_2
+                magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / distancia_entre_curvas
+                    
+                print(f"Magnitud: {magnitud_nueva} = {curva1} - {distancia_1} * ({curva1} - {curva2}) / {distancia_1} + {distancia_2}")
+
+                #Compruebo que la suma de las distancias sea 1
+                # d1 = distancia_1/distancia_entre_curvas
+                # d2 = distancia_2/distancia_entre_curvas
+                # print(d1 + d2, d1 + d2 == 1)
+
+
                 if dist_12 > dist_min_2 and dist_13 < dist_min_3:
                     # print(f"Metodo viejo para curva 1: {cte_1} dist = {dist_min_1}|{dist_min_2}")
                     # output.write(f" {dist_min_1}")
@@ -1401,13 +1414,14 @@ class Curvas:
                     dist_min= dist_min_1 + dist_min_2
                     magnitud= cte_1 - dist_min_1*(cte_1 - cte_2)/dist_min
 
-                    #Calculo la nueva magnitud:
-                    distancia_entre_curvas = distancia_1 + distancia_2
-                    resta = distancia_1 * (cte_1 - cte_2) / distancia_entre_curvas
-                    magnitud_nueva = cte_1 - (distancia_1 * (cte_1 - cte_2) / distancia_entre_curvas)
+                    # #Calculo la nueva magnitud:
+                    # distancia_entre_curvas = distancia_1 + distancia_2
+                    # resta = distancia_1 * (cte_1 - cte_2) / distancia_entre_curvas
+                    # magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / ditancia_entre_curvas
+
                     # print(f"Los valores de magnitud son: \n {cte_1} - {dist_min_1}*({cte_1} - {cte_2})/{dist_min} " )
                     # print(f"Los valores nuevos son: \n {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_entre_curvas}" )
-                    print(f"Magnitud: {magnitud_nueva} = {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_1} + {distancia_2}, la resta es {resta}")
+                    # print(f"Magnitud: {magnitud_nueva} = {cte_1} - {distancia_1} * ({cte_1} - {cte_2}) / {distancia_1} + {distancia_2}, la resta es {resta}")
                     #Compruebo que la diferencia sea 0
                     # print(f"La diferencia entre magnitudes es: {magnitud} - {magnitud_nueva} ={magnitud - magnitud_nueva}")
 
@@ -1421,17 +1435,18 @@ class Curvas:
                     dist_min= dist_min_1 + dist_min_3
                     magnitud= cte_3 - dist_min_3*(cte_3 - cte_1)/dist_min
 
-                    #Calculo la nueva magnitud:
-                    ditancia_entre_curvas = distancia_1 + distancia_2
-                    magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / ditancia_entre_curvas
-                    print(f"Magnitud: {magnitud_nueva} = {curva1} - {distancia_1} * ({curva1} - {curva2}) / {distancia_1} + {distancia_2}")
-                    #Compruebo que la diferencia sea 0
+                    # #Calculo la nueva magnitud:
+                    # ditancia_entre_curvas = distancia_1 + distancia_2
+                    # magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / ditancia_entre_curvas
+                    
+                    # print(f"Magnitud: {magnitud_nueva} = {curva1} - {distancia_1} * ({curva1} - {curva2}) / {distancia_1} + {distancia_2}")
+                    # #Compruebo que la diferencia sea 0
                     # print(f"La diferencia entre magnitudes es: {magnitud - magnitud_nueva}")
                 
                 extrapolo= False
                 lohice= True
 
-            #Si es la primer curva
+            #Si es la primer curva, el punto más cercano esta en el valor que tiene n+1, que es 1
             elif n1 == 0:
                 dist_min_3= 1000.
                 for i in range(i1,i2):

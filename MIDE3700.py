@@ -30,6 +30,9 @@ from Modulos import Curvas
 #import Allen
 from Modulos import Landolt
 from Modulos import Distancia
+
+from tests.pruebas_interpolación import probar_mv
+
 #######################################################################
 #######################################################################
 #############            PRINCIPAL PROGRAM              ##############
@@ -119,6 +122,9 @@ for nom_est in lista_estrellas:
 # Ajuste del continuo de Paschen
 # Fitting Paschen continuum
 #
+    
+    probar_mv(curvas=curvas_mv)
+
     espectro.Ajuste_Paschen()
 #
 # Ajuste del continuo de Balmer
@@ -241,8 +247,10 @@ for nom_est in lista_estrellas:
 # CALCULAMOS LOS PARAMETROS FUNDAMENTALES
 # Calculate the fundamental parameters
 #
-        if lambda_ok:
+        # if lambda_ok:
+        if True:
 #
+            print("EL LAMBADA OK ESTA TRUE")
             estrella= Parametros_FUN.Parametros(BCD, c_o_f, espectro.nombre)
             estrella.m= m[i]
             estrella.lohice_m= lohice_m[i]
