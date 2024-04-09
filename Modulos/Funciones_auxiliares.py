@@ -67,10 +67,10 @@ def calcular_min_distance(xy, curva):
     # output.write(f"{min_distance}\n")
     # output.close()
 
-    # print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
-    plt.scatter(x = min_point[0], y = min_point[1], c = "pink", marker = "o", s = 50)
+    # # print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
+    # plt.scatter(x = min_point[0], y = min_point[1], c = "pink", marker = "o", s = 50)
 
-    print(f"Punto minimo: {min_point}, que es {min_punto_real}, distance {min_distance}")
+    # print(f"Punto minimo: {min_point}, que es {min_punto_real}, distance {min_distance}")
     
     return round(min_distance, 3)
 
