@@ -4,20 +4,19 @@ import matplotlib.pyplot as plt
 
 def probar_errores(curvas):
 
-    #Casos de entrada
-    xs = [0.17, 0.19, 0.21, 0.21]
-    ys = [65, 65, 65, 75]
+   #Casos fijos:
+    xs = [x/1000 for x in range(150, 600, 30)]
+    ys = [y for y in range(10, 80, 5)]
 
-    #Registro de resultados
     errores = []
+    for x in xs:
+        for y in ys:
+            m = curvas.Interpolo(x, y)[1]
+            error = curvas.Error(x,y,m)
+            errores.append(error)
 
-    for x, y in zip(xs, ys):
-        magnitud = curvas.Interpolo(x, y)[1]
-        error = curvas.Error(x,y,magnitud)
-        errores.append(error)
-
-    for x,y,e in zip(xs, ys, errores):
-        print(f"Error en {x, y} es {e}")
+    print(f"Entrada: \nxs = {xs}\nys = {ys}")
+    print(f"Errores = ", errores)
 
 def probar_mv(curvas):
     # x: 0.19 - 0.22
