@@ -1069,7 +1069,7 @@ class Curvas:
         """
         
         # fig, axes = plt.subplots()
-        self.graficar_curvas(curvas_in, [curva1, curva2], axes)
+        # self.graficar_curvas(curvas_in, [curva1, curva2], axes)
         
         c1 = self.get_puntos_curva(curvas_in, curva1)
         c2 = self.get_puntos_curva(curvas_in, curva2)
@@ -1090,17 +1090,17 @@ class Curvas:
         
         # minima_distancia = calcular_min_distance(xy, curva_completa)      
         
-        # if True:
-        # #     plt.title(f"Caso {xy[0]} {xy[1]}")
-        #     self.graficar_punto(axes,xy, color="black",marker="o")
-        #     # self.graficar_punto(axes,curva_completa[medio], color="green")
-        #     plt.draw()
-        #     plt.show()
+        if True:
+        #     plt.title(f"Caso {xy[0]} {xy[1]}")
+            self.graficar_punto(axes,xy, color="black",marker="o")
+            # self.graficar_punto(axes,curva_completa[medio], color="green")
+            # plt.draw()
+            # plt.show()
         #     # plt.savefig(f"/home/valen/Casos_MIDE3700/Versión nueva/{xy[0]},{xy[1]}.png")
         return dist1, dist2
     
     def buscar_curvas(self, x, y):
-        print("buscar_curvas: ", x,y)
+        # print("buscar_curvas: ", x,y)
         curves = {
     "CL-Calientes": {
         "1.0" : (1.0 ,0.0 ),
@@ -1238,9 +1238,9 @@ class Curvas:
         
         x = Algebra.Redondeo_int_mas_cerca(x)
         y = Algebra.Redondeo_int_mas_cerca(y)
-        print("ahora valen; ", x, y)
+        # print("ahora valen; ", x, y)
         valor_en_matriz = str(self.matriz[x][y])
-        print("valor en matriz: ", valor_en_matriz)
+        # print("valor en matriz: ", valor_en_matriz)
     
         curvas_in = self.Leo_Archivo()
         titulo = self.nombrar_archivo(curvas_in)
@@ -1399,7 +1399,7 @@ class Curvas:
                 distancia_entre_curvas = distancia_1 + distancia_2
                 magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / distancia_entre_curvas
                     
-                print(f"Magnitud: {magnitud_nueva} = {curva1} - {distancia_1} * ({curva1} - {curva2}) / {distancia_1} + {distancia_2}")
+                # print(f"Magnitud: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
 
                 #Compruebo que la suma de las distancias sea 1
                 # d1 = distancia_1/distancia_entre_curvas
@@ -1572,6 +1572,7 @@ class Curvas:
             err4= 0.0
 #
         error= (err1 + err2 + err3 + err4) / float(n)
+
 #
         return error
 #-----------------------------------------------------------------------------------------

@@ -31,7 +31,7 @@ from Modulos import Curvas
 from Modulos import Landolt
 from Modulos import Distancia
 
-from tests.pruebas_interpolación import probar_mv
+from tests.pruebas_interpolación import probar_mv, probar_errores
 
 #######################################################################
 #######################################################################
@@ -123,7 +123,8 @@ for nom_est in lista_estrellas:
 # Fitting Paschen continuum
 #
     
-    probar_mv(curvas=curvas_mv)
+#Pruebo los errores
+    probar_errores(curvas=curvas_mv)
 
     espectro.Ajuste_Paschen()
 #
