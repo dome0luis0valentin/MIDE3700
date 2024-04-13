@@ -42,7 +42,7 @@ for file_path in file_list:
                 
     # Create a scatter plot
 plt.scatter(x_values, y_values, color='blue', marker='.')
-print(len(x_values))
+
 
 # Add color between curve 0 and curve 1
 if len(list_curves) >= 2:
@@ -56,6 +56,7 @@ plt.title(file_list[0].split('/')[-1].split('.')[0])
 
 print(valores)
 valores.sort()
+
 
 # Show the plot
 plt.show()

@@ -33,7 +33,10 @@ def graficar(dir):
                     y_values.append(y)
                     
         # Create a scatter plot
-                    
+    puntos = [(0.15, 25), (0.15, 30), (0.18, 20), (0.18, 25), (0.21, 15), (0.21, 20), (0.24, 10), (0.24, 15), (0.27, 10), (0.3, 10), (0.39, 60), (0.39, 65), (0.42, 55), (0.42, 60), (0.42, 65), (0.42, 70), (0.45, 55), (0.45, 70), (0.48, 50), (0.48, 55), (0.48, 70), (0.48, 75), (0.51, 50), (0.51, 75), (0.54, 50), (0.57, 45), (0.57, 50)]
+
+    plt.scatter([x[0] for x in puntos], [x[1] for x in puntos], color='red', marker='o')
+    plt.draw()
     plt.scatter(x_values, y_values, color='blue', marker='.')  
     plt.show()
     # plt.savefig(f"./Imagenes_Curvas_Sin_Rellenar/{dir.split('/')[-1]}.png") 

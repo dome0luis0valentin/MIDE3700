@@ -8,14 +8,23 @@ def probar_errores(curvas):
     xs = [x/1000 for x in range(150, 600, 30)]
     ys = [y for y in range(10, 80, 5)]
 
+    casos = [(0.15, 25), (0.15, 30), (0.18, 20), (0.18, 25), (0.21, 15), (0.21, 20), (0.24, 10), (0.24, 15), (0.27, 10), (0.3, 10), (0.39, 60), (0.39, 65), (0.42, 55), (0.42, 60), (0.42, 65), (0.42, 70), (0.45, 55), (0.45, 70), (0.48, 50), (0.48, 55), (0.48, 70), (0.48, 75), (0.51, 50), (0.51, 75), (0.54, 50), (0.57, 45), (0.57, 50)]
     errores = []
-    for x in xs:
-        for y in ys:
-            m = curvas.Interpolo(x, y)[1]
-            error = curvas.Error(x,y,m)
-            errores.append(error)
+    magnitudes = []
 
-    print(f"Entrada: \nxs = {xs}\nys = {ys}")
+    for c in casos:
+        x = c[0]
+        y = c[1]
+        print(f"Prueba con {x , y}")
+        m = curvas.Interpolo(x, y)[1]
+        error = curvas.Error(x,y,m)
+        print(f"Error: {error}")
+        errores.append(error)
+        magnitudes.append(m)
+   
+    # print(f"Entrada: \nxs = {xs}\nys = {ys}")
+    print("Magnitudes: ", magnitudes)
+    print("Entrada: ", casos)
     print(f"Errores = ", errores)
 
 def probar_mv(curvas):
