@@ -17,7 +17,7 @@ def probar_error(curvas):
         print(f"Prueba con {x , y}")
         m = curvas.Interpolo(x, y)[1]
         error = curvas.Error(x,y,m)
-        print(f"Error: {error}")
+        print(f"Error:. {error}")
         errores.append(error)
         magnitudes.append(m)
    

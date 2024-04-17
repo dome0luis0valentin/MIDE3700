@@ -509,8 +509,8 @@ class Curvas:
             self.ky= 10
 
         curvas_in= self.Leo_Archivo()
-        m1 = self.Matriz_Curvas(curvas_in)
-        # self.Matriz_Curvas_Rellenas(curvas_in)
+        # m1 = self.Matriz_Curvas(curvas_in)
+        self.Matriz_Curvas_Rellenas(curvas_in)
         # print("Matrices iguales: ", matrices_son_iguales(m1, m2))
         return
     #---------------------------------------------------------------------------
@@ -734,7 +734,7 @@ class Curvas:
         
         titulo = self.nombrar_archivo(curvas_in)
         # matriz = cargar_matriz_desde_archivo("./tests/Curvas_en_text/"+titulo + ".txt")
-        self.matriz = np.load("./tests/Curvas_Numpy/"+titulo+".npy")
+        self.matriz = np.load("./tests/Curvas_Map/"+titulo+".npy", allow_pickle=True)
     
         return self.matriz
     
@@ -1270,8 +1270,64 @@ class Curvas:
         magnitud = 0
         extrapolo = False
         # return lohice, magnitud, extrapolo
+    def query_matriz(self, x, y):
+        xx = Algebra.Redondeo_int_mas_cerca(x)
+        yy = Algebra.Redondeo_int_mas_cerca(y)
+
+        return self.matriz[xx][yy]
+    
+    def calcular_magnitud(self, x, y, celda):
+        """
+        x e y flotantes, los redondea para indexar la matriz
+        Consulta la celda de la matriz con las curvas, y devuelve el valor en esa celda
+        """
+        curva1, curva2 = map(float, celda.split(" "))
+        curvas_in = self.Leo_Archivo()
+
+        distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
+                            
+        #Calculo la nueva magnitud:
+        distancia_entre_curvas = distancia_1 + distancia_2
+        magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / distancia_entre_curvas
+                                
+        print(f"Magnitud: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
+
+        return magnitud_nueva
     
     def Interpolo(self, x, y):
+        magnitud_nueva = 99999.
+        i1, i2, xx, j1, j2, yy = self.Parametrizar(x, y)
+
+        #Si el punto a buscar esta fuera del rango calculo fallido
+        if (i1 < xx < i2) and j1 < yy < j2:             
+            
+            celda = self.query_matriz(xx,yy)
+            print("La celda vale: ",celda)
+            if celda != "None None":
+
+                #El valor cae sobre la curva
+                if type(celda) == np.float64:
+
+                    #Resolver utilizando producto cruzado
+                    magnitud_nueva = celda
+
+                #Cae entre 2 curvas
+                else:
+                    magnitud_nueva = self.calcular_magnitud(x, y, celda)
+            
+            lohice=True
+            extrapolo=False
+
+            return  lohice, magnitud_nueva, extrapolo
+                
+        print("Calcula Fallido")
+        extrapolo= False
+        lohice= False
+        magnitud_nueva = 99999.
+
+        return lohice, magnitud_nueva, extrapolo
+                 
+    def Interpolo_original(self, x, y):
         magnitud_nueva = 99999.
         # self.Entre_que_curvas_esta_el_punto_x_e_y(x, y)
         # Parametrizamos el eje x y la cordenada x del punto
@@ -1329,9 +1385,20 @@ class Curvas:
             # print(f"\n\n -------------------------- \n x: {xx}\n y: {yy} \n{dist_min_1} \n--------------------------\n\n")
             key= True
             i= 0
-
+            print(f"cte_1: {cte_1}")
+            #Hacemos esto para que la versión anterior no se rompa, el valor  es totalmente descartable 
+            if type(cte_1) == np.float64:
+                pass
+            elif (cte_1.split(" ")[0] == 'None'):
+                cte_1=self.cte_curvas[0]
+            else:
+                cte_1 = float(cte_1.split(" ")[0])
+            
+            print(cte_1)
             #Busco a que curva pertence el punto más cercano
             while key:
+                print(f"cte_1: {cte_1} == {self.cte_curvas[i]}")
+                print(type(cte_1), type(self.cte_curvas[i]))
                 if cte_1 == self.cte_curvas[i]:
                     n1= i
                     key= False
@@ -1395,7 +1462,22 @@ class Curvas:
                 titulo = self.nombrar_archivo(curvas_in)
                 # print(titulo)
                 
-                curva1, curva2 = self.buscar_curvas(xx, yy)
+                #Versión sin map
+                # curva1, curva2 = self.buscar_curvas(xx, yy)
+
+                #Versión con map
+                xx = Algebra.Redondeo_int_mas_cerca(xx)
+                yy = Algebra.Redondeo_int_mas_cerca(yy)
+
+                print(self.matriz[xx][yy])
+                celda = self.matriz[xx][yy]
+                if type(celda) == np.float64:
+                    curva1, curva2 = celda, celda
+                else:
+                    curva1, curva2 = map(float, celda.split(" "))
+                 
+                print(f"Curvas: {curva1} - {curva2}")
+
                 distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
                 
                 #Mostrar punto más cercano encontrado del primer algoritmo:
