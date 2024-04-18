@@ -1164,8 +1164,6 @@ class Curvas:
 
         medio = dic.pop("medio")[1]
 
-      
-
         for k, v in dic.items():
             if producto_cruzado(origen, medio, v[1]) > 0:
                 punto_der = v
@@ -1317,7 +1315,6 @@ class Curvas:
 
         if len(curvas_cercanas) == 3:
 
-            print(" Casos entre curvas")
             dic = self.buscar_entre_curvas(x, y, curvas_cercanas, curvas_in)            
             curve_punto1, curve_punto2 = self.elegir_curvas(dic, (x,y))
 
@@ -1335,7 +1332,6 @@ class Curvas:
             distancia_2 = distancia_euclidea(x, punto2[0], y , punto2[1])
 
         else:
-            print(" Casos al borde")
             #Tengo las dos curvas más cercanas que son dos solamente,  por lo que se debe calcular cuales son los puntos
             #Más cercanos de cada curva 
             curva1 = curvas_cercanas[0]
@@ -1554,7 +1550,6 @@ class Curvas:
     def Interpolo(self, x, y):
         magnitud_nueva = 99999.
         i1, i2, xx, j1, j2, yy = self.Parametrizar(x, y)
-        print("Entrada: ", x,y)
         #Si el punto a buscar esta fuera del rango calculo fallido
         if (i1 < xx < i2) and j1 < yy < j2:             
             
@@ -1579,7 +1574,6 @@ class Curvas:
             else:
                 lohice=True
                 extrapolo=False
-            print("Salida: ", lohice, magnitud_nueva, extrapolo)
             return  lohice, magnitud_nueva, extrapolo
                 
         print("Calcula Fallido")
