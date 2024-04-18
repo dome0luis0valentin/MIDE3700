@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pylab import *
 
-from Funciones_auxiliares import point_in_triangle, calcular_min_distance, distancia_euclidea, distancia_euclidea_v2
+from Funciones_auxiliares import point_in_triangle, calcular_min_distance, distancia_euclidea, distancia_euclidea_v2, calcular_min_punto, producto_cruzado
 from tests.generar_matriz_desde_texto import cargar_matriz_desde_archivo, matrices_son_iguales
 
 class Curvas:
@@ -797,8 +797,8 @@ class Curvas:
                     if (self.matriz[ii][jj] == 99999.):
                         self.matriz[ii][jj] = self.cte_curvas[i]
 
-        np.save("/home/valen/PPS/MIDE3700/tests/Rellenar_curvas_v2/input_matrices_con_curvas/"+titulo, self.matriz )
-        np.savetxt("/home/valen/PPS/MIDE3700/tests/Rellenar_curvas_v2/input_m_in_text/"+titulo+".txt", self.matriz, fmt='%s', delimiter=' | ')
+        # np.save("/home/valen/PPS/MIDE3700/tests/Rellenar_curvas_v2/input_matrices_con_curvas/"+titulo, self.matriz )
+        # np.savetxt("/home/valen/PPS/MIDE3700/tests/Rellenar_curvas_v2/input_m_in_text/"+titulo+".txt", self.matriz, fmt='%s', delimiter=' | ')
         self.colorear_matriz(self.matriz, titulo)
 
         # iguales = matrices_son_iguales(self.matriz, cargar_matriz_desde_archivo("./tests/Curvas_en_text/"+titulo + ".txt"))   
@@ -972,7 +972,7 @@ class Curvas:
         
         return lista_puntos
 
-    def graficar_punto(self, axes, xy, color="red", marker="x"):
+    def graficar_punto(self, xy=(1, 1), color="red", marker="x"):
         plt.scatter([xy[0]],[xy[1]],color=color, marker="x", s=100)
 
     def elegir_derecha(self, xy, p1, p2):
@@ -1049,7 +1049,7 @@ class Curvas:
             # plt.show()
         medio = int( punto_actual[2] )
 
-        return medio
+        return medio, index_curva
     
     def fijar_rango(self, medio, curva_completa):
         inicio  = medio - int( (len( curva_completa ) / 10) )
@@ -1061,6 +1061,30 @@ class Curvas:
             fin = len( curva_completa )
 
         return inicio, fin
+    
+    def calcular_origen(self, xy, curva_discreta):
+        """
+        Dado un punto xy y una curva, devuelve el punto de la curva que está más cerca de xy
+        """
+        min_distance = 99999.0
+    
+        punto = calcular_min_punto(xy, curva_discreta)
+        
+        return punto
+    
+    def calcular_punto_minimo(self, xy, curva_discreta, curva_completa):
+        """
+        Dado un punto xy y una curva, devuelve el punto de la curva que está más cerca de xy
+        """    
+        medio, index_curve = self.buscar_medio(xy, curva_discreta)
+
+        inicio, fin = self.fijar_rango(medio, curva_completa)
+        
+        punto = calcular_min_punto(xy, curva_completa[inicio:fin])
+        
+        # minima_distancia = calcular_min_distance(xy, curva_completa)      
+        
+        return punto, index_curve
     
     def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2):
         """
@@ -1079,11 +1103,11 @@ class Curvas:
         curva_completa = self.get_puntos_curva_completa(curvas_in, curva1)
         curva_2_completa = self.get_puntos_curva_completa(curvas_in, curva2)
 
-        medio = self.buscar_medio(xy, c1, curvas_in)
+        medio, _ = self.buscar_medio(xy, c1, curvas_in)
 
         inicio, fin = self.fijar_rango(medio, curva_completa)
 
-        medio = self.buscar_medio(xy, c2, curvas_in)
+        medio, _ = self.buscar_medio(xy, c2, curvas_in)
 
         inicio_2, fin_2 = self.fijar_rango(medio, curva_2_completa)
         
@@ -1092,15 +1116,248 @@ class Curvas:
         
         # minima_distancia = calcular_min_distance(xy, curva_completa)      
         
-        if True:
-        #     plt.title(f"Caso {xy[0]} {xy[1]}")
-            self.graficar_punto(axes,xy, color="black",marker="o")
-            # self.graficar_punto(axes,curva_completa[medio], color="green")
-            # plt.draw()
-            # plt.show()
-        #     # plt.savefig(f"/home/valen/Casos_MIDE3700/Versión nueva/{xy[0]},{xy[1]}.png")
         return dist1, dist2
     
+    def buscar_entre_curvas(self, x, y , curvas_cercanas, curvas_in):
+        """
+        Curvas cercanas vienen ordenadas de menor a mayor
+        Devuelve los 3 puntos más cercanos, al punto, cada uno corresponde a una curva, el diccionario tiene el siguiente formato
+
+        La clave es la ubicación del punto, puede ser inicio, medio o fin
+        El valor es el valor de la curva, y el punto más cercano a x, y
+        """
+        dic = {}
+        for curva, ubicacion in zip(curvas_cercanas, ["inicio", "medio", "fin"]):
+            dic[ubicacion] = [curva]
+
+        for curva, ubicacion in zip(curvas_cercanas, ["inicio", "medio", "fin"]):
+            curva_completa = self.get_puntos_curva_completa(curvas_in, curva)
+            curva_discreta = self.get_puntos_curva(curvas_in, curva)
+            if ubicacion == "medio":
+                
+                punto, medio = self.calcular_punto_minimo((x,y), curva_discreta, curva_completa)
+            else:
+                punto, _ =self.calcular_punto_minimo((x,y), curva_discreta, curva_completa)
+            dic[ubicacion].append(punto)
+
+        #Busca en la curva del medio, un punto que este a una distanica x, para poder utilizarlo como origen, para calcular producto cruzado
+        curva_discreta = self.get_puntos_curva(curvas_in, curvas_cercanas[1])
+
+        #Setea el punto de origen como referencia para calcular el producto cruzado
+        try:
+          
+            punto_origen = curva_discreta[medio-1]
+        except:
+            
+            punto_origen = curva_discreta[medio+1]
+
+        dic["origen"] = (punto_origen[0], punto_origen[1])
+
+        print(dic)
+        return dic
+    
+    def elegir_curvas(self, dic, punto):
+        #El valor de los diccionarios es una lista donde el primer valor es el valor de la curva:
+        # 
+        origen = dic.pop("origen")
+        curve1 = (dic["medio"][0], dic["medio"][1])
+
+        medio = dic.pop("medio")[1]
+
+      
+
+        for k, v in dic.items():
+            if producto_cruzado(origen, medio, v[1]) > 0:
+                punto_der = v
+            else:
+                punto_izq = v
+            
+        if producto_cruzado(origen, medio, punto) > 0:
+            curve2 = (punto_der[0], punto_der[1])
+        elif(producto_cruzado(origen, medio ,punto) < 0):
+            curve2 = (punto_izq[0] , punto_izq[1])
+        
+        #Retorna los valores: valor de la curva, punto más cercano a x, y de esa curva
+        return curve1, curve2
+
+    def interpolo_sobre_punto(self, x, y, curva):
+        """
+        Si el punto cae sobre un punto de la curva en la matriz, no se puede determinar de que lado
+        de la curva esta el punto, por lo que se hace es obtener las 3 curvas, el punto más cercano de
+        cada una y luego un producto cruzado para determinar de que lado esta el punto
+        """
+        # fig, axes = plt.subplots()
+        #Este diccionario devuelve para un valor de la curva, cuáles son las curvas próxmas
+        curvas_mas_cercanas = {
+            'CL-Calientes': {
+                '0.0': {0.0, 1.0},
+                  '1.0': {0.0, 1.0, 2.0},
+                  '2.0': {1.0, 2.0, 3.0},
+                  '3.0': {2.0, 3.0, 4.0},
+                  '4.0': {3.0, 4.0, 5.0},
+                  '5.0': {4.0, 5.0, 6.0},
+                  '6.0': {5.0, 6.0},
+                  '99999.0': None},
+            'CL-Frias': {'1.0': {1.0, 2.0},
+                        '2.0': {1.0, 2.0, 3.0},
+                        '3.0': {2.0, 3.0, 4.0},
+                        '4.0': {3.0, 4.0, 5.0},
+                        '5.0': {4.0, 5.0},
+                        '99999.0': None},
+            'Landolt': {},
+            'Logg': {'2.8': {2.8, 3.0},
+                '3.0': {3.2, 2.8, 3.0},
+                '3.2': {3.2, 3.0},
+                '3.4000000000000004': {3.6000000000000005, 3.4000000000000004},
+                '3.6000000000000005': {3.4000000000000004,
+                                        3.6000000000000005,
+                                        3.8000000000000007},
+                '3.8000000000000007': {3.6000000000000005,
+                                        3.8000000000000007,
+                                        4.000000000000001},
+                '4.000000000000001': {3.8000000000000007,
+                                        4.000000000000001,
+                                        4.1000000000000005},
+                '4.1000000000000005': {4.2, 4.000000000000001, 4.1000000000000005},
+                '4.2': {4.3, 4.1000000000000005, 4.2},
+                '4.3': {4.2, 4.3},
+                '99999.0': None},
+        'Mbol': {'-0.5': {-0.5, -1.0},
+                '-1.0': {-0.5, -1.0, -1.5},
+                '-1.5': {-1.0, -2.0, -1.5},
+                '-2.0': {-2.5, -2.0, -1.5},
+                '-2.5': {-3.0, -2.5, -2.0},
+                '-3.0': {-3.5, -3.0, -2.5},
+                '-3.5': {-3.0, -4.0, -3.5},
+                '-4.0': {-4.5, -4.0, -3.5},
+                '-4.5': {-5.0, -4.5, -4.0},
+                '-5.0': {-5.0, -4.5, -5.5},
+                '-5.5': {-6.0, -5.5, -5.0},
+                '-6.0': {-6.5, -6.0, -5.5},
+                '-6.5': {-7.0, -6.5, -6.0},
+                '-7.0': {-7.0, -6.5, -7.5},
+                '-7.5': {-8.0, -7.5, -7.0},
+                '-8.0': {-8.0, -7.5},
+                '99999.0': None},
+        'Mv': {'-0.5': {-0.5, 0.0, -1.0},
+                '-1.0': {-0.5, -1.0, -2.0},
+                '-2.0': {-3.0, -2.0, -1.0},
+                '-3.0': {-4.0, -3.0, -2.0},
+                '-4.0': {-5.0, -4.0, -3.0},
+                '-5.0': {-6.0, -5.0, -4.0},
+                '-6.0': {-6.0, -5.0},
+                '0.0': {0.0, -0.5, 0.5},
+                '0.5': {0.5, 0.0},
+                '99999.0': None},
+        'PHIo-Calientes': {'0.66': {0.67, 0.66},
+                            '0.67': {0.67, 0.66, 0.68},
+                            '0.68': {0.68, 0.67, 0.69},
+                            '0.69': {0.69, 0.68, 0.7},
+                            '0.7': {0.7, 0.69, 0.72},
+                            '0.72': {0.72, 0.7, 0.76},
+                            '0.76': {0.76, 0.72, 0.8},
+                            '0.8': {0.8, 0.76, 0.86},
+                            '0.86': {0.86, 0.8, 0.93},
+                            '0.93': {0.93, 0.86, 1.05},
+                            '1.05': {0.93, 1.05, 1.12},
+                            '1.12': {1.27, 1.12, 1.05},
+                            '1.27': {1.27, 1.12},
+                            '99999.0': None},
+        'PHIo-Frias': {'1.27': {1.45, 1.27},
+                        '1.45': {1.27, 1.62, 1.45},
+                        '1.62': {1.77, 1.62, 1.45},
+                        '1.77': {1.77, 1.97, 1.62},
+                        '1.97': {1.97, 2.14, 1.77},
+                        '2.14': {1.97, 2.14, 2.27},
+                        '2.27': {2.4, 2.27, 2.14},
+                        '2.4': {2.65, 2.4, 2.27},
+                        '2.65': {2.65, 2.4},
+                        '99999.0': None},
+        'TE-Calientes': {'10.0': {8.0, 10.0, 11.0},
+                        '11.0': {10.0, 11.0, 12.0},
+                        '12.0': {11.0, 12.0, 13.0},
+                        '13.0': {12.0, 13.0, 15.0},
+                        '15.0': {17.0, 13.0, 15.0},
+                        '17.0': {17.0, 19.0, 15.0},
+                        '19.0': {17.0, 19.0, 20.0},
+                        '20.0': {19.0, 20.0, 22.0},
+                        '22.0': {20.0, 22.0, 23.0},
+                        '23.0': {25.0, 22.0, 23.0},
+                        '25.0': {25.0, 23.0},
+                        '6.0': {8.0, 6.0},
+                        '8.0': {8.0, 10.0, 6.0},
+                        '99999.0': None},
+        'TE-Frias': {'25.0': {25.0, 27.0},
+                    '27.0': {25.0, 27.0, 30.0},
+                    '30.0': {32.0, 27.0, 30.0},
+                    '32.0': {32.0, 34.0, 30.0},
+                    '34.0': {32.0, 34.0, 36.0},
+                    '36.0': {34.0, 36.0, 37.0},
+                    '37.0': {36.0, 37.0, 38.0},
+                    '38.0': {40.0, 37.0, 38.0},
+                    '40.0': {40.0, 38.0},
+                    '99999.0': None},
+        'Teff': {'10000.0': {10000.0, 11000.0, 9500.0},
+                '11000.0': {11000.0, 10000.0, 12500.0},
+                '12500.0': {11000.0, 12500.0, 15000.0},
+                '15000.0': {15000.0, 12500.0, 17500.0},
+                '17500.0': {15000.0, 20000.0, 17500.0},
+                '20000.0': {20000.0, 22500.0, 17500.0},
+                '22500.0': {20000.0, 22500.0, 25000.0},
+                '25000.0': {25000.0, 30000.0, 22500.0},
+                '30000.0': {30000.0, 35000.0, 25000.0},
+                '35000.0': {35000.0, 30000.0},
+                '9500.0': {10000.0, 9500.0},
+                '99999.0': None}}
+
+        curvas_in = self.Leo_Archivo()
+        titulo = self.nombrar_archivo(curvas_in)
+
+        curvas_cercanas = sorted(curvas_mas_cercanas[titulo][str(curva)])
+
+        if len(curvas_cercanas) == 3:
+
+            print(" Casos entre curvas")
+            dic = self.buscar_entre_curvas(x, y, curvas_cercanas, curvas_in)            
+            curve_punto1, curve_punto2 = self.elegir_curvas(dic, (x,y))
+
+            curva1 = curve_punto1[0]
+            curva2 = curve_punto2[0]
+            punto1 = curve_punto1[1]
+            punto2 = curve_punto2[1]
+
+            # self.graficar_curvas(curvas_in, [curva1, curva2], axes) 
+            # self.graficar_punto((x,y), color="black", marker="O")
+            # self.graficar_punto(punto1, color="yellow", marker="-")
+            # self.graficar_punto(punto2, color="green", marker="-")
+
+            distancia_1 = distancia_euclidea(x, punto1[0], y , punto1[1])
+            distancia_2 = distancia_euclidea(x, punto2[0], y , punto2[1])
+
+        else:
+            print(" Casos al borde")
+            #Tengo las dos curvas más cercanas que son dos solamente,  por lo que se debe calcular cuales son los puntos
+            #Más cercanos de cada curva 
+            curva1 = curvas_cercanas[0]
+            curva2 = curvas_cercanas[1]
+
+            # self.graficar_curvas(curvas_in, [curva1, curva2], axes) 
+            # self.graficar_punto((x,y), color="black", marker="O")
+            
+
+            distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x,y), curvas_in, curva1, curva2)
+
+        #Calculo la nueva magnitud:
+        distancia_entre_curvas = distancia_1 + distancia_2
+        magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / distancia_entre_curvas
+                                    
+        print(f"Magnitud: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
+
+        # plt.show()
+        return magnitud_nueva
+
+            
+
     def buscar_curvas(self, x, y):
         print("buscar_curvas: ", x,y)
         curves = {
@@ -1297,34 +1554,39 @@ class Curvas:
     def Interpolo(self, x, y):
         magnitud_nueva = 99999.
         i1, i2, xx, j1, j2, yy = self.Parametrizar(x, y)
-
+        print("Entrada: ", x,y)
         #Si el punto a buscar esta fuera del rango calculo fallido
         if (i1 < xx < i2) and j1 < yy < j2:             
             
             celda = self.query_matriz(xx,yy)
-            print("La celda vale: ",celda)
+            
             if celda != "None None":
 
                 #El valor cae sobre la curva
                 if type(celda) == np.float64:
-
+                    print("\nLa celda vale: ",celda, " -------------------------------")
                     #Resolver utilizando producto cruzado
+                    magnitud_nueva = self.interpolo_sobre_punto(x, y, celda)
                     magnitud_nueva = celda
 
                 #Cae entre 2 curvas
                 else:
                     magnitud_nueva = self.calcular_magnitud(x, y, celda)
             
-            lohice=True
-            extrapolo=False
-
+            if magnitud_nueva > 99990.:
+                lohice=False
+                extrapolo=False
+            else:
+                lohice=True
+                extrapolo=False
+            print("Salida: ", lohice, magnitud_nueva, extrapolo)
             return  lohice, magnitud_nueva, extrapolo
                 
         print("Calcula Fallido")
         extrapolo= False
         lohice= False
         magnitud_nueva = 99999.
-
+        print("Salida: ", lohice, magnitud_nueva, extrapolo)
         return lohice, magnitud_nueva, extrapolo
                  
     def Interpolo_original(self, x, y):
@@ -1630,6 +1892,9 @@ class Curvas:
         lohice2, m2, extra2= self.Interpolo(D1, L2)
         lohice3, m3, extra3= self.Interpolo(D2, L1)
         lohice4, m4, extra4= self.Interpolo(D2, L2)
+
+        print(f"Los valores de las magnitudes son: {m1}, {m2}, {m3}, {m4}")
+        print(f"Los valores de lo hice: {lohice1}, {lohice2}, {lohice3}, {lohice4}")
 #
 # Ahora promediamos los valores de los errores
 #
@@ -1659,6 +1924,7 @@ class Curvas:
         else:
             err4= 0.0
 #
+        print(f"Los errores son: {err1}, {err2}, {err3}, {err4}")
         error= (err1 + err2 + err3 + err4) / float(n)
 
 #

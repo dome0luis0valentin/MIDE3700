@@ -47,6 +47,26 @@ def redondear(n: float, decimals: int = 0) -> float:
         return math.floor(expoN) / 10 ** decimals
     return math.ceil(expoN) / 10 ** decimals
 
+def calcular_min_punto(xy, curva):
+    min_distance = float("inf")
+    min_point = (0, 0)
+
+    for punto in curva:
+       
+        x2 = punto[0]
+        y2 = punto[1]
+
+        distance = distancia_euclidea_v2(xy[0], x2, xy[1], y2)
+
+        if distance < min_distance: 
+            min_point = (x2, y2)
+            min_distance = distance
+
+    return min_point
+
+def producto_cruzado(a, b, c):
+    return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]) 
+
 def calcular_min_distance(xy, curva):
     min_distance = float("inf")
     min_point = (0, 0)
