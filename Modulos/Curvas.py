@@ -1156,7 +1156,6 @@ class Curvas:
 
         dic["origen"] = (punto_origen[0], punto_origen[1])
 
-        print(dic)
         return dic
     
     def elegir_curvas(self, dic, punto):
@@ -1350,7 +1349,7 @@ class Curvas:
         distancia_entre_curvas = distancia_1 + distancia_2
         magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / distancia_entre_curvas
                                     
-        print(f"Magnitud_: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
+        # print(f"Magnitud_: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
 
         # plt.show()
         return magnitud_nueva
@@ -1358,7 +1357,6 @@ class Curvas:
             
 
     def buscar_curvas(self, x, y):
-        print("buscar_curvas: ", x,y)
         curves = {
     "CL-Calientes": {
         "1.0" : (1.0 ,2.0 ),
@@ -1498,12 +1496,9 @@ class Curvas:
         
         x = Algebra.Redondeo_int_mas_cerca(x)
         y = Algebra.Redondeo_int_mas_cerca(y)
-        print("ahora valen; ", x, y)
-        valor_en_matriz = str(self.matriz[x][y])
-            
 
-        print("valor en matriz: ", valor_en_matriz)
-    
+        valor_en_matriz = str(self.matriz[x][y])
+                
         curvas_in = self.Leo_Archivo()
         titulo = self.nombrar_archivo(curvas_in)
         
@@ -1546,7 +1541,7 @@ class Curvas:
         distancia_entre_curvas = distancia_1 + distancia_2
         magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / distancia_entre_curvas
                                 
-        print(f"Magnitud: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
+        # print(f"Magnitud: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
 
         return magnitud_nueva
     
@@ -1562,7 +1557,6 @@ class Curvas:
 
                 #El valor cae sobre la curva
                 if type(celda) == np.float64:
-                    print("\nLa celda vale: ",celda, " -------------------------------")
                     #Resolver utilizando producto cruzado
                     magnitud_nueva = self.interpolo_sobre_punto(x, y, celda)
                     # magnitud_nueva = celda
@@ -1583,7 +1577,7 @@ class Curvas:
         extrapolo= False
         lohice= False
         magnitud_nueva = 99999.
-        print("Salida: ", lohice, magnitud_nueva, extrapolo)
+
         return lohice, magnitud_nueva, extrapolo
                  
     def Interpolo_original(self, x, y):
@@ -1644,7 +1638,7 @@ class Curvas:
             # print(f"\n\n -------------------------- \n x: {xx}\n y: {yy} \n{dist_min_1} \n--------------------------\n\n")
             key= True
             i= 0
-            print(f"cte_1: {cte_1}")
+
             #Hacemos esto para que la versión anterior no se rompa, el valor  es totalmente descartable 
             if type(cte_1) == np.float64:
                 pass
@@ -1653,11 +1647,9 @@ class Curvas:
             else:
                 cte_1 = float(cte_1.split(" ")[0])
             
-            print(cte_1)
             #Busco a que curva pertence el punto más cercano
             while key:
-                print(f"cte_1: {cte_1} == {self.cte_curvas[i]}")
-                print(type(cte_1), type(self.cte_curvas[i]))
+                
                 if cte_1 == self.cte_curvas[i]:
                     n1= i
                     key= False
@@ -1728,15 +1720,12 @@ class Curvas:
                 xx = Algebra.Redondeo_int_mas_cerca(xx)
                 yy = Algebra.Redondeo_int_mas_cerca(yy)
 
-                print(self.matriz[xx][yy])
                 celda = self.matriz[xx][yy]
                 if type(celda) == np.float64:
                     curva1, curva2 = celda, celda
                 else:
                     curva1, curva2 = map(float, celda.split(" "))
                  
-                print(f"Curvas: {curva1} - {curva2}")
-
                 distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
                 
                 #Mostrar punto más cercano encontrado del primer algoritmo:
@@ -1890,8 +1879,6 @@ class Curvas:
         lohice3, m3, extra3= self.Interpolo(D2, L1)
         lohice4, m4, extra4= self.Interpolo(D2, L2)
 
-        print(f"Los valores de las magnitudes son: {m1}, {m2}, {m3}, {m4}")
-        print(f"Los valores de lo hice: {lohice1}, {lohice2}, {lohice3}, {lohice4}")
 #
 # Ahora promediamos los valores de los errores
 #
@@ -1921,7 +1908,6 @@ class Curvas:
         else:
             err4= 0.0
 #
-        print(f"Los errores son: {err1}, {err2}, {err3}, {err4}")
         error= (err1 + err2 + err3 + err4) / float(n)
 
 #

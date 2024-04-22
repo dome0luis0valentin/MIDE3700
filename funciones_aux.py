@@ -82,7 +82,7 @@ def probar_mv(curvas):
         print(i)
 
 def probar(curvas, x , y):
-    print(f"Caso de entrada {x, y}")
+    # print(f"Caso de entrada {x, y}")
     # x: 0.19 - 0.22
     # y: 43.0 - 84.0
 

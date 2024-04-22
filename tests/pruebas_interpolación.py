@@ -148,4 +148,4 @@ def comprobar():
         print("Caso", i)
         if (j-k) > 0 :
             print("Dif: ", str(round(abs(j-k), 5)).rjust(5, " "), str(j).rjust(20, "*")," - ", k)
-comprobar()
+# comprobar()

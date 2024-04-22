@@ -32,8 +32,6 @@ from Modulos.Curvas import cargar_curvas_multiproceso
 #import Allen
 from Modulos import Distancia
 
-from tests.pruebas_interpolación import probar_mv, probar_errores
-
 #######################################################################
 #######################################################################
 #############            PRINCIPAL PROGRAM              ##############
@@ -92,9 +90,6 @@ for nom_est in lista_estrellas:
 # Fitting Paschen continuum
 #
     
-#Pruebo los errores
-    probar_errores(curvas=curvas_mv)
-
     espectro.Ajuste_Paschen()
 #
 # Ajuste del continuo de Balmer
@@ -222,7 +217,6 @@ for nom_est in lista_estrellas:
         # if lambda_ok:
         if True:
 #
-            print("EL LAMBADA OK ESTA TRUE")
             estrella= Parametros_FUN.Parametros(BCD, c_o_f, espectro.nombre)
             estrella.m= m[i]
             estrella.lohice_m= lohice_m[i]

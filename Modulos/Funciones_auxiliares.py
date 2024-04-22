@@ -98,7 +98,7 @@ def calcular_min_distance(xy, curva):
 
 def maximizar_pantalla():
     mng = plt.get_current_fig_manager()
-    file = "/home/valen/pps/MIDE3700_v2/MIDE3700/Configuraciones/resolucion.txt"
+    file = "./Configuraciones/resolucion.txt"
     tupla_resultante = (1000, 1000)
     
     try:

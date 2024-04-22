@@ -69,11 +69,11 @@ class Parametros:
 #
         f_est.write( 'D= ' + '%1.2f' % self.D_total + '\n')
         
-        print('D* = {} = {} - {}\n\n     d = {} = {} - {}\n\n      D_total = {} = {} + {}'.format(
-            self.D_est, yp, ybi,
-            self.d, ybi, yb,
-            self.D_total, self.D_est, self.d
-        ))
+        # print('D* = {} = {} - {}\n\n     d = {} = {} - {}\n\n      D_total = {} = {} + {}'.format(
+        #     self.D_est, yp, ybi,
+        #     self.d, ybi, yb,
+        #     self.D_total, self.D_est, self.d
+        # ))
 #
 # El error de medicion es 0.02
 #
