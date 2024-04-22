@@ -3,6 +3,99 @@ import math
 import matplotlib.pyplot as plt
 import os
 
+#https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+def sign(p1, p2, p3):
+    return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1]);
+
+def point_in_triangle(pt, v1, v2, v3):
+    d1 = (0,0)
+    d2 = (0,0)
+    d3 = (0,0)
+    has_neg = False
+    has_pos = False
+
+    d1 = sign(pt, v1, v2);
+    d2 = sign(pt, v2, v3);
+    d3 = sign(pt, v3, v1);
+
+    has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0);
+    has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0);
+
+    return not (has_neg and has_pos)
+
+def Redondeo_int_mas_cerca(x):
+    """
+    Redondea un número al entero más cercano.
+    """
+    y= ( x - round(x) ) * 10
+    if x >= 0.:
+        if y < 5.:
+            x_int= int( round(x) )
+        else:
+            x_int= int( round(x) + 1 )
+    else:
+        if abs(y) < 5.:
+            x_int= int( round(x) )
+        else:
+            x_int= int( round(x) - 1 )        
+    return x_int
+
+# Fuente: https://stackoverflow.com/a/52617883/2116607
+def redondear(n: float, decimals: int = 0) -> float:
+    expoN = n * 10 ** decimals
+    if abs(expoN) - abs(math.floor(expoN)) < 0.5:
+        return math.floor(expoN) / 10 ** decimals
+    return math.ceil(expoN) / 10 ** decimals
+
+def calcular_min_punto(xy, curva):
+    min_distance = float("inf")
+    min_point = (0, 0)
+
+    for punto in curva:
+       
+        x2 = punto[0]
+        y2 = punto[1]
+
+        distance = distancia_euclidea_v2(xy[0], x2, xy[1], y2)
+
+        if distance < min_distance: 
+            min_point = (x2, y2)
+            min_distance = distance
+
+    return min_point
+
+def producto_cruzado(a, b, c):
+    return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]) 
+
+def calcular_min_distance(xy, curva):
+    min_distance = float("inf")
+    min_point = (0, 0)
+
+    for punto in curva:
+        # x2 = redondear(punto[0], 2)
+        # y2 = redondear(punto[1], 1)
+        x2 = punto[0]
+        y2 = punto[1]
+
+        distance = distancia_euclidea_v2(xy[0], x2, xy[1], y2)
+
+        if distance < min_distance: 
+            min_point = (x2, y2)
+            min_punto_real = punto
+            min_distance = distance
+
+    # output = open("/home/valen/PPS/MIDE3700/tests/resultados_interpolación/resultados.txt", "a")
+    # output.write(f"# {xy[0]} {xy[1]} {min_point[0]} {min_point[1]}\n")
+    # output.write(f"{min_distance}\n")
+    # output.close()
+
+    # # print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
+    # plt.scatter(x = min_point[0], y = min_point[1], c = "pink", marker = "o", s = 50)
+
+    # print(f"Punto minimo: {min_point}, que es {min_punto_real}, distance {min_distance}")
+    
+    return min_distance
+
 def maximizar_pantalla():
     mng = plt.get_current_fig_manager()
     file = "/home/valen/pps/MIDE3700_v2/MIDE3700/Configuraciones/resolucion.txt"
@@ -28,6 +121,25 @@ def maximizar_pantalla():
         print(f"Error inesperado: {e}")
     mng.resize(tupla_resultante[0], tupla_resultante[1])
     return
+
+def distancia_euclidea_v2(x1, x2, y1, y2):
+    di = ((x1 - x2) ** 2)
+    dj = ((y1 - y2) ** 2)
+    
+    return math.sqrt( di + dj )
+
+    d1 = math.sqrt((x1 - x2) ** 2)
+
+    d2 = math.sqrt((y1 - y2) ** 2)
+    print(x1, y1, x2, y2)
+    print(f"d1: {d1}")
+    print(f"d2: {d2}")
+
+    dist = (d1) + (d2)
+    print(dist)
+    return dist
+    
+    return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
 
 def distancia_euclidea(x1, x2, y1, y2):
     return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
@@ -89,7 +201,7 @@ def encontrar_punto_mas_cercano( x_norm, y_norm, x_spectro_norm, y_spectro_norm)
         
         #Los valores del eje x se multiplican por 10000 para trabajar con valores en una escala aproximada
         
-        distance = distancia_euclidea(x_spectro_norm[i]*10000, x_norm*10000, y_spectro_norm[i], y_norm)
+        distance = distancia_euclidea(x_spectro_norm[i], x_norm, y_spectro_norm[i], y_norm)
         if distance < min_distance:
             min_distance = distance
             closest_spectrum_index = i

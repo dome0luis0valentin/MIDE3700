@@ -6,11 +6,12 @@ matplotlib.use('TkAgg')
 import glob
 
 def graficar(dir):
-    file_list = glob.glob(f'{dir}/*.dat')
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/{dir}')
+    # file_list = dir
 
 
-# file_list = glob.glob(f'/home/valen/pps/MIDE3700_v2/MIDE3700/Curvas/{dir}/*.dat')
-
+    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/{dir}/*.dat')
+    print(file_list)
     x_values = []
     y_values = []
     
@@ -19,12 +20,12 @@ def graficar(dir):
     # Iterate over the files
     valores = []
     for file_path in file_list:
+        print(file_path)
         # Open the file and read the coordinates
         with open(file_path, 'r') as f:
             
             for line in f:
                 if line.startswith("#"):
-                    
                     continue
                 else:
                     x, y = map(float, line.strip().split())
@@ -32,23 +33,32 @@ def graficar(dir):
                     y_values.append(y)
                     
         # Create a scatter plot
-                    
+    puntos = [(0.15, 25), (0.15, 30), (0.18, 20), (0.18, 25), (0.21, 15), (0.21, 20), (0.24, 10), (0.24, 15), (0.27, 10), (0.3, 10), (0.39, 60), (0.39, 65), (0.42, 55), (0.42, 60), (0.42, 65), (0.42, 70), (0.45, 55), (0.45, 70), (0.48, 50), (0.48, 55), (0.48, 70), (0.48, 75), (0.51, 50), (0.51, 75), (0.54, 50), (0.57, 45), (0.57, 50)]
+
+    plt.scatter([x[0] for x in puntos], [x[1] for x in puntos], color='red', marker='o')
+    plt.draw()
     plt.scatter(x_values, y_values, color='blue', marker='.')  
     plt.show()
     # plt.savefig(f"./Imagenes_Curvas_Sin_Rellenar/{dir.split('/')[-1]}.png") 
     plt.close()
 # Ejemplo de uso:
-
-path = glob.glob(f'/home/valen/PPS/MIDE3700/tests/output_folder/Mbol')
-
-
-for dir in path:
-    try:
-        print(dir)
+    
+def main(paths):
+    # lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
+    lista_input = ["Mv/"]
+    for dir in lista_input:
         graficar(dir)
-    except Exception as e:
-        print(f"Error al cargar la matriz desde el archivo: {e}")
-        continue
+    # for dir in paths:
+    #     try:
+    #         graficar(dir)
+    #     except Exception as e:
+    #         print(f"Error al cargar la matriz desde el archivo: {e}")
+    #         continue
+
+if __name__ == "__main__":
+    main([""])
+
+
 #Checkea si hay otro directorio dentro
 
 # for file in path:

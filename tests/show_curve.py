@@ -14,7 +14,7 @@ finally:
 
 #file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Curvas_Densas/{dir}/*.dat')
 
-file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/output_relleno_fino/Mv/*.dat')
+file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/output_relleno_fino/TE/Frias/*.dat')
     
 # file_list = glob.glob(f'/home/valen/pps/MIDE3700_v2/MIDE3700/Curvas/{dir}/*.dat')
 
@@ -42,7 +42,7 @@ for file_path in file_list:
                 
     # Create a scatter plot
 plt.scatter(x_values, y_values, color='blue', marker='.')
-print(len(x_values))
+
 
 # Add color between curve 0 and curve 1
 if len(list_curves) >= 2:
@@ -58,9 +58,5 @@ print(valores)
 valores.sort()
 
 
-for i in range(0, len(valores)-1):
-    print('"'+valores[i]+f'" : ({valores[i]} ,{valores[i-1]} ),')
-
-print('"'+valores[i]+f'" : (None , None ')
 # Show the plot
 plt.show()

@@ -117,7 +117,9 @@ def Interseccion(recta, parabola):
     return x1, x2, sol
 #-------------------------------------------------------------------------------
 def Redondeo_int_mas_cerca(x):
-# Redondeo al entero mas cercano
+    """
+    Redondea un número al entero más cercano.
+    """
     y= ( x - round(x) ) * 10
     if x >= 0.:
         if y < 5.:
