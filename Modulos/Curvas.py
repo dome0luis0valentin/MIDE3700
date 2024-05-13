@@ -1546,6 +1546,7 @@ class Curvas:
         return magnitud_nueva
     
     def Interpolo(self, x, y):
+        print("interpolando ", self.titulo)
         magnitud_nueva = 99999.
         i1, i2, xx, j1, j2, yy = self.Parametrizar(x, y)
         #Si el punto a buscar esta fuera del rango calculo fallido

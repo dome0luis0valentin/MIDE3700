@@ -277,7 +277,6 @@ class Normalizo_espectro(Espectro.Espectro):
 #-------------------------------------------------------------------------------
     def Ajuste_Balmer(self):
 #
-        print("Ajuste de Balmer")
         f_est= open(self.archivo_out, "a") # Archivo de salida
         f_est.write( '\n' )
         f_est.write( 'AJUSTE DEL CONTINUO DE BALMER\n' )
