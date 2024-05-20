@@ -10,8 +10,10 @@ def graficar(dir):
     # file_list = dir
 
 
-    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/Curvas_superiores/{dir}/*.dat')
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/Curvas_superiores/{dir}/*.dat')
     # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/{dir}/*.dat')
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/output_relleno_fino/{dir}/*.dat')
+    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/Curvas/{dir}/*.dat')
     print(file_list)
     x_values = []
     y_values = []
@@ -38,6 +40,7 @@ def graficar(dir):
                         y_new.append(y)
 
                     else:
+                        
                         x = float(line.strip().split()[0])
                         y = float(line.strip().split()[1])
                         x_values.append(x)
@@ -54,10 +57,11 @@ def graficar(dir):
 # Ejemplo de uso:
     
 def main(paths):
-    # lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
+    lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
     lista_input = ["Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
-    c = 7
-    lista_input = [lista_input[c]]
+    # lista_input = [ "PHIo/Calientes/","Teff/"]
+    # c = 0
+    # lista_input = [lista_input[c]]
 
     for dir in lista_input:
         graficar(dir)
