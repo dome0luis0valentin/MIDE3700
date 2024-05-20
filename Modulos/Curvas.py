@@ -57,8 +57,8 @@ class Curvas:
 
             self.x0= 0.
             self.xn= 0.55
-            self.y0= -5.
-            self.yn= 80.
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -86,9 +86,9 @@ class Curvas:
             self.cte_curvas.append( 25. )# => tipo espectral A5
 
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.730
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 10000
             self.ky= 10
 
@@ -115,9 +115,9 @@ class Curvas:
             self.cte_curvas.append( 40. )# => tipo espectral G0
 
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.730
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -144,8 +144,8 @@ class Curvas:
 
             self.x0= 0.
             self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -170,11 +170,11 @@ class Curvas:
 
             self.x0= 0.
             self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
-
+        
         elif magnitud == "Logg":
 
             self.nc= 10
@@ -186,9 +186,9 @@ class Curvas:
                 self.cte_curvas.append( self.cte_curvas[i-1] + 0.1 )
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -204,12 +204,13 @@ class Curvas:
             self.cte_curvas.append( 0.5 )
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
+        
         elif magnitud == "Mbol":
 
             self.nc= 16
@@ -219,11 +220,12 @@ class Curvas:
                 self.cte_curvas.append( self.cte_curvas[i-1] + 0.5 )
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
+        
         elif magnitud == "PHIo_c":
 
             self.nc= 13
@@ -243,9 +245,9 @@ class Curvas:
             self.cte_curvas.append( 1.27 )
 
             self.x0= 0.
-            self.xn= 0.70
+            self.xn= 0.730
             self.y0= -8.
-            self.yn= 80.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -264,9 +266,9 @@ class Curvas:
             self.cte_curvas.append( 2.65 )
 
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.730
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -297,8 +299,8 @@ class Curvas:
 
             self.x0= 0.
             self.xn= 0.55
-            self.y0= -5.
-            self.yn= 80.
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -326,9 +328,9 @@ class Curvas:
             # self.cte_curvas.append( 25. )# => tipo espectral A5
 
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.730
+            self.y0= -15.
+            self.yn= 86.
             # self.kx= 10000
             self.kx= 100
             self.ky= 10
@@ -356,9 +358,9 @@ class Curvas:
             self.cte_curvas.append( 40. )# => tipo espectral G0
 
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.730
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -415,23 +417,28 @@ class Curvas:
             self.yn= 80.
             self.kx= 100
             self.ky= 10
-
+        
         elif magnitud == "Logg":
 
-            self.nc= 10
+            self.nc= 12
 
+            self.cte_curvas.append( 2.7 )
             self.cte_curvas.append( 2.8 )
+
             for i in range( 1, 7):
                 self.cte_curvas.append( self.cte_curvas[i-1] + 0.2 )
-            for i in range( 7, self.nc):
+            for i in range( 7, self.nc -1 ):
                 self.cte_curvas.append( self.cte_curvas[i-1] + 0.1 )
+            self.cte_curvas.append( 4.35 )
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
+
+            print(self.cte_curvas)
 
         elif magnitud == "Mv":
 
@@ -445,9 +452,9 @@ class Curvas:
             self.cte_curvas.append( 0.5 )
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -460,11 +467,12 @@ class Curvas:
                 self.cte_curvas.append( self.cte_curvas[i-1] + 0.5 )
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
+        
         elif magnitud == "PHIo_c":
 
             self.nc= 13
@@ -484,9 +492,9 @@ class Curvas:
             self.cte_curvas.append( 1.27 )
 
             self.x0= 0.
-            self.xn= 0.70
+            self.xn= 0.730
             self.y0= -8.
-            self.yn= 80.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -505,15 +513,15 @@ class Curvas:
             self.cte_curvas.append( 2.65 )
 
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.7330
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
         curvas_in= self.Leo_Archivo()
-        # m1 = self.Matriz_Curvas(curvas_in)
-        self.Matriz_Curvas_Rellenas(curvas_in)
+        m1 = self.Matriz_Curvas(curvas_in)
+        # self.Matriz_Curvas_Rellenas(curvas_in)
         # print("Matrices iguales: ", matrices_son_iguales(m1, m2))
         return
     #---------------------------------------------------------------------------
