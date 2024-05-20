@@ -31,6 +31,7 @@ class Curvas:
         self.archivo_in= "Input/Curva" + magnitud + ".in"
         self.cte_curvas= []
         self.matriz= [[],[]]
+        self.titulo = ""
         self.Cargo_Curva(magnitud)
         return
     #---------------------------------------------------------------------------
@@ -519,6 +520,9 @@ class Curvas:
             self.kx= 100
             self.ky= 10
 
+        #Asigno un titulo a la curva utilizando el Path de sus archivos.
+        self.titulo = self.nombrar_archivo(self.Leo_Archivo())
+
         curvas_in= self.Leo_Archivo()
         m1 = self.Matriz_Curvas(curvas_in)
         # self.Matriz_Curvas_Rellenas(curvas_in)
@@ -743,9 +747,9 @@ class Curvas:
         Carga la matriz de curvas desde un archivo de texto
         """
         
-        titulo = self.nombrar_archivo(curvas_in)
+        self.titulo = self.nombrar_archivo(curvas_in)
         # matriz = cargar_matriz_desde_archivo("./tests/Curvas_en_text/"+titulo + ".txt")
-        self.matriz = np.load("./tests/Curvas_Map/"+titulo+".npy", allow_pickle=True)
+        self.matriz = np.load("./tests/Curvas_Map/"+self.titulo+".npy", allow_pickle=True)
     
         return self.matriz
     
@@ -754,7 +758,7 @@ class Curvas:
         # i1 : primer punto del eje x
         # i2 : ultimo punto del eje x
 
-        titulo = self.nombrar_archivo(curvas_in)
+        titulo = self.titulo
 
         if self.x0 >= 0.:
             i1= Algebra.Redondeo_int_mas_cerca( self.x0 * float(self.kx) )
@@ -1319,9 +1323,8 @@ class Curvas:
                 '99999.0': None}}
 
         curvas_in = self.Leo_Archivo()
-        titulo = self.nombrar_archivo(curvas_in)
 
-        curvas_cercanas = sorted(curvas_mas_cercanas[titulo][str(curva)])
+        curvas_cercanas = sorted(curvas_mas_cercanas[self.titulo][str(curva)])
 
         if len(curvas_cercanas) == 3:
 
@@ -1508,9 +1511,8 @@ class Curvas:
         valor_en_matriz = str(self.matriz[x][y])
                 
         curvas_in = self.Leo_Archivo()
-        titulo = self.nombrar_archivo(curvas_in)
         
-        dict_curvas = curves[titulo]
+        dict_curvas = curves[self.titulo]
         entre_curvas = dict_curvas[valor_en_matriz]
                     
         return entre_curvas
@@ -1719,7 +1721,7 @@ class Curvas:
                 #  dist_13 > dist_min_3  y  dist_12 < dist_min_2
 
                 curvas_in = self.Leo_Archivo()
-                titulo = self.nombrar_archivo(curvas_in)
+                # titulo = self.nombrar_archivo(curvas_in)
                 # print(titulo)
                 
                 #Versión sin map
