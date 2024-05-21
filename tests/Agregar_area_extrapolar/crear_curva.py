@@ -71,7 +71,7 @@ def leer_archivos(dir):
         procesar_CL_Calientes(curvas)
     if dir == "TE/Frias/":
         procesar_Phio_te(curvas)
-    if dir == "PHIo/Frias/" or dir == "Mv/" or dir == "Teff/":
+    if dir == "PHIo/Frias/" or dir == "Mv/" or dir == "Teff/" or dir == "TE/Calientes/":
         procesar_Phio_te(curvas)
     
 
@@ -147,9 +147,9 @@ def calcular_punto_Phio(a, b):
     x1, y1 = a
     x2, y2 = b
 
-    x_new = x1 - abs(x1-x2)*0.5
-    y_new = y1 + abs(y1-y2)*0.5
-        
+    x_new = x2 - abs(x1-x2)*0.5
+    y_new = y2 - abs(y1-y2)*0.5
+    
     return x_new, y_new
 
 def calcular_nueva_curva_Phio(curvas, dir):
@@ -174,11 +174,12 @@ def calcular_nueva_curva_Phio(curvas, dir):
                     plt.pause(0.001)
                 break
             
-            # plt.scatter(a[0], a[1], color='blue', marker='.')
-            # plt.scatter(b[0], b[1], color='red', marker='.')
-            # plt.scatter(punto_nuevo[0], punto_nuevo[1], color='green', marker='.')
-            # plt.draw()
-            # plt.pause(0.001)
+            if i % 100 == 0:
+                plt.scatter(a[0], a[1], color='blue', marker='.')
+                plt.scatter(b[0], b[1], color='red', marker='.')
+                plt.scatter(punto_nuevo[0], punto_nuevo[1], color='green', marker='.')
+                plt.draw()
+                plt.pause(0.001)
             
             f.write(f'{punto_nuevo[0]}    {punto_nuevo[1]}\n')
 
@@ -188,7 +189,8 @@ def calcular_nueva_curva_Phio(curvas, dir):
 def main(paths):
     #No tenemos en cuenta las curvas CL, ya que no tienen sentido extrapolar en esos casos.
     lista_input = ["Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
-    c = 7
+    
+    c = 2
     lista_input = [lista_input[c]]
     for dir in lista_input:
         curvas = leer_archivos(dir)

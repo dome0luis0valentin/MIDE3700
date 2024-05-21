@@ -178,13 +178,20 @@ class Curvas:
         
         elif magnitud == "Logg":
 
-            self.nc= 10
+            self.nc= 12
 
+            self.cte_curvas.append( 2.7 )
             self.cte_curvas.append( 2.8 )
-            for i in range( 1, 7):
-                self.cte_curvas.append( self.cte_curvas[i-1] + 0.2 )
-            for i in range( 7, self.nc):
-                self.cte_curvas.append( self.cte_curvas[i-1] + 0.1 )
+            self.cte_curvas.append( 3.0 )
+            self.cte_curvas.append( 3.2 )
+            self.cte_curvas.append( 3.4 )
+            self.cte_curvas.append( 3.6 )
+            self.cte_curvas.append( 3.8 )
+            self.cte_curvas.append( 4.0 )
+            self.cte_curvas.append( 4.1)
+            self.cte_curvas.append( 4.2 )
+            self.cte_curvas.append( 4.3 )
+            self.cte_curvas.append( 4.35)
 
             self.x0= 0.
             self.xn= 0.73
@@ -207,7 +214,7 @@ class Curvas:
             self.x0= 0.
             self.xn= 0.73
             self.y0= -15.
-            self.yn= 86.
+            self.yn= 84.
             self.kx= 100
             self.ky= 10
 
@@ -284,7 +291,9 @@ class Curvas:
 
         if magnitud == "Teff":
 
-            self.nc= 11
+            self.nc= 13
+            #Curva inferior nueva
+            self.cte_curvas.append( 9250. )
 
             self.cte_curvas.append( 9500. )
             self.cte_curvas.append( 10000. )
@@ -297,6 +306,9 @@ class Curvas:
             self.cte_curvas.append( 25000. )
             self.cte_curvas.append( 30000. )
             self.cte_curvas.append( 35000. )
+
+            #Curva superior nueva
+            self.cte_curvas.append( 37500. )
 
             self.x0= 0.
             self.xn= 0.55
@@ -313,6 +325,9 @@ class Curvas:
             # O0 => 0
             # B0 => 10
             # A0 => 20
+            
+            #Curva inferior nueva
+            self.cte_curvas.append(  5. )# => tipo espectral O5
 
             self.cte_curvas.append(  6. )# => tipo espectral O6
             self.cte_curvas.append(  8. )# => tipo espectral O8
@@ -326,7 +341,13 @@ class Curvas:
             self.cte_curvas.append( 20. )# => tipo espectral A0
             self.cte_curvas.append( 22. )# => tipo espectral A2
             self.cte_curvas.append( 23. )# => tipo espectral A3
+
             # self.cte_curvas.append( 25. )# => tipo espectral A5
+
+            #Curva superior nueva
+            self.cte_curvas.append(  23.5 )# => tipo espectral A3.5
+
+            print(self.cte_curvas)
 
             self.x0= 0.
             self.xn= 0.730
@@ -338,17 +359,20 @@ class Curvas:
 
         elif magnitud == "TE_f":
 
-            self.nc= 9
+            self.nc= 11
 
             # A cada tipo espectral le asignamos le asignamos un numero entero:
             # A0 => 20
             # F0 => 30
             # G0 => 40
 
-            self.cte_curvas.append( 25. )# => tipo espectral A5
             
             #MODIFICO WARNING AVISO ACA YAEL
             # self.cte_curvas.append( 37. )# => tipo espectral A7 
+
+            self.cte_curvas.append( 24)# => Area de extrapolación
+
+            self.cte_curvas.append( 25. )# => tipo espectral A5
             self.cte_curvas.append( 27. )# => tipo espectral A7
             self.cte_curvas.append( 30. )# => tipo espectral F0
             self.cte_curvas.append( 32. )# => tipo espectral F2
@@ -357,6 +381,9 @@ class Curvas:
             self.cte_curvas.append( 37. )# => tipo espectral F7
             self.cte_curvas.append( 38. )# => tipo espectral F8
             self.cte_curvas.append( 40. )# => tipo espectral G0
+
+            self.cte_curvas.append( 41. )# => Area de extrapolación
+
 
             self.x0= 0.
             self.xn= 0.730
@@ -425,12 +452,16 @@ class Curvas:
 
             self.cte_curvas.append( 2.7 )
             self.cte_curvas.append( 2.8 )
-
-            for i in range( 1, 7):
-                self.cte_curvas.append( self.cte_curvas[i-1] + 0.2 )
-            for i in range( 7, self.nc -1 ):
-                self.cte_curvas.append( self.cte_curvas[i-1] + 0.1 )
-            self.cte_curvas.append( 4.35 )
+            self.cte_curvas.append( 3.0 )
+            self.cte_curvas.append( 3.2 )
+            self.cte_curvas.append( 3.4 )
+            self.cte_curvas.append( 3.6 )
+            self.cte_curvas.append( 3.8 )
+            self.cte_curvas.append( 4.0 )
+            self.cte_curvas.append( 4.1)
+            self.cte_curvas.append( 4.2 )
+            self.cte_curvas.append( 4.3 )
+            self.cte_curvas.append( 4.35)
 
             self.x0= 0.
             self.xn= 0.73
@@ -443,29 +474,35 @@ class Curvas:
 
         elif magnitud == "Mv":
 
-            self.nc= 9
+            self.nc= 11
 
+            self.cte_curvas.append(-6.25 )
             for i in range( -6, 0):
                 self.cte_curvas.append( float(i) )
                 
             self.cte_curvas.append( -0.5 )
             self.cte_curvas.append( 0.0 )
             self.cte_curvas.append( 0.5 )
+            self.cte_curvas.append( 0.75 )
+
+            print(self.cte_curvas)
 
             self.x0= 0.
             self.xn= 0.73
             self.y0= -15.
-            self.yn= 86.
+            self.yn= 84.
             self.kx= 100
             self.ky= 10
 
         elif magnitud == "Mbol":
 
-            self.nc= 16
+            self.nc= 18
 
+            self.cte_curvas.append( -8.25 )
             self.cte_curvas.append( -8.0 )
-            for i in range( 1, self.nc):
+            for i in range( 2, self.nc-1):
                 self.cte_curvas.append( self.cte_curvas[i-1] + 0.5 )
+            self.cte_curvas.append( -0.25)
 
             self.x0= 0.
             self.xn= 0.73
@@ -473,11 +510,14 @@ class Curvas:
             self.yn= 86.
             self.kx= 100
             self.ky= 10
+
+            print(self.cte_curvas)
         
         elif magnitud == "PHIo_c":
 
-            self.nc= 13
+            self.nc= 15
 
+            self.cte_curvas.append( 0.665 )
             self.cte_curvas.append( 0.66 )
             self.cte_curvas.append( 0.67 )
             self.cte_curvas.append( 0.68 )
@@ -491,6 +531,7 @@ class Curvas:
             self.cte_curvas.append( 1.05 )
             self.cte_curvas.append( 1.12 )
             self.cte_curvas.append( 1.27 )
+            self.cte_curvas.append( 1.35 )
 
             self.x0= 0.
             self.xn= 0.730
@@ -501,8 +542,9 @@ class Curvas:
 
         elif magnitud == "PHIo_f":
 
-            self.nc= 9
-
+            self.nc= 11
+            
+            self.cte_curvas.append( 1.16 )
             self.cte_curvas.append( 1.27 )
             self.cte_curvas.append( 1.45 )
             self.cte_curvas.append( 1.62 )
@@ -512,6 +554,7 @@ class Curvas:
             self.cte_curvas.append( 2.27 )
             self.cte_curvas.append( 2.40 )
             self.cte_curvas.append( 2.65 )
+            self.cte_curvas.append( 2.77 )
 
             self.x0= 0.
             self.xn= 0.7330
@@ -519,6 +562,8 @@ class Curvas:
             self.yn= 86.
             self.kx= 100
             self.ky= 10
+
+            print(self.cte_curvas)
 
         #Asigno un titulo a la curva utilizando el Path de sus archivos.
         self.titulo = self.nombrar_archivo(self.Leo_Archivo())
@@ -695,20 +740,56 @@ class Curvas:
                 # cambio al nuevo valor de la curva
                 if index < alto_matriz:
                     valor_actual = matriz[index][col]
-    
+    def colorear_vertical_inverso(self, matriz):
+        ancho_matriz = matriz.shape[1]
+        alto_matriz = len(matriz)-1
+        
+        vacio = 99999.0
+        valor_actual = vacio
+        
+        for col in range(ancho_matriz):
+            index = alto_matriz
+            
+            # busco el primer punto de la curva
+            while (matriz[index][col] == vacio and index > 0):
+                index -= 1
+                    
+            # relleno con ese valor hasta la próxima curva
+            valor_actual = matriz[index][col]
+            
+            # no se termine la matriz
+            while (index > 0):
+                
+                # no llegue a otra curva
+                while ((matriz[index][col] == vacio or matriz[index][col] == valor_actual) and index > 0):
+                    matriz[index][col] = valor_actual
+                    index -= 1
+                    
+                # cambio al nuevo valor de la curva
+                if index > 0:
+                    valor_actual = matriz[index][col]
+                    
     def colorear_matriz(self, matriz, titulo):
         """ """
         print(titulo)
-        if (titulo == "PHIo-Calientes"):
-            np.savetxt("Phio-Calientes.txt", matriz, fmt='%s', delimiter=', ')
+        # if (titulo == "PHIo-Calientes"):
+        #     np.savetxt("Phio-Calientes.txt", matriz, fmt='%s', delimiter=', ')
 
         if (titulo == "Logg" or titulo.startswith("CL-C") or (titulo == "Mbol") or (titulo.startswith("TE-C")) ):        
-            self.colorear_horizontal(matriz)      
+            self.colorear_horizontal(matriz)   
+
+            if (titulo == "Mbol"):
+                self.colorear_vertical(matriz)
+
         else:
             if (titulo.startswith("CL-F")):
                 self.colorear_horizontal_inverso(matriz)
+            elif titulo == "Teff":
+                self.colorear_vertical_inverso(matriz)
             else:
                 self.colorear_vertical(matriz)
+                if titulo == "PHIo-Calientes":
+                    self.colorear_horizontal_inverso(matriz)
             # print(f" \n\n {fila} \n\n")
         
         self.save_matrix_to_file(matriz, "./tests/Curvas_en_text/"+titulo + ".txt")    
@@ -812,7 +893,8 @@ class Curvas:
                     if (self.matriz[ii][jj] == 99999.):
                         self.matriz[ii][jj] = self.cte_curvas[i]
 
-        # np.save("/home/valen/PPS/MIDE3700/tests/Rellenar_curvas_v2/input_matrices_con_curvas/"+titulo, self.matriz )
+        # if titulo == "PHIo-Calientes":
+        #     np.savetxt("/home/valen/PPS/MIDE3700/tests/Rellenar_curvas_v2/input_matrices_con_curvas/"+titulo, self.matriz )
         # np.savetxt("/home/valen/PPS/MIDE3700/tests/Rellenar_curvas_v2/input_m_in_text/"+titulo+".txt", self.matriz, fmt='%s', delimiter=' | ')
         self.colorear_matriz(self.matriz, titulo)
 
@@ -1220,18 +1302,18 @@ class Curvas:
             'Logg': {'2.8': {2.8, 3.0},
                 '3.0': {3.2, 2.8, 3.0},
                 '3.2': {3.2, 3.0},
-                '3.4000000000000004': {3.6000000000000005, 3.4000000000000004},
-                '3.6000000000000005': {3.4000000000000004,
-                                        3.6000000000000005,
-                                        3.8000000000000007},
-                '3.8000000000000007': {3.6000000000000005,
-                                        3.8000000000000007,
-                                        4.000000000000001},
-                '4.000000000000001': {3.8000000000000007,
-                                        4.000000000000001,
-                                        4.1000000000000005},
-                '4.1000000000000005': {4.2, 4.000000000000001, 4.1000000000000005},
-                '4.2': {4.3, 4.1000000000000005, 4.2},
+                '3.4': {3.6, 3.4},
+                '3.6': {3.4,
+                                        3.6,
+                                        3.8},
+                '3.8': {3.6,
+                                        3.8,
+                                        4.0},
+                '4.0': {3.8,
+                                        4.0,
+                                        4.1},
+                '4.1': {4.2, 4.0, 4.1},
+                '4.2': {4.3, 4.1, 4.2},
                 '4.3': {4.2, 4.3},
                 '99999.0': None},
         'Mbol': {'-0.5': {-0.5, -1.0},
@@ -1391,11 +1473,11 @@ class Curvas:
     "Logg" : {
         "3.0" : (3.0 , 3.2 ),
         "3.2" : (3.2 ,3.0 ),
-        "3.4000000000000004" : (3.4000000000000004 ,3.6000000000000005 ),
-        "3.6000000000000005" : (3.6000000000000005 ,3.8000000000000007),
-        "3.8000000000000007" : (3.8000000000000007 ,4.000000000000001),
-        "4.000000000000001" : (4.000000000000001 ,4.1000000000000005 ),
-        "4.1000000000000005" : (4.1000000000000005 ,4.2 ),
+        "3.4" : (3.4 ,3.6 ),
+        "3.6" : (3.6 ,3.8),
+        "3.8" : (3.8 ,4.0),
+        "4.0" : (4.0 ,4.1 ),
+        "4.1" : (4.1 ,4.2 ),
         "4.2" : (4.2 ,4.3 ),
         "4.3" : (None, None ),
         "2.8" :  (2.8 , 3.0),
