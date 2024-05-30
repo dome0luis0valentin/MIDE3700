@@ -3,3 +3,7 @@ Proyecto de app de astronomia
 
 Puedes cambiar el tamaño de resolución de pantalla en el archivo /Configuraciones/resolucion.txt
     altura,ancho (sin espacios)
+
+git clone https://github.com/dome0luis0valentin/MIDE3700
+
+pip install -r requirements
