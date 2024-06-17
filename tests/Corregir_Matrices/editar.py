@@ -151,7 +151,7 @@ def matrices_son_iguales(matriz1, matriz2):
 
 # Ejemplo de uso:
 
-path = glob.glob(f'./output/*')
+path = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Curvas_Numpy/PHIo-Calientes.npy')
 for numpy_file in path:
 
     #Cargar Matriz

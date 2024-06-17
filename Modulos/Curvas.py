@@ -11,7 +11,7 @@ import multiprocessing
 from Modulos import Landolt
 from pylab import *
 
-from Funciones_auxiliares import point_in_triangle, calcular_min_distance, distancia_euclidea, distancia_euclidea_v2, calcular_min_punto, producto_cruzado
+from Funciones_auxiliares import point_in_triangle, calcular_min_distance, distancia_euclidea, distancia_euclidea_v2, calcular_min_punto, producto_cruzado, entre_puntos
 from tests.generar_matriz_desde_texto import cargar_matriz_desde_archivo, matrices_son_iguales
 
 class Curvas:
@@ -31,7 +31,9 @@ class Curvas:
         self.archivo_in= "Input/Curva" + magnitud + ".in"
         self.cte_curvas= []
         self.matriz= [[],[]]
-        self.Cargo_Curva(magnitud)
+        self.titulo = ""
+        # self.Cargo_Curva(magnitud)
+        self.cargo_curvas_rellenas(magnitud)
         return
     #---------------------------------------------------------------------------
     
@@ -41,7 +43,9 @@ class Curvas:
 
         if magnitud == "Teff":
 
-            self.nc= 11
+            self.nc= 13
+            #Curva inferior nueva
+            self.cte_curvas.append( 9250. )
 
             self.cte_curvas.append( 9500. )
             self.cte_curvas.append( 10000. )
@@ -55,21 +59,27 @@ class Curvas:
             self.cte_curvas.append( 30000. )
             self.cte_curvas.append( 35000. )
 
+            #Curva superior nueva
+            self.cte_curvas.append( 37500. )
+
             self.x0= 0.
             self.xn= 0.55
-            self.y0= -5.
-            self.yn= 80.
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
         elif magnitud == "TE_c":
 
-            self.nc= 13
+            self.nc= 14
 
             # A cada tipo espectral le asignamos le asignamos un numero entero:
             # O0 => 0
             # B0 => 10
             # A0 => 20
+            
+            #Curva inferior nueva
+            self.cte_curvas.append(  5.5 )# => tipo espectral O5
 
             self.cte_curvas.append(  6. )# => tipo espectral O6
             self.cte_curvas.append(  8. )# => tipo espectral O8
@@ -83,28 +93,36 @@ class Curvas:
             self.cte_curvas.append( 20. )# => tipo espectral A0
             self.cte_curvas.append( 22. )# => tipo espectral A2
             self.cte_curvas.append( 23. )# => tipo espectral A3
+
             self.cte_curvas.append( 25. )# => tipo espectral A5
 
+            #Curva superior nueva
+            # self.cte_curvas.append(  23.5 )# => tipo espectral A3.5
+
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
-            self.kx= 10000
+            self.xn= 0.730
+            self.y0= -15.
+            self.yn= 86.
+            # self.kx= 10000
+            self.kx= 100
             self.ky= 10
 
         elif magnitud == "TE_f":
 
-            self.nc= 9
+            self.nc= 11
 
             # A cada tipo espectral le asignamos le asignamos un numero entero:
             # A0 => 20
             # F0 => 30
             # G0 => 40
 
-            self.cte_curvas.append( 25. )# => tipo espectral A5
             
             #MODIFICO WARNING AVISO ACA YAEL
             # self.cte_curvas.append( 37. )# => tipo espectral A7 
+
+            self.cte_curvas.append( 24.)# => Area de extrapolación
+
+            self.cte_curvas.append( 25. )# => tipo espectral A5
             self.cte_curvas.append( 27. )# => tipo espectral A7
             self.cte_curvas.append( 30. )# => tipo espectral F0
             self.cte_curvas.append( 32. )# => tipo espectral F2
@@ -114,10 +132,13 @@ class Curvas:
             self.cte_curvas.append( 38. )# => tipo espectral F8
             self.cte_curvas.append( 40. )# => tipo espectral G0
 
+            self.cte_curvas.append( 41. )# => Area de extrapolación
+
+
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.730
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -174,85 +195,112 @@ class Curvas:
             self.yn= 80.
             self.kx= 100
             self.ky= 10
-
+        
         elif magnitud == "Logg":
 
-            self.nc= 10
+            self.nc= 12
 
+            self.cte_curvas.append( 2.7 )
             self.cte_curvas.append( 2.8 )
-            for i in range( 1, 7):
-                self.cte_curvas.append( self.cte_curvas[i-1] + 0.2 )
-            for i in range( 7, self.nc):
-                self.cte_curvas.append( self.cte_curvas[i-1] + 0.1 )
+            self.cte_curvas.append( 3.0 )
+            self.cte_curvas.append( 3.2 )
+            self.cte_curvas.append( 3.4 )
+            self.cte_curvas.append( 3.6 )
+            self.cte_curvas.append( 3.8 )
+            self.cte_curvas.append( 4.0 )
+            self.cte_curvas.append( 4.1)
+            self.cte_curvas.append( 4.2 )
+            self.cte_curvas.append( 4.3 )
+            self.cte_curvas.append( 4.35)
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
+            print(self.cte_curvas)
+
         elif magnitud == "Mv":
 
-            self.nc= 9
+            self.nc= 11
 
+            self.cte_curvas.append(-6.25 )
             for i in range( -6, 0):
                 self.cte_curvas.append( float(i) )
                 
             self.cte_curvas.append( -0.5 )
             self.cte_curvas.append( 0.0 )
             self.cte_curvas.append( 0.5 )
+            self.cte_curvas.append( 0.75 )
+
+            print(self.cte_curvas)
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 84.
             self.kx= 100
             self.ky= 10
 
         elif magnitud == "Mbol":
 
-            self.nc= 16
+            self.nc= 18
 
+            self.cte_curvas.append( -8.25 )
             self.cte_curvas.append( -8.0 )
-            for i in range( 1, self.nc):
+            for i in range( 2, self.nc-1):
                 self.cte_curvas.append( self.cte_curvas[i-1] + 0.5 )
+            self.cte_curvas.append( -0.25)
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
+
+            print(self.cte_curvas)
+        
         elif magnitud == "PHIo_c":
 
-            self.nc= 13
+            self.nc= 14
+
+            self.cte_curvas.append( 0.655 ) #Curva inferior
 
             self.cte_curvas.append( 0.66 )
             self.cte_curvas.append( 0.67 )
             self.cte_curvas.append( 0.68 )
             self.cte_curvas.append( 0.69 )
+
             self.cte_curvas.append( 0.70 )
             self.cte_curvas.append( 0.72 )
             self.cte_curvas.append( 0.76 )
             self.cte_curvas.append( 0.80 )
+
             self.cte_curvas.append( 0.86 )
             self.cte_curvas.append( 0.93 )
             self.cte_curvas.append( 1.05 )
             self.cte_curvas.append( 1.12 )
-            self.cte_curvas.append( 1.27 )
+
+            self.cte_curvas.append( 1.24) #Curva superior
+
+            # self.cte_curvas.append( 1.27 ) Eliminar, este debe ser el valor viejo
+            # self.cte_curvas.append( 1.35 ) 
 
             self.x0= 0.
-            self.xn= 0.70
+            self.xn= 0.730
             self.y0= -8.
-            self.yn= 80.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
         elif magnitud == "PHIo_f":
 
-            self.nc= 9
-
+            self.nc= 11
+            
+            self.cte_curvas.append( 1.16 ) #Curva inferior de extrapolación
             self.cte_curvas.append( 1.27 )
             self.cte_curvas.append( 1.45 )
             self.cte_curvas.append( 1.62 )
@@ -262,16 +310,18 @@ class Curvas:
             self.cte_curvas.append( 2.27 )
             self.cte_curvas.append( 2.40 )
             self.cte_curvas.append( 2.65 )
+            self.cte_curvas.append( 2.77 )#Curva inferior de extrapolación
 
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.7330
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
         curvas_in= self.Leo_Archivo()
-        self.Matriz_Curvas(curvas_in)
+        # self.Matriz_Curvas(curvas_in) Versión anterior, donde se cargan las curvas de a una y se convierten en matriz
+        self.Matriz_Curvas_Rellenas(curvas_in)
         return
     #---------------------------------------------------------------------------
     
@@ -281,7 +331,9 @@ class Curvas:
 
         if magnitud == "Teff":
 
-            self.nc= 11
+            self.nc= 13
+            #Curva inferior nueva
+            self.cte_curvas.append( 9250. )
 
             self.cte_curvas.append( 9500. )
             self.cte_curvas.append( 10000. )
@@ -295,21 +347,27 @@ class Curvas:
             self.cte_curvas.append( 30000. )
             self.cte_curvas.append( 35000. )
 
+            #Curva superior nueva
+            self.cte_curvas.append( 37500. )
+
             self.x0= 0.
             self.xn= 0.55
-            self.y0= -5.
-            self.yn= 80.
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
         elif magnitud == "TE_c":
 
-            self.nc= 12
+            self.nc= 14
 
             # A cada tipo espectral le asignamos le asignamos un numero entero:
             # O0 => 0
             # B0 => 10
             # A0 => 20
+            
+            #Curva inferior nueva
+            self.cte_curvas.append(  5.5 )# => tipo espectral O5
 
             self.cte_curvas.append(  6. )# => tipo espectral O6
             self.cte_curvas.append(  8. )# => tipo espectral O8
@@ -323,29 +381,36 @@ class Curvas:
             self.cte_curvas.append( 20. )# => tipo espectral A0
             self.cte_curvas.append( 22. )# => tipo espectral A2
             self.cte_curvas.append( 23. )# => tipo espectral A3
-            # self.cte_curvas.append( 25. )# => tipo espectral A5
+
+            self.cte_curvas.append( 25. )# => tipo espectral A5
+
+            #Curva superior nueva
+            # self.cte_curvas.append(  23.5 )# => tipo espectral A3.5
 
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.730
+            self.y0= -15.
+            self.yn= 86.
             # self.kx= 10000
             self.kx= 100
             self.ky= 10
 
         elif magnitud == "TE_f":
 
-            self.nc= 9
+            self.nc= 11
 
             # A cada tipo espectral le asignamos le asignamos un numero entero:
             # A0 => 20
             # F0 => 30
             # G0 => 40
 
-            self.cte_curvas.append( 25. )# => tipo espectral A5
             
             #MODIFICO WARNING AVISO ACA YAEL
             # self.cte_curvas.append( 37. )# => tipo espectral A7 
+
+            self.cte_curvas.append( 24.)# => Area de extrapolación
+
+            self.cte_curvas.append( 25. )# => tipo espectral A5
             self.cte_curvas.append( 27. )# => tipo espectral A7
             self.cte_curvas.append( 30. )# => tipo espectral F0
             self.cte_curvas.append( 32. )# => tipo espectral F2
@@ -355,10 +420,13 @@ class Curvas:
             self.cte_curvas.append( 38. )# => tipo espectral F8
             self.cte_curvas.append( 40. )# => tipo espectral G0
 
+            self.cte_curvas.append( 41. )# => Area de extrapolación
+
+
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.730
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
@@ -415,85 +483,112 @@ class Curvas:
             self.yn= 80.
             self.kx= 100
             self.ky= 10
-
+        
         elif magnitud == "Logg":
 
-            self.nc= 10
+            self.nc= 12
 
+            self.cte_curvas.append( 2.7 )
             self.cte_curvas.append( 2.8 )
-            for i in range( 1, 7):
-                self.cte_curvas.append( self.cte_curvas[i-1] + 0.2 )
-            for i in range( 7, self.nc):
-                self.cte_curvas.append( self.cte_curvas[i-1] + 0.1 )
+            self.cte_curvas.append( 3.0 )
+            self.cte_curvas.append( 3.2 )
+            self.cte_curvas.append( 3.4 )
+            self.cte_curvas.append( 3.6 )
+            self.cte_curvas.append( 3.8 )
+            self.cte_curvas.append( 4.0 )
+            self.cte_curvas.append( 4.1)
+            self.cte_curvas.append( 4.2 )
+            self.cte_curvas.append( 4.3 )
+            self.cte_curvas.append( 4.35)
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
+            print(self.cte_curvas)
+
         elif magnitud == "Mv":
 
-            self.nc= 9
+            self.nc= 11
 
+            self.cte_curvas.append(-6.25 )
             for i in range( -6, 0):
                 self.cte_curvas.append( float(i) )
                 
             self.cte_curvas.append( -0.5 )
             self.cte_curvas.append( 0.0 )
             self.cte_curvas.append( 0.5 )
+            self.cte_curvas.append( 0.75 )
+
+            print(self.cte_curvas)
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 84.
             self.kx= 100
             self.ky= 10
 
         elif magnitud == "Mbol":
 
-            self.nc= 16
+            self.nc= 18
 
+            self.cte_curvas.append( -8.25 )
             self.cte_curvas.append( -8.0 )
-            for i in range( 1, self.nc):
+            for i in range( 2, self.nc-1):
                 self.cte_curvas.append( self.cte_curvas[i-1] + 0.5 )
+            self.cte_curvas.append( -0.25)
 
             self.x0= 0.
-            self.xn= 0.7
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.73
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
+
+            print(self.cte_curvas)
+        
         elif magnitud == "PHIo_c":
 
-            self.nc= 13
+            self.nc= 14
+
+            self.cte_curvas.append( 0.655 ) #Curva inferior
 
             self.cte_curvas.append( 0.66 )
             self.cte_curvas.append( 0.67 )
             self.cte_curvas.append( 0.68 )
             self.cte_curvas.append( 0.69 )
+
             self.cte_curvas.append( 0.70 )
             self.cte_curvas.append( 0.72 )
             self.cte_curvas.append( 0.76 )
             self.cte_curvas.append( 0.80 )
+
             self.cte_curvas.append( 0.86 )
             self.cte_curvas.append( 0.93 )
             self.cte_curvas.append( 1.05 )
             self.cte_curvas.append( 1.12 )
-            self.cte_curvas.append( 1.27 )
+
+            self.cte_curvas.append( 1.24) #Curva superior
+
+            # self.cte_curvas.append( 1.27 ) Eliminar, este debe ser el valor viejo
+            # self.cte_curvas.append( 1.35 ) 
 
             self.x0= 0.
-            self.xn= 0.70
+            self.xn= 0.730
             self.y0= -8.
-            self.yn= 80.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
         elif magnitud == "PHIo_f":
 
-            self.nc= 9
-
+            self.nc= 11
+            
+            self.cte_curvas.append( 1.16 ) #Curva inferior de extrapolación
             self.cte_curvas.append( 1.27 )
             self.cte_curvas.append( 1.45 )
             self.cte_curvas.append( 1.62 )
@@ -503,17 +598,21 @@ class Curvas:
             self.cte_curvas.append( 2.27 )
             self.cte_curvas.append( 2.40 )
             self.cte_curvas.append( 2.65 )
+            self.cte_curvas.append( 2.77 )#Curva inferior de extrapolación
 
             self.x0= 0.
-            self.xn= 0.70
-            self.y0= -5.
-            self.yn= 80.
+            self.xn= 0.7330
+            self.y0= -15.
+            self.yn= 86.
             self.kx= 100
             self.ky= 10
 
+        #Asigno un titulo a la curva utilizando el Path de sus archivos.
+        self.titulo = self.nombrar_archivo(self.Leo_Archivo())
+
         curvas_in= self.Leo_Archivo()
-        # m1 = self.Matriz_Curvas(curvas_in)
-        self.Matriz_Curvas_Rellenas(curvas_in)
+        m1 = self.Matriz_Curvas(curvas_in)
+        # self.Matriz_Curvas_Rellenas(curvas_in)
         # print("Matrices iguales: ", matrices_son_iguales(m1, m2))
         return
     #---------------------------------------------------------------------------
@@ -584,9 +683,13 @@ class Curvas:
     def mostrar_matriz(self, matriz, titulo):
         # Convert the matrix to a numpy array
         matriz_np = np.array(matriz)
+        for i in range(matriz_np.shape[0]):
+            for j in range(matriz_np.shape[1]):
+                if matriz_np[i][j] == 99999.0:
+                    matriz_np[i][j] = 1
 
         # Create a figure and axis
-        # fig, ax = plt.subplots()
+        fig, ax = plt.subplots()
 
         # Display the matrix using imshow with intensity-based color mapping
         ax.imshow(matriz_np, cmap='viridis', vmin=np.min(matriz_np), vmax=np.max(matriz_np))
@@ -606,7 +709,11 @@ class Curvas:
         vacio = 99999.0
         valor_actual = vacio
         
+        # indice_contador = 0
         for fila in matriz:
+            # indice_contador += 1
+            # if indice_contador % 20 == 0:
+            #     self.mostrar_matriz(matriz, "TE-Caliente")
             index = 0
             
             #busco el primer punto de la curva
@@ -683,20 +790,58 @@ class Curvas:
                 # cambio al nuevo valor de la curva
                 if index < alto_matriz:
                     valor_actual = matriz[index][col]
-    
+    def colorear_vertical_inverso(self, matriz):
+        ancho_matriz = matriz.shape[1]
+        alto_matriz = len(matriz)-1
+        
+        vacio = 99999.0
+        valor_actual = vacio
+        
+        for col in range(ancho_matriz):
+            index = alto_matriz
+            
+            # busco el primer punto de la curva
+            while (matriz[index][col] == vacio and index > 0):
+                index -= 1
+                    
+            # relleno con ese valor hasta la próxima curva
+            valor_actual = matriz[index][col]
+            
+            # no se termine la matriz
+            while (index > 0):
+                
+                # no llegue a otra curva
+                while ((matriz[index][col] == vacio or matriz[index][col] == valor_actual) and index > 0):
+                    matriz[index][col] = valor_actual
+                    index -= 1
+                    
+                # cambio al nuevo valor de la curva
+                if index > 0:
+                    valor_actual = matriz[index][col]
+                 
     def colorear_matriz(self, matriz, titulo):
         """ """
         print(titulo)
-        if (titulo == "PHIo-Calientes"):
-            np.savetxt("Phio-Calientes.txt", matriz, fmt='%s', delimiter=', ')
+        # if (titulo == "PHIo-Calientes"):
+        #     np.savetxt("Phio-Calientes.txt", matriz, fmt='%s', delimiter=', ')
 
-        if (titulo == "Logg" or titulo.startswith("CL-C") or (titulo == "Mbol") or (titulo.startswith("TE-C")) ):        
-            self.colorear_horizontal(matriz)      
+        if (titulo == "Logg" or titulo.startswith("CL-C") or (titulo == "Mbol") ):        
+            self.colorear_horizontal(matriz) 
+
+            if (titulo == "Mbol"):
+                self.colorear_vertical(matriz)
+
         else:
             if (titulo.startswith("CL-F")):
                 self.colorear_horizontal_inverso(matriz)
+            elif titulo == "Teff":
+                self.colorear_vertical_inverso(matriz)
             else:
                 self.colorear_vertical(matriz)
+                if titulo == "PHIo-Calientes" or titulo == "TE-Calientes":
+                    self.colorear_horizontal_inverso(matriz)
+        if titulo == "TE-Calientes" or titulo == "PHIo-Calientes":
+            self.mostrar_matriz(matriz, titulo)
             # print(f" \n\n {fila} \n\n")
         
         self.save_matrix_to_file(matriz, "./tests/Curvas_en_text/"+titulo + ".txt")    
@@ -732,12 +877,12 @@ class Curvas:
     def Matriz_Curvas_Rellenas(self, curvas_in):
         """
         Version: 2.0
-        Carga la matriz de curvas desde un archivo de texto
+        Carga las matrices alamacenadas en archivos .npy, que contienen valores mapeados
         """
         
-        titulo = self.nombrar_archivo(curvas_in)
+        self.titulo = self.nombrar_archivo(curvas_in)
         # matriz = cargar_matriz_desde_archivo("./tests/Curvas_en_text/"+titulo + ".txt")
-        self.matriz = np.load("./tests/Curvas_Map/"+titulo+".npy", allow_pickle=True)
+        self.matriz = np.load("./tests/Curvas_Mapeadas_con_curvas_simples/"+self.titulo+".npy", allow_pickle=True)
     
         return self.matriz
     
@@ -746,7 +891,7 @@ class Curvas:
         # i1 : primer punto del eje x
         # i2 : ultimo punto del eje x
 
-        titulo = self.nombrar_archivo(curvas_in)
+        titulo = self.titulo
 
         if self.x0 >= 0.:
             i1= Algebra.Redondeo_int_mas_cerca( self.x0 * float(self.kx) )
@@ -800,8 +945,12 @@ class Curvas:
                     if (self.matriz[ii][jj] == 99999.):
                         self.matriz[ii][jj] = self.cte_curvas[i]
 
-        # np.save("/home/valen/PPS/MIDE3700/tests/Rellenar_curvas_v2/input_matrices_con_curvas/"+titulo, self.matriz )
+        # if titulo == "PHIo-Calientes":
+        #     np.savetxt("/home/valen/PPS/MIDE3700/tests/Rellenar_curvas_v2/input_matrices_con_curvas/"+titulo, self.matriz )
         # np.savetxt("/home/valen/PPS/MIDE3700/tests/Rellenar_curvas_v2/input_m_in_text/"+titulo+".txt", self.matriz, fmt='%s', delimiter=' | ')
+        np.save(f"/home/valen/PPS/MIDE3700/tests/Curvas_simples_numpy/{self.titulo}.npy", self.matriz)
+        np.savetxt(f"/home/valen/PPS/MIDE3700/tests/Curvas_simples_texto/{self.titulo}.txt", self.matriz, fmt='%-10s', delimiter=' | ')
+        
         self.colorear_matriz(self.matriz, titulo)
 
         # iguales = matrices_son_iguales(self.matriz, cargar_matriz_desde_archivo("./tests/Curvas_en_text/"+titulo + ".txt"))   
@@ -971,12 +1120,12 @@ class Curvas:
                 index_file = i
                 break
         
-        lista_puntos = self.leer_curva(curvas_in[index_file].replace("Curvas/", "/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar/"))
+        lista_puntos = self.leer_curva(curvas_in[index_file].replace("Curvas/", "./tests/Suavisar/Output_Suavisar/"))
         
         return lista_puntos
 
-    def graficar_punto(self, xy=(1, 1), color="red", marker="x"):
-        plt.scatter([xy[0]],[xy[1]],color=color, marker="x", s=100)
+    def graficar_punto(self, xy=(1, 1), color="red", marker="x", s = 100):
+        plt.scatter([xy[0]],[xy[1]],color=color, marker="x", s=s)
 
     def elegir_derecha(self, xy, p1, p2):
         """
@@ -988,12 +1137,12 @@ class Curvas:
         x2 = p1[0]
         y2 = p1[1]
 
-        distancia_p1 = distancia_euclidea(x1, x2, y1, y2)
+        distancia_p1 = distancia_euclidea_v2(x1, x2, y1, y2)
 
         x2 = p2[0]
         y2 = p2[1]
 
-        distancia_p2 = distancia_euclidea(x1, x2, y1, y2)
+        distancia_p2 = distancia_euclidea_v2(x1, x2, y1, y2)
 
         return distancia_p1 < distancia_p2
 
@@ -1022,7 +1171,7 @@ class Curvas:
 
         #Mientras el tamaño del segmento no sea lo suficientemente pequeño sigo buscando
         #Pequeño será el 5% del total de los puntos en la curva
-        
+        # plt.scatter([punto_actual[0]],[punto_actual[1]],color="red", marker="x", s=100)
         while (largo_segmento > umbral_busqueda):
 
             largo_segmento /= 2
@@ -1044,25 +1193,69 @@ class Curvas:
             mover_derecha = self.elegir_derecha(xy, punto_actual, punto_der)
 
             # self.graficar_curvas(curvas_in, [curva1, curva2], axes)
-            # self.graficar_punto(axes, xy, color="blue")
-            # self.graficar_punto(axes, punto_anterior, color="green")
-            # self.graficar_punto(axes, punto_actual, color="red")
+            # plt.scatter([punto_actual[0]],[punto_actual[1]],color="red", marker="x", s=100)
+            # plt.scatter([xy[0]],[xy[1]],color=color, marker="x", s=100)
+            # plt.scatter([xy[0]],[xy[1]],color=color, marker="x", s=100)
 
             # plt.draw()
+            # plt.pause(1)
             # plt.show()
+
+
         medio = int( punto_actual[2] )
 
         return medio, index_curva
     
     def fijar_rango(self, medio, curva_completa):
+        """
+        Calculo el inicio y el fin del rango de búsqueda
+        El inicio esta una decima parte de la totalidad de los puntos de la curvas
+        De forma parecida para el fin.
+        """
+        punto_0 = curva_completa[0]
+        punto_ultimo = curva_completa[-1]
+        distancia_ini_fin = distancia_euclidea_v2(punto_0[0], punto_ultimo[0], punto_0[1], punto_ultimo[1])
+
+        largo = len(curva_completa)
+
         inicio  = medio - int( (len( curva_completa ) / 10) )
+        
         if inicio < 0:
             inicio = 0
+        else:
+            punto_inicio = curva_completa[inicio]
+            punto_medio = curva_completa[medio]
+            
+            distancia_ini_medio = distancia_euclidea_v2(punto_inicio[0], punto_medio[0], punto_inicio[1], punto_medio[1])
 
-        fin     = medio + int( (len( curva_completa ) / 10) * 2 )
-        if fin > len( curva_completa ):
-            fin = len( curva_completa )
+            while ( distancia_ini_medio < distancia_ini_fin/20) and inicio > 0:
+                inicio -= int( (len( curva_completa ) / 20) )
+                punto_inicio = curva_completa[inicio] if inicio > 0 else curva_completa[0]
 
+                distancia_ini_medio = distancia_euclidea_v2(punto_inicio[0], punto_medio[0], punto_inicio[1], punto_medio[1])
+            
+            inicio = inicio if inicio > 0 else 0
+
+        fin = medio + int( (largo / 10) )
+
+        if fin > largo:
+            fin = largo-1
+        else:
+            punto_fin = curva_completa[fin]
+            punto_medio = curva_completa[medio]
+            distancia_fin_medio = distancia_euclidea(punto_fin[0], punto_medio[0], punto_fin[1], punto_medio[1])
+            
+            # print(f"Distancia fin medio: {distancia_fin_medio}, distancia_ini_fin: {distancia_ini_fin}")
+            while ( distancia_fin_medio < distancia_ini_fin/20 ) and fin < largo:
+                # print(f"Distancia fin medio: {distancia_fin_medio}, distancia_ini_fin: {distancia_ini_fin}")
+                fin += int( largo / 20) 
+
+                punto_fin = curva_completa[largo-1] if fin > largo else curva_completa[fin]
+                distancia_fin_medio = distancia_euclidea(punto_fin[0], punto_medio[0], punto_fin[1], punto_medio[1])
+            
+            fin = fin if fin < largo else largo-1
+
+        # print(f"Retorna {inicio} y {fin}, largo: {largo}")
         return inicio, fin
     
     def calcular_origen(self, xy, curva_discreta):
@@ -1084,11 +1277,60 @@ class Curvas:
         inicio, fin = self.fijar_rango(medio, curva_completa)
         
         punto = calcular_min_punto(xy, curva_completa[inicio:fin])
+        if self.titulo == "Logg":
+            punto = calcular_min_punto(xy, curva_completa[0:len(curva_completa)-1])
+
+        # plt.scatter(x = punto[0], y =punto[1], c = "yellow", marker = "o", s = 50)
+        # plt.draw()
+        # plt.show()
         
         # minima_distancia = calcular_min_distance(xy, curva_completa)      
         
         return punto, index_curve
     
+    def minimas_distancias_con_validación(self, xy, curvas_in, curva1, curva2):
+        """
+        Esta función, dado:
+        xy: un par con coordenadas x e y en el plano
+        curvas_in: la lista de archivos que contienen las curvas almacenadas en conjuntos de puntos x,y
+        curva1 y curva2, contienen el valor constante que representa la curva, una curva en el planto es un conjunto de puntos x,y -> z, donde z es el valor constante
+        
+        Devuelve la distancia que hay de x,y a cada una de las curvas y si realmente el punto esta entre esas curvas
+
+        Existe el caso en el que el punto parece estar entre las curvas, pero realmente cae afuera de las curvas.
+        """
+        
+        c1 = self.get_puntos_curva(curvas_in, curva1)
+        c2 = self.get_puntos_curva(curvas_in, curva2)
+
+        curva_completa = self.get_puntos_curva_completa(curvas_in, curva1)
+        curva_2_completa = self.get_puntos_curva_completa(curvas_in, curva2)
+
+        medio, _ = self.buscar_medio(xy, c1, curvas_in)
+
+        inicio, fin = self.fijar_rango(medio, curva_completa)
+
+        medio, _ = self.buscar_medio(xy, c2, curvas_in)
+
+        inicio_2, fin_2 = self.fijar_rango(medio, curva_2_completa)
+
+        # dist1 = calcular_min_distance(xy, curva_completa[inicio:fin])
+        # dist2 = calcular_min_distance(xy, curva_2_completa[inicio_2:fin_2])
+        punto_1 = calcular_min_punto(xy, curva_completa[inicio:fin])
+        punto_2 = calcular_min_punto(xy, curva_2_completa[inicio_2:fin_2])
+        dentro_de_curvas = entre_puntos(xy, punto_1, punto_2)
+
+        if dentro_de_curvas:
+            dist1 = distancia_euclidea_v2(xy[0], punto_1[0], xy[1], punto_1[1])
+            dist2 = distancia_euclidea_v2(xy[0], punto_2[0], xy[1], punto_2[1])
+        else: 
+            dist1 = 99999.0
+            dist2 = 99999.0
+        
+        # minima_distancia = calcular_min_distance(xy, curva_completa)      
+        
+        return dist1, dist2, dentro_de_curvas
+
     def calcular_minimas_distancias_entre_curvas(self, xy, curvas_in, curva1, curva2):
         """
         Esta función, dado:
@@ -1113,9 +1355,17 @@ class Curvas:
         medio, _ = self.buscar_medio(xy, c2, curvas_in)
 
         inicio_2, fin_2 = self.fijar_rango(medio, curva_2_completa)
+
+        # print(inicio, fin, inicio_2, fin_2)
+        
+        # plt.scatter(x = curva_completa[inicio][0], y =curva_completa[inicio][1], c = "blue", marker = "x", s = 110)
+        # plt.scatter(x = curva_completa[fin][0], y =curva_completa[fin][1], c = "pink", marker = "x", s = 110)
+        # plt.scatter(x = curva_2_completa[inicio_2][0], y =curva_2_completa[inicio_2][1], c = "blue", marker = "x", s = 110)
+        # plt.scatter(x = curva_2_completa[fin_2][0], y =curva_2_completa[fin_2][1], c = "pink", marker = "x", s = 110)
         
         dist1 = calcular_min_distance(xy, curva_completa[inicio:fin])
         dist2 = calcular_min_distance(xy, curva_2_completa[inicio_2:fin_2])
+
         
         # minima_distancia = calcular_min_distance(xy, curva_completa)      
         
@@ -1130,17 +1380,21 @@ class Curvas:
         El valor es el valor de la curva, y el punto más cercano a x, y
         """
         dic = {}
+
+        #Creo las claves de los diccionarios
         for curva, ubicacion in zip(curvas_cercanas, ["inicio", "medio", "fin"]):
             dic[ubicacion] = [curva]
 
+        #Lleno el diccionario
         for curva, ubicacion in zip(curvas_cercanas, ["inicio", "medio", "fin"]):
             curva_completa = self.get_puntos_curva_completa(curvas_in, curva)
             curva_discreta = self.get_puntos_curva(curvas_in, curva)
+
             if ubicacion == "medio":
-                
                 punto, medio = self.calcular_punto_minimo((x,y), curva_discreta, curva_completa)
             else:
                 punto, _ =self.calcular_punto_minimo((x,y), curva_discreta, curva_completa)
+            
             dic[ubicacion].append(punto)
 
         #Busca en la curva del medio, un punto que este a una distanica x, para poder utilizarlo como origen, para calcular producto cruzado
@@ -1148,10 +1402,8 @@ class Curvas:
 
         #Setea el punto de origen como referencia para calcular el producto cruzado
         try:
-          
             punto_origen = curva_discreta[medio-1]
         except:
-            
             punto_origen = curva_discreta[medio+1]
 
         dic["origen"] = (punto_origen[0], punto_origen[1])
@@ -1167,12 +1419,12 @@ class Curvas:
         medio = dic.pop("medio")[1]
 
         for k, v in dic.items():
-            if producto_cruzado(origen, medio, v[1]) > 0:
+            if producto_cruzado(origen, medio, v[1]) >= 0:
                 punto_der = v
             else:
                 punto_izq = v
             
-        if producto_cruzado(origen, medio, punto) > 0:
+        if producto_cruzado(origen, medio, punto) >= 0:
             curve2 = (punto_der[0], punto_der[1])
         elif(producto_cruzado(origen, medio ,punto) < 0):
             curve2 = (punto_izq[0] , punto_izq[1])
@@ -1185,12 +1437,16 @@ class Curvas:
         Si el punto cae sobre un punto de la curva en la matriz, no se puede determinar de que lado
         de la curva esta el punto, por lo que se hace es obtener las 3 curvas, el punto más cercano de
         cada una y luego un producto cruzado para determinar de que lado esta el punto
+        
+        La clave 99999.0 ya no es necesaria, en la matriz ya no se encuentre este valor.
+        
         """
+        
         # fig, axes = plt.subplots()
-        #Este diccionario devuelve para un valor de la curva, cuáles son las curvas próxmas
+        #Este diccionario devuelve para un valor de la curva, cuáles son las curvas próximas
         curvas_mas_cercanas = {
             'CL-Calientes': {
-                '0.0': {0.0, 1.0},
+                  '0.0': {0.0, 1.0},
                   '1.0': {0.0, 1.0, 2.0},
                   '2.0': {1.0, 2.0, 3.0},
                   '3.0': {2.0, 3.0, 4.0},
@@ -1198,6 +1454,7 @@ class Curvas:
                   '5.0': {4.0, 5.0, 6.0},
                   '6.0': {5.0, 6.0},
                   '99999.0': None},
+
             'CL-Frias': {'1.0': {1.0, 2.0},
                         '2.0': {1.0, 2.0, 3.0},
                         '3.0': {2.0, 3.0, 4.0},
@@ -1205,99 +1462,124 @@ class Curvas:
                         '5.0': {4.0, 5.0},
                         '99999.0': None},
             'Landolt': {},
-            'Logg': {'2.8': {2.8, 3.0},
+
+            'Logg': {
+                '2.7': {2.7, 2.8},
+                '2.8': {2.7,2.8, 3.0},
                 '3.0': {3.2, 2.8, 3.0},
                 '3.2': {3.2, 3.0},
-                '3.4000000000000004': {3.6000000000000005, 3.4000000000000004},
-                '3.6000000000000005': {3.4000000000000004,
-                                        3.6000000000000005,
-                                        3.8000000000000007},
-                '3.8000000000000007': {3.6000000000000005,
-                                        3.8000000000000007,
-                                        4.000000000000001},
-                '4.000000000000001': {3.8000000000000007,
-                                        4.000000000000001,
-                                        4.1000000000000005},
-                '4.1000000000000005': {4.2, 4.000000000000001, 4.1000000000000005},
-                '4.2': {4.3, 4.1000000000000005, 4.2},
-                '4.3': {4.2, 4.3},
-                '99999.0': None},
-        'Mbol': {'-0.5': {-0.5, -1.0},
-                '-1.0': {-0.5, -1.0, -1.5},
-                '-1.5': {-1.0, -2.0, -1.5},
-                '-2.0': {-2.5, -2.0, -1.5},
-                '-2.5': {-3.0, -2.5, -2.0},
-                '-3.0': {-3.5, -3.0, -2.5},
-                '-3.5': {-3.0, -4.0, -3.5},
-                '-4.0': {-4.5, -4.0, -3.5},
-                '-4.5': {-5.0, -4.5, -4.0},
-                '-5.0': {-5.0, -4.5, -5.5},
-                '-5.5': {-6.0, -5.5, -5.0},
-                '-6.0': {-6.5, -6.0, -5.5},
-                '-6.5': {-7.0, -6.5, -6.0},
-                '-7.0': {-7.0, -6.5, -7.5},
-                '-7.5': {-8.0, -7.5, -7.0},
-                '-8.0': {-8.0, -7.5},
-                '99999.0': None},
-        'Mv': {'-0.5': {-0.5, 0.0, -1.0},
+                '3.4': {3.6, 3.4},
+                '3.6': {3.4,3.6,3.8},
+                '3.8': {3.6,3.8,4.0},
+                '4.0': {3.8,4.0,4.1},
+                '4.1': {4.2, 4.0, 4.1},
+                '4.2': {4.3, 4.1, 4.2},
+                '4.3': {4.2, 4.3, 4.35},
+                '4.35': {4.3, 4.35},
+                '99999.0': None
+            },
+                
+            'Mbol': {
+                    '-0.25': {-0.25, 0.0},
+                    '-0.5': {-0.25, -0.5, -1.0},
+                    '-1.0': {-0.5, -1.0, -1.5},
+                    '-1.5': {-1.0, -2.0, -1.5},
+                    '-2.0': {-2.5, -2.0, -1.5},
+                    '-2.5': {-3.0, -2.5, -2.0},
+                    '-3.0': {-3.5, -3.0, -2.5},
+                    '-3.5': {-3.0, -4.0, -3.5},
+                    '-4.0': {-4.5, -4.0, -3.5},
+                    '-4.5': {-5.0, -4.5, -4.0},
+                    '-5.0': {-5.0, -4.5, -5.5},
+                    '-5.5': {-6.0, -5.5, -5.0},
+                    '-6.0': {-6.5, -6.0, -5.5},
+                    '-6.5': {-7.0, -6.5, -6.0},
+                    '-7.0': {-7.0, -6.5, -7.5},
+                    '-7.5': {-8.0, -7.5, -7.0},
+                    '-8.0': {-8.25, -8.0, -7.5},
+                    '-8.25': {-8.25, -8.0},
+                    '99999.0': None
+            },
+            
+            'Mv': {
+                '0.75': {0.75, 0.5},
+                '0.5': {0.75, 0.5, 0.0},
+                '0.0': {0.0, -0.5, 0.5},
+                '-0.5': {-0.5, 0.0, -1.0},
                 '-1.0': {-0.5, -1.0, -2.0},
                 '-2.0': {-3.0, -2.0, -1.0},
                 '-3.0': {-4.0, -3.0, -2.0},
                 '-4.0': {-5.0, -4.0, -3.0},
                 '-5.0': {-6.0, -5.0, -4.0},
-                '-6.0': {-6.0, -5.0},
-                '0.0': {0.0, -0.5, 0.5},
-                '0.5': {0.5, 0.0},
-                '99999.0': None},
-        'PHIo-Calientes': {'0.66': {0.67, 0.66},
-                            '0.67': {0.67, 0.66, 0.68},
-                            '0.68': {0.68, 0.67, 0.69},
-                            '0.69': {0.69, 0.68, 0.7},
-                            '0.7': {0.7, 0.69, 0.72},
-                            '0.72': {0.72, 0.7, 0.76},
-                            '0.76': {0.76, 0.72, 0.8},
-                            '0.8': {0.8, 0.76, 0.86},
-                            '0.86': {0.86, 0.8, 0.93},
-                            '0.93': {0.93, 0.86, 1.05},
-                            '1.05': {0.93, 1.05, 1.12},
-                            '1.12': {1.27, 1.12, 1.05},
-                            '1.27': {1.27, 1.12},
+                '-6.0': {-6.25, -6.0, -5.0},
+                "-6.25":{-6.25,-6.0 },
+                '99999.0': None
+            },
+            
+            'PHIo-Calientes': { '0.655': {0.655, 0.66},
+                                '0.66': {0.67, 0.66, 0.665},
+                                '0.67': {0.67, 0.66, 0.68},
+                                '0.68': {0.68, 0.67, 0.69},
+                                '0.69': {0.69, 0.68, 0.7},
+                                '0.7': {0.7, 0.69, 0.72},
+                                '0.72': {0.72, 0.7, 0.76},
+                                '0.76': {0.76, 0.72, 0.8},
+                                '0.8': {0.8, 0.76, 0.86},
+                                '0.86': {0.86, 0.8, 0.93},
+                                '0.93': {0.93, 0.86, 1.05},
+                                '1.05': {0.93, 1.05, 1.12},
+                                '1.12': {1.27, 1.12, 1.05},
+                                '1.24': {1.24, 1.12},
+                                '99999.0': None},
+
+            'PHIo-Frias': { '1.16': {1.16, 1.27},
+                            '1.27': {1.45, 1.27, 1.16},
+                            '1.45': {1.27, 1.62, 1.45},
+                            '1.62': {1.77, 1.62, 1.45},
+                            '1.77': {1.77, 1.97, 1.62},
+                            '1.97': {1.97, 2.14, 1.77},
+                            '2.14': {1.97, 2.14, 2.27},
+                            '2.27': {2.4, 2.27, 2.14},
+                            '2.4':  {2.65, 2.4, 2.27},
+                            '2.65': {2.77, 2.65, 2.4},
+                            '2.77': {2.77, 2.65},
                             '99999.0': None},
-        'PHIo-Frias': {'1.27': {1.45, 1.27},
-                        '1.45': {1.27, 1.62, 1.45},
-                        '1.62': {1.77, 1.62, 1.45},
-                        '1.77': {1.77, 1.97, 1.62},
-                        '1.97': {1.97, 2.14, 1.77},
-                        '2.14': {1.97, 2.14, 2.27},
-                        '2.27': {2.4, 2.27, 2.14},
-                        '2.4': {2.65, 2.4, 2.27},
-                        '2.65': {2.65, 2.4},
+
+            'TE-Calientes': {
+                            '5.5': {6.0, 5.5},
+                            '6.0': {8.0, 6.0, 5.5},
+                            '8.0': {10.0,8.0, 6.0},
+                            '10.0': {8.0, 10.0, 11.0},
+                            '11.0': {10.0, 11.0, 12.0},
+                            '12.0': {11.0, 12.0, 13.0},
+                            '13.0': {12.0, 13.0, 15.0},
+                            '15.0': {17.0, 13.0, 15.0},
+                            '17.0': {17.0, 19.0, 15.0},
+                            '19.0': {17.0, 19.0, 20.0},
+                            '20.0': {19.0, 20.0, 22.0},
+                            '22.0': {20.0, 22.0, 23.0},
+                            '23.0': {25.0, 22.0, 23.0},
+                            '25.0': {25.0, 23.0},
+                            '99999.0': None},
+            
+            'TE-Frias': {
+                        '24.0': {24.0, 25.0},
+                        '25.0': {24.0, 25.0, 27.0},
+                        '27.0': {25.0, 27.0, 30.0},
+                        '30.0': {32.0, 27.0, 30.0},
+                        '32.0': {32.0, 34.0, 30.0},
+                        '34.0': {32.0, 34.0, 36.0},
+                        '36.0': {34.0, 36.0, 37.0},
+                        '37.0': {36.0, 37.0, 38.0},
+                        '38.0': {40.0, 37.0, 38.0},
+                        '40.0': {41.0, 40.0, 38.0},
+                        '41.0': {41.0, 40.0},
                         '99999.0': None},
-        'TE-Calientes': {'10.0': {8.0, 10.0, 11.0},
-                        '11.0': {10.0, 11.0, 12.0},
-                        '12.0': {11.0, 12.0, 13.0},
-                        '13.0': {12.0, 13.0, 15.0},
-                        '15.0': {17.0, 13.0, 15.0},
-                        '17.0': {17.0, 19.0, 15.0},
-                        '19.0': {17.0, 19.0, 20.0},
-                        '20.0': {19.0, 20.0, 22.0},
-                        '22.0': {20.0, 22.0, 23.0},
-                        '23.0': {25.0, 22.0, 23.0},
-                        '25.0': {25.0, 23.0},
-                        '6.0': {8.0, 6.0},
-                        '8.0': {8.0, 10.0, 6.0},
-                        '99999.0': None},
-        'TE-Frias': {'25.0': {25.0, 27.0},
-                    '27.0': {25.0, 27.0, 30.0},
-                    '30.0': {32.0, 27.0, 30.0},
-                    '32.0': {32.0, 34.0, 30.0},
-                    '34.0': {32.0, 34.0, 36.0},
-                    '36.0': {34.0, 36.0, 37.0},
-                    '37.0': {36.0, 37.0, 38.0},
-                    '38.0': {40.0, 37.0, 38.0},
-                    '40.0': {40.0, 38.0},
-                    '99999.0': None},
-        'Teff': {'10000.0': {10000.0, 11000.0, 9500.0},
+            
+            'Teff': {
+                '9250.0':  {9500.0 , 9250.0 },
+                '9500.0':  {10000.0, 9500.0, 9250.0},
+                '10000.0': {10000.0, 11000.0, 9500.0},
                 '11000.0': {11000.0, 10000.0, 12500.0},
                 '12500.0': {11000.0, 12500.0, 15000.0},
                 '15000.0': {15000.0, 12500.0, 17500.0},
@@ -1306,18 +1588,20 @@ class Curvas:
                 '22500.0': {20000.0, 22500.0, 25000.0},
                 '25000.0': {25000.0, 30000.0, 22500.0},
                 '30000.0': {30000.0, 35000.0, 25000.0},
-                '35000.0': {35000.0, 30000.0},
-                '9500.0': {10000.0, 9500.0},
-                '99999.0': None}}
+                '35000.0': {37500.0, 35000.0, 30000.0},
+                '37500.0': {37500.0, 35000.0},
+                '99999.0': None
+            }
+        }
 
         curvas_in = self.Leo_Archivo()
-        titulo = self.nombrar_archivo(curvas_in)
 
-        curvas_cercanas = sorted(curvas_mas_cercanas[titulo][str(curva)])
+        curvas_cercanas = sorted(curvas_mas_cercanas[self.titulo][str(curva)])  
 
+        #Si el largo es 2 quiere decir que cayo en alguna las curvas más externas.
         if len(curvas_cercanas) == 3:
-
-            dic = self.buscar_entre_curvas(x, y, curvas_cercanas, curvas_in)            
+            
+            dic = self.buscar_entre_curvas(x, y, curvas_cercanas, curvas_in)
             curve_punto1, curve_punto2 = self.elegir_curvas(dic, (x,y))
 
             curva1 = curve_punto1[0]
@@ -1327,8 +1611,8 @@ class Curvas:
 
             # self.graficar_curvas(curvas_in, [curva1, curva2], axes) 
             # self.graficar_punto((x,y), color="black", marker="O")
-            # self.graficar_punto(punto1, color="yellow", marker="-")
-            # self.graficar_punto(punto2, color="green", marker="-")
+            self.graficar_punto(punto1, color="red", marker="-", s = 200)
+            self.graficar_punto(punto2, color="green", marker="-", s = 200)
 
             distancia_1 = distancia_euclidea(x, punto1[0], y , punto1[1])
             distancia_2 = distancia_euclidea(x, punto2[0], y , punto2[1])
@@ -1343,16 +1627,24 @@ class Curvas:
             # self.graficar_punto((x,y), color="black", marker="O")
             
 
-            distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x,y), curvas_in, curva1, curva2)
-
+            # distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x,y), curvas_in, curva1, curva2)
+            distancia_1, distancia_2, dentro_de_curvas = self.minimas_distancias_con_validación((x, y), curvas_in, curva1, curva2)
+            print(f"Distancia 1: {distancia_1}, distancia 2: {distancia_2}, dentro de curvas: {dentro_de_curvas}")
+            if not dentro_de_curvas:
+                print("El punto esta fuera de las curvas")
+                return 99999.0
+        #Determino si el punto no esta realmente fuera de las curvas
+                          
         #Calculo la nueva magnitud:
         distancia_entre_curvas = distancia_1 + distancia_2
         magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / distancia_entre_curvas
-                                    
-        # print(f"Magnitud_: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
+                                        
+        print(f"Magnitud_: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
 
-        # plt.show()
+        plt.show()
         return magnitud_nueva
+        
+            
 
             
 
@@ -1380,11 +1672,11 @@ class Curvas:
     "Logg" : {
         "3.0" : (3.0 , 3.2 ),
         "3.2" : (3.2 ,3.0 ),
-        "3.4000000000000004" : (3.4000000000000004 ,3.6000000000000005 ),
-        "3.6000000000000005" : (3.6000000000000005 ,3.8000000000000007),
-        "3.8000000000000007" : (3.8000000000000007 ,4.000000000000001),
-        "4.000000000000001" : (4.000000000000001 ,4.1000000000000005 ),
-        "4.1000000000000005" : (4.1000000000000005 ,4.2 ),
+        "3.4" : (3.4 ,3.6 ),
+        "3.6" : (3.6 ,3.8),
+        "3.8" : (3.8 ,4.0),
+        "4.0" : (4.0 ,4.1 ),
+        "4.1" : (4.1 ,4.2 ),
         "4.2" : (4.2 ,4.3 ),
         "4.3" : (None, None ),
         "2.8" :  (2.8 , 3.0),
@@ -1500,9 +1792,8 @@ class Curvas:
         valor_en_matriz = str(self.matriz[x][y])
                 
         curvas_in = self.Leo_Archivo()
-        titulo = self.nombrar_archivo(curvas_in)
         
-        dict_curvas = curves[titulo]
+        dict_curvas = curves[self.titulo]
         entre_curvas = dict_curvas[valor_en_matriz]
                     
         return entre_curvas
@@ -1534,33 +1825,165 @@ class Curvas:
         """
         curva1, curva2 = map(float, celda.split(" "))
         curvas_in = self.Leo_Archivo()
-
+# 
         distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x, y), curvas_in, curva1, curva2)
-                            
-        #Calculo la nueva magnitud:
+        # distancia_1, distancia_2, dentro_de_curvas = self.minimas_distancias_con_validación((x, y), curvas_in, curva1, curva2)
+        
+        
         distancia_entre_curvas = distancia_1 + distancia_2
+            
+        print(f"magnitud = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_entre_curvas:.4} + {distancia_2:.4}")
         magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / distancia_entre_curvas
                                 
         # print(f"Magnitud: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
-
         return magnitud_nueva
+    
+    
+    def evaluo_extrapolar(self, celda):
+        """
+        Evalua si el punto esta fuera de las curvas, si es así, indico que se esta extrapolando
+        """
+
+        if self.titulo in ["Landolt", "CL-Calientes", "CL-Frias"]:
+            return False
+        
+        curvas_de_extrapolacion = {
+        
+            "Logg" : {
+                "2.7" : (2.7 ,2.8 ), #Extrapolación
+                "4.3" : (4.3 ,4.35), #Extrapolación
+            },
+
+            "Mbol" : {
+                "-8.25": (-8.25,-7.5 ), #Extrapolación
+                "-0.5" : (-0.5 ,-0.25), #Extrapolación
+            },
+
+            "Mv" : {
+                "-6.25": (-6.25,-6.0 ), #Extrapolación
+                "0.5"  : (0.5  ,0.75  ), #Extrapolación
+            },
+
+            "PHIo-Calientes" : {
+                "0.665": (0.665 ,0.67), #Extrapolación
+                "1.12" : (1.12 ,1.24 ), #Extrapolación  
+            },
+
+            "PHIo-Frias" : {
+                "1.27" : (1.45 , 1.27), #Extrapolación
+                "2.77" : (2.77, 2.65), #Extrapolación
+            },
+
+            "TE-Calientes" : {
+                "6.0" :  (5.5, 6.0), #Extrapolación
+                "25.0" : (23.0 ,25.0 ), #Extrapolación
+            },
+
+            "TE-Frias" : {
+                "25.0" : (24.0 ,25.0 ), #Extrapolación
+                "41.0" : (40.0 ,41.0), #Extrapolación
+            },
+
+            "Teff" : {
+                "9250.0"  : (9500.0 , 9250.0 ), #Extrapolación
+                "35000.0" : (37500.0 ,35000.0 ), #Extrapolación
+            }
+        }
+        
+        curvas_externas = {
+            "Logg" : {
+                "2.7",
+                "4.35" 
+            },
+
+            "Mbol" : {
+                "-8.25",
+                "-0.25"
+            },
+
+            "Mv" : {
+                "-6.25",
+                "0.75" 
+            },
+
+            "PHIo-Calientes" : {
+                "0.665", 
+                "1.24" 
+            },
+
+            "PHIo-Frias" : {
+                "1.27",
+                "2.77" 
+            },
+
+            "TE-Calientes" : {
+                "5.5",
+                "25.0" 
+            },
+
+            "TE-Frias" : {
+                "24.0",
+                "41.0" 
+            },
+
+            "Teff" : {
+                "9250.0" ,
+                "37500.0"
+            }
+        }
+        
+        valores = curvas_de_extrapolacion[self.titulo].values()
+        claves = curvas_externas[self.titulo]
+        
+        for v in valores:
+            if celda == f"{v[0]} {v[1]}":
+                #El punto esta en un area de extrapolación
+                return True
+        
+        celda = str(celda)
+        for k in claves:
+            if celda == k:
+                #El punto esta sobre una de las curvas externas (que tienen valore float64)
+                return True
+
+        #Si su valor no cae sobre curvas externas ni las 2 areas externas, se debe interpolar.
+        return False
     
     def Interpolo(self, x, y):
         print("interpolando ", self.titulo)
+
+        #Si cae dentro de las curvas exteriores es True
+        extrapolo=False
+        
         magnitud_nueva = 99999.
         i1, i2, xx, j1, j2, yy = self.Parametrizar(x, y)
+
+        # plt.scatter(xx/self.kx, yy/self.ky, color="black", marker="o")
         #Si el punto a buscar esta fuera del rango calculo fallido
-        if (i1 < xx < i2) and j1 < yy < j2:             
+        # print(f"i1: {i1} xx: {xx} i2: {i2}  j1: {j1} yy: {yy} j2: {j2}, {(i1 <= xx <= i2)} and {(j1 <= yy <= j2)}")
+        
+        if (i1 <= xx <= i2) and (j1 <= yy <= j2):             
             
             celda = self.query_matriz(xx,yy)
-            
-            if celda != "None None":
+            print("Valor de la celda: ",celda)
+            # Casos posibles:
+            # Es None None, entonces cae fuera del area de las curvas
+            # Es un solo valor, entonces cae sobre una curva
+            # Es un string con dos valores, entonces cae entre dos curvas
+            # Es un string con dos valores y estos valores son de extrapolación
 
+            if celda != "None None":
+                
+                #Esta variable sirve para indicar en el archivo de salida si es que el valor fue extrapolado o no
+                extrapolo = self.evaluo_extrapolar(celda)
+                if extrapolo:
+                    print("El valor calculado será resultado de una extrapolación")
+                
                 #El valor cae sobre la curva
                 if type(celda) == np.float64:
-                    #Resolver utilizando producto cruzado
+                    
+                    #Resolver utilizando producto cruzado para determinar de que lado de la curva se encuentra el punto.
                     magnitud_nueva = self.interpolo_sobre_punto(x, y, celda)
-                    # magnitud_nueva = celda
 
                 #Cae entre 2 curvas
                 else:
@@ -1569,9 +1992,10 @@ class Curvas:
             if magnitud_nueva > 99990.:
                 lohice=False
                 extrapolo=False
+                print("Calcula Fallido")
             else:
                 lohice=True
-                extrapolo=False
+                
             return  lohice, magnitud_nueva, extrapolo
                 
         print("Calcula Fallido")
@@ -1711,7 +2135,7 @@ class Curvas:
                 #  dist_13 > dist_min_3  y  dist_12 < dist_min_2
 
                 curvas_in = self.Leo_Archivo()
-                titulo = self.nombrar_archivo(curvas_in)
+                # titulo = self.nombrar_archivo(curvas_in)
                 # print(titulo)
                 
                 #Versión sin map

@@ -10,17 +10,29 @@ def graficar(dir):
     # file_list = dir
 
 
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/Curvas_inferiores/{dir}/*.dat')
     file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/{dir}/*.dat')
-    print(file_list)
+    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar/{dir}/*.dat')
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/output_relleno_fino/{dir}/*.dat')
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/PHIo/Calientes/*.dat')
+
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/CL/Calientes/*.dat')
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/Curvas_superiores/TE/Calientes/*.dat')
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/Curvas_superiores/PHIo/Frias/*.dat')
+    
+    # print(file_list)
+
     x_values = []
     y_values = []
+    x_new = []
+    y_new = []
     
     list_curves = []
     
     # Iterate over the files
     valores = []
     for file_path in file_list:
-        print(file_path)
+        # print(file_path)
         # Open the file and read the coordinates
         with open(file_path, 'r') as f:
             
@@ -28,49 +40,39 @@ def graficar(dir):
                 if line.startswith("#"):
                     continue
                 else:
-                    x, y = map(float, line.strip().split())
-                    x_values.append(x)
-                    y_values.append(y)
+                    if (file_path.endswith("rior.dat")):
+                        x = float(line.strip().split()[0])
+                        y = float(line.strip().split()[1])
+                        x_new.append(x)
+                        y_new.append(y)
+
+                    else:
+                        
+                        x = float(line.strip().split()[0])
+                        y = float(line.strip().split()[1])
+                        x_values.append(x)
+                        y_values.append(y)
                     
         # Create a scatter plot
-    puntos = [(0.15, 25), (0.15, 30), (0.18, 20), (0.18, 25), (0.21, 15), (0.21, 20), (0.24, 10), (0.24, 15), (0.27, 10), (0.3, 10), (0.39, 60), (0.39, 65), (0.42, 55), (0.42, 60), (0.42, 65), (0.42, 70), (0.45, 55), (0.45, 70), (0.48, 50), (0.48, 55), (0.48, 70), (0.48, 75), (0.51, 50), (0.51, 75), (0.54, 50), (0.57, 45), (0.57, 50)]
-
-    plt.scatter([x[0] for x in puntos], [x[1] for x in puntos], color='red', marker='o')
-    plt.draw()
-    plt.scatter(x_values, y_values, color='blue', marker='.')  
-    plt.show()
+    
+  
+    plt.scatter(x_values, y_values, color='blue', marker='.') 
+    plt.scatter(x_new, y_new, color='red', marker='.') 
+    # plt.show()
     # plt.savefig(f"./Imagenes_Curvas_Sin_Rellenar/{dir.split('/')[-1]}.png") 
-    plt.close()
+    # plt.close()
 # Ejemplo de uso:
     
 def main(paths):
-    # lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
-    lista_input = ["Mv/"]
+    lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
+    lista_input = ["Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
+    lista_input = [ "Teff/"   ]
+    # c = 0
+    # lista_input = [lista_input[c]]
+
     for dir in lista_input:
         graficar(dir)
-    # for dir in paths:
-    #     try:
-    #         graficar(dir)
-    #     except Exception as e:
-    #         print(f"Error al cargar la matriz desde el archivo: {e}")
-    #         continue
+  
 
 if __name__ == "__main__":
     main([""])
-
-
-#Checkea si hay otro directorio dentro
-
-# for file in path:
-#     matriz_resultante = cargar_matriz_desde_archivo(file)
-#     matriz_resultante[matriz_resultante == 99999.0] = 0
-#     plt.matshow(matriz_resultante)
-#     plt.savefig(f'./Imagenes_Curvas_Rellenas/{file.split("/")[-1].split(".")[0]}.png')
-#     plt.draw()
-
-# matriz_resultante = cargar_matriz_desde_archivo("/home/valen/PPS/MIDE3700/tests/Curvas_en_text/TE-Frias.txt")
-# #Reemplazar 99999.9 por 0
-# matriz_resultante[matriz_resultante == 99999.0] = 0
-
-# plt.matshow(matriz_resultante)
-# plt.show()

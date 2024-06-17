@@ -7,6 +7,10 @@ import os
 def sign(p1, p2, p3):
     return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1]);
 
+def entre_puntos(xy, p1, p2):
+    """ Dado un punto xy, determina si este punto se encuentra entre 2 puntos p1 y p2"""
+    return (p1[0] <= xy[0] <= p2[0] or p2[0] <= xy[0] <= p1[0]) and (p1[1] <= xy[1] <= p2[1] or p2[1] <= xy[1] <= p1[1])
+
 def point_in_triangle(pt, v1, v2, v3):
     d1 = (0,0)
     d2 = (0,0)
@@ -72,8 +76,6 @@ def calcular_min_distance(xy, curva):
     min_point = (0, 0)
 
     for punto in curva:
-        # x2 = redondear(punto[0], 2)
-        # y2 = redondear(punto[1], 1)
         x2 = punto[0]
         y2 = punto[1]
 
@@ -90,8 +92,9 @@ def calcular_min_distance(xy, curva):
     # output.close()
 
     # # print("El punto más cercano esta en la posición: ",min_point[0], min_point[1])
-    # plt.scatter(x = min_point[0], y = min_point[1], c = "pink", marker = "o", s = 50)
-
+    plt.scatter(x = min_punto_real[0], y = min_punto_real[1], c = "pink", marker = "o", s = 50)
+    # plt.show()
+    # plt.draw()
     # print(f"Punto minimo: {min_point}, que es {min_punto_real}, distance {min_distance}")
     
     return min_distance
@@ -123,7 +126,7 @@ def maximizar_pantalla():
     return
 
 def distancia_euclidea_v2(x1, x2, y1, y2):
-    di = ((x1 - x2) ** 2)
+    di = ((x1*100 - x2*100) ** 2)
     dj = ((y1 - y2) ** 2)
     
     return math.sqrt( di + dj )
