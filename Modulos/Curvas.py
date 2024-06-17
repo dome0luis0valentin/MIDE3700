@@ -220,7 +220,7 @@ class Curvas:
             self.kx= 100
             self.ky= 10
 
-            print(self.cte_curvas)
+            # print(self.cte_curvas)
 
         elif magnitud == "Mv":
 
@@ -235,7 +235,7 @@ class Curvas:
             self.cte_curvas.append( 0.5 )
             self.cte_curvas.append( 0.75 )
 
-            print(self.cte_curvas)
+            # print(self.cte_curvas)
 
             self.x0= 0.
             self.xn= 0.73
@@ -261,7 +261,7 @@ class Curvas:
             self.kx= 100
             self.ky= 10
 
-            print(self.cte_curvas)
+            # print(self.cte_curvas)
         
         elif magnitud == "PHIo_c":
 
@@ -1611,8 +1611,8 @@ class Curvas:
 
             # self.graficar_curvas(curvas_in, [curva1, curva2], axes) 
             # self.graficar_punto((x,y), color="black", marker="O")
-            self.graficar_punto(punto1, color="red", marker="-", s = 200)
-            self.graficar_punto(punto2, color="green", marker="-", s = 200)
+            # self.graficar_punto(punto1, color="red", marker="-", s = 200)
+            # self.graficar_punto(punto2, color="green", marker="-", s = 200)
 
             distancia_1 = distancia_euclidea(x, punto1[0], y , punto1[1])
             distancia_2 = distancia_euclidea(x, punto2[0], y , punto2[1])
@@ -1629,7 +1629,7 @@ class Curvas:
 
             # distancia_1, distancia_2 = self.calcular_minimas_distancias_entre_curvas((x,y), curvas_in, curva1, curva2)
             distancia_1, distancia_2, dentro_de_curvas = self.minimas_distancias_con_validación((x, y), curvas_in, curva1, curva2)
-            print(f"Distancia 1: {distancia_1}, distancia 2: {distancia_2}, dentro de curvas: {dentro_de_curvas}")
+            # print(f"Distancia 1: {distancia_1}, distancia 2: {distancia_2}, dentro de curvas: {dentro_de_curvas}")
             if not dentro_de_curvas:
                 print("El punto esta fuera de las curvas")
                 return 99999.0
@@ -1641,7 +1641,7 @@ class Curvas:
                                         
         print(f"Magnitud_: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
 
-        plt.show()
+        # plt.show()
         return magnitud_nueva
         
             
@@ -1832,7 +1832,7 @@ class Curvas:
         
         distancia_entre_curvas = distancia_1 + distancia_2
             
-        print(f"magnitud = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_entre_curvas:.4} + {distancia_2:.4}")
+        # print(f"magnitud = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_entre_curvas:.4} + {distancia_2:.4}")
         magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / distancia_entre_curvas
                                 
         # print(f"Magnitud: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
@@ -1950,7 +1950,7 @@ class Curvas:
         return False
     
     def Interpolo(self, x, y):
-        print("interpolando ", self.titulo)
+        # print("interpolando ", self.titulo)
 
         #Si cae dentro de las curvas exteriores es True
         extrapolo=False
@@ -1965,7 +1965,7 @@ class Curvas:
         if (i1 <= xx <= i2) and (j1 <= yy <= j2):             
             
             celda = self.query_matriz(xx,yy)
-            print("Valor de la celda: ",celda)
+            # print("Valor de la celda: ",celda)
             # Casos posibles:
             # Es None None, entonces cae fuera del area de las curvas
             # Es un solo valor, entonces cae sobre una curva
