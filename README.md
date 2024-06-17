@@ -6,4 +6,6 @@ Puedes cambiar el tamaño de resolución de pantalla en el archivo /Configuracio
 
 git clone https://github.com/dome0luis0valentin/MIDE3700
 
+cd MIDE3700
+
 pip install -r requirement.py
