@@ -1,5 +1,6 @@
 from random import randint
 import matplotlib.pyplot as plt
+from tests.show_all_curves import graficar
 
 
 def probar_errores(curvas):
@@ -94,6 +95,7 @@ def probar(curvas):
     # x: 0.19 - 0.22
     # y: 43.0 - 84.0
 
+
     #Casos fijos:
     xs = [x/1000 for x in range(50, 500, 40)]
     ys = [y for y in range(-10, 75,20)]
@@ -101,19 +103,25 @@ def probar(curvas):
     # xs = [0.09]
     # ys = [70]
     
-    xs = [0.20291153295793762, 0.20291153295793762, 0.20291153295793762, 0.20291153295793762, 0.20291153295793762]
-    ys = [5.77, 6.77, 7.77, 8.77, 9.77]
+    xs = [x/1000 for x in range(0, 700, 100)]
+    ys = [y/10 for y in range(80, 0, -5)]
+    # ys = [7.0 for y in range(10, 80, 5)]
+    # xs = [0.3]
+    # ys = [7.0]
     
     magnitudes = []
     ejex = []
     ejey = []
     
-    # for x,y in zip(xs,ys):
-    for x in xs:
-        for y in ys:
+    
+    
+    for x,y in zip(xs,ys):
+        graficar("TE/Calientes/")
+    # for x in xs:
+    #     for y in ys:
 
     # for i in range(4300, 8400, 100):
-    # if (True):
+        if (True):
         # x = float(randint(1900, 2200)/10000)
         # y = float(randint(4300, 8400)/100)
         # y = i / 100
@@ -122,13 +130,17 @@ def probar(curvas):
             print(f"Prueba con {x , y}")
             ejex.append(x)
             ejey.append(y)
+            plt.scatter(x, y, color="green", marker="o")
             a, b, c = curvas.Interpolo(x, y)
 
+            
             magnitudes.append(b)
+        plt.show()
             #redondear cada valor de la lista ejey a 2 decimales con una función lambda
 
     # valores = [19375.0, 19375.0, 19375.0, 19882.20742392061, 19375.0, 19062.5, 19062.5, 19062.5, 19826.834984182427, 19062.5, 18750.0, 18750.0, 18750.0, 19773.753109471978, 18750.0, 18437.5, 18437.5, 18437.5, 19722.913965907013, 18437.5, 18750.0, 18750.0, 18750.0, 19773.753109471978, 18750.0]
     # plt.scatter(ejex, ejey, color="red", marker=".")
+    
     print(f"Esta son la lista de magnitudes: ", magnitudes)
     # for a, b, c, d in zip(ejex, ejey, magnitudes, valores):
     #     print(a, b, c-d)

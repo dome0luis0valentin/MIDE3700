@@ -11,14 +11,17 @@ def graficar(dir):
 
 
     # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/Curvas_inferiores/{dir}/*.dat')
-    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/{dir}/*.dat')
+    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/{dir}/*.dat')
+    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Suavisar/Output_Suavisar/{dir}/*.dat')
     # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/output_relleno_fino/{dir}/*.dat')
-    file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/Teff/*.dat')
-    
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/PHIo/Calientes/*.dat')
+
+    # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/Curvas/CL/Calientes/*.dat')
     # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/Curvas_superiores/TE/Calientes/*.dat')
     # file_list = glob.glob(f'/home/valen/PPS/MIDE3700/tests/Agregar_area_extrapolar/Curvas_superiores/PHIo/Frias/*.dat')
     
-    print(file_list)
+    # print(file_list)
+
     x_values = []
     y_values = []
     x_new = []
@@ -29,7 +32,7 @@ def graficar(dir):
     # Iterate over the files
     valores = []
     for file_path in file_list:
-        print(file_path)
+        # print(file_path)
         # Open the file and read the coordinates
         with open(file_path, 'r') as f:
             
@@ -55,15 +58,15 @@ def graficar(dir):
   
     plt.scatter(x_values, y_values, color='blue', marker='.') 
     plt.scatter(x_new, y_new, color='red', marker='.') 
-    plt.show()
+    # plt.show()
     # plt.savefig(f"./Imagenes_Curvas_Sin_Rellenar/{dir.split('/')[-1]}.png") 
-    plt.close()
+    # plt.close()
 # Ejemplo de uso:
     
 def main(paths):
     lista_input = ["CL/Calientes/", "CL/Frias/", "Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
     lista_input = ["Logg/", "Mbol/", "PHIo/Frias/", "PHIo/Calientes/", "TE/Frias/", "TE/Calientes/", "Mv/", "Teff/"]
-    lista_input = [ "PHIo/Calientes/"   ]
+    lista_input = [ "Teff/"   ]
     # c = 0
     # lista_input = [lista_input[c]]
 
