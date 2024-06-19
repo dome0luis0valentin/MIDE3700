@@ -1288,6 +1288,30 @@ class Curvas:
         
         return punto, index_curve
     
+    def minimo_punto_busqueda_binaria(self, xy = (1, 1), curvas_in = "", curva = 0):
+        """_summary_
+
+        Args:
+            xy (_type_): _description_
+            curvas_in (_type_): _description_
+            curva1 (_type_): _description_
+            curva2 (_type_): _description_
+        """
+        curva_suavisada = self.get_puntos_curva(curvas_in, curva)
+
+        curva_completa = self.get_puntos_curva_completa(curvas_in, curva)
+
+        medio, _ = self.buscar_medio(xy, curva_suavisada, curvas_in)
+
+        inicio, fin = self.fijar_rango(medio, curva_completa)
+
+        punto = calcular_min_punto(xy, curva_completa[inicio:fin])
+
+        self.graficar_punto(punto, color="pink", marker="o")
+        
+        return punto
+    
+    
     def minimas_distancias_con_validación(self, xy, curvas_in, curva1, curva2):
         """
         Esta función, dado:
@@ -1300,30 +1324,36 @@ class Curvas:
         Existe el caso en el que el punto parece estar entre las curvas, pero realmente cae afuera de las curvas.
         """
         
-        c1 = self.get_puntos_curva(curvas_in, curva1)
-        c2 = self.get_puntos_curva(curvas_in, curva2)
+        # c1 = self.get_puntos_curva(curvas_in, curva1)
+        # c2 = self.get_puntos_curva(curvas_in, curva2)
 
-        curva_completa = self.get_puntos_curva_completa(curvas_in, curva1)
-        curva_2_completa = self.get_puntos_curva_completa(curvas_in, curva2)
+        # curva_completa = self.get_puntos_curva_completa(curvas_in, curva1)
+        # curva_2_completa = self.get_puntos_curva_completa(curvas_in, curva2)
 
-        medio, _ = self.buscar_medio(xy, c1, curvas_in)
+        # medio, _ = self.buscar_medio(xy, c1, curvas_in)
 
-        inicio, fin = self.fijar_rango(medio, curva_completa)
+        # inicio, fin = self.fijar_rango(medio, curva_completa)
 
-        medio, _ = self.buscar_medio(xy, c2, curvas_in)
+        # medio, _ = self.buscar_medio(xy, c2, curvas_in)
 
-        inicio_2, fin_2 = self.fijar_rango(medio, curva_2_completa)
+        # inicio_2, fin_2 = self.fijar_rango(medio, curva_2_completa)
 
-        # dist1 = calcular_min_distance(xy, curva_completa[inicio:fin])
-        # dist2 = calcular_min_distance(xy, curva_2_completa[inicio_2:fin_2])
-        punto_1 = calcular_min_punto(xy, curva_completa[inicio:fin])
-        punto_2 = calcular_min_punto(xy, curva_2_completa[inicio_2:fin_2])
+        # # dist1 = calcular_min_distance(xy, curva_completa[inicio:fin])
+        # # dist2 = calcular_min_distance(xy, curva_2_completa[inicio_2:fin_2])
+        # punto_1 = calcular_min_punto(xy, curva_completa[inicio:fin])
+        # punto_2 = calcular_min_punto(xy, curva_2_completa[inicio_2:fin_2])
+        # self.graficar_punto(punto_1, color="pink", marker="o")
+        # self.graficar_punto(punto_2, color="pink", marker="o")
+
+        punto_1 = self.minimo_punto_busqueda_binaria(xy, curvas_in, curva1)
+        punto_2 = self.minimo_punto_busqueda_binaria(xy, curvas_in, curva2)
+
         dentro_de_curvas = entre_puntos(xy, punto_1, punto_2)
 
         if dentro_de_curvas:
             dist1 = distancia_euclidea_v2(xy[0], punto_1[0], xy[1], punto_1[1])
             dist2 = distancia_euclidea_v2(xy[0], punto_2[0], xy[1], punto_2[1])
-        else: 
+        else:   
             dist1 = 99999.0
             dist2 = 99999.0
         
