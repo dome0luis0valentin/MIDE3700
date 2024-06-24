@@ -840,7 +840,7 @@ class Curvas:
                 self.colorear_vertical(matriz)
                 if titulo == "PHIo-Calientes" or titulo == "TE-Calientes":
                     self.colorear_horizontal_inverso(matriz)
-        if titulo == "TE-Calientes" or titulo == "PHIo-Calientes":
+        if titulo == "TE-Calientes" or titulo == "PHIo-Calientes" or "PHIo-Frias":
             self.mostrar_matriz(matriz, titulo)
             # print(f" \n\n {fila} \n\n")
         
@@ -923,7 +923,6 @@ class Curvas:
         self.matriz = np.full((i2+1, j2+1), 99999.0, dtype=float)
 
         # Leo todos los archivos de las curvas
-        
         
         #Agrego cada curva a la matriz
         for i in range(self.nc):

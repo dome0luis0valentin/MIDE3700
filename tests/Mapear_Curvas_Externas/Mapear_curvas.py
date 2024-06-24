@@ -167,7 +167,7 @@ curves = {
 
     "PHIo-Frias" : {
         "1.16" : (None , None), #Fuera del area de extrapolación
-        "1.27" : (1.45 , 1.27), #Extrapolación
+        "1.27" : (1.27 , 1.16), #Extrapolación
         "1.45" : (1.45 , 1.27 ),
         "1.62" : (1.62 ,1.45 ),
         "1.77" : (1.77 ,1.62 ),
