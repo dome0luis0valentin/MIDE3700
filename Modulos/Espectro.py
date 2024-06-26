@@ -308,6 +308,7 @@ class Espectro:
         else:
             f_ajuste= 'Ajustes/' + self.nombre + '.3' + '.png'# Nombre del archivo
 #
+        # input("Imprimiendo...")
         plt.xlabel('$\lambda$ [$\AA$]')
         plt.ylabel('$\log (F_{\lambda})$')
         plt.plot(self.l_onda, log_flujo, 'b-')
@@ -319,12 +320,13 @@ class Espectro:
         plt.axvline(x=3700., color='k')
         plt.savefig(f_ajuste)
         plt.clf()
+        # input("Fin de impresion...")
 #
         if n == 1:
 #
 # Abro el archivo donde gurde el ajuste
 #
-            f_png= Image.open(f_ajuste).show()
+            # f_png= Image.open(f_ajuste).show()
 #
 # Despliego la ventana
 #

@@ -1668,7 +1668,7 @@ class Curvas:
         distancia_entre_curvas = distancia_1 + distancia_2
         magnitud_nueva = curva1 - distancia_1 * (curva1 - curva2) / distancia_entre_curvas
                                         
-        print(f"Magnitud_: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
+        # print(f"Magnitud_: {magnitud_nueva:.4} = {curva1} - {distancia_1:.4} * ({curva1} - {curva2}) / {distancia_1:.4} + {distancia_2:.4}")
 
         # plt.show()
         return magnitud_nueva
