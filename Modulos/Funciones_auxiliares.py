@@ -284,7 +284,7 @@ def get_puntos_curva_completa(curvas_in, curva, constantes):
         
     return lista_puntos
 
-def get_puntos_curva(constantes, curva):
+def get_puntos_curva(curvas_in, curva, constantes):
         """
         Dada una constante, devuelve una lista de pares x, y con los puntos que representan una
         aproximación de la curva.
@@ -293,13 +293,12 @@ def get_puntos_curva(constantes, curva):
         lista_puntos = []
         index_file = -1
 
-         
         for i in range(len(constantes)):
             if ( constantes[i] == curva ):
                 index_file = i
                 break
-        print(constantes, index_file)
-        lista_puntos = leer_curva(constantes[index_file].replace("Curvas/", "./Curvas_Muestreadas/"))
+
+        lista_puntos = leer_curva(curvas_in[index_file].replace("Curvas/", "./Curvas_Muestreadas/"))
         
         return lista_puntos
 
@@ -429,17 +428,20 @@ def calcular_origen(xy, curva_discreta):
         
         return punto
 
-def minimo_punto_busqueda_binaria( xy = (1, 1), curvas_in = "", curva = 0):
-        """_summary_
+def minimo_punto_busqueda_binaria( xy = (1, 1), curvas_in = "", curva = 0, cte_curvas= []):
+        """
+        Dado un punto xy y una curva, devuelve el punto de la curva que está más cerca de xy
+        utilizando un algoritmo de busqueda binaria, con respecto a la distancia de los puntos a xy
+        por último se calcula la distancia con los puntos alrededor de este punto encontrado
 
         Args:
             xy (tuple): Coordenadas x, y del punto
             curvas_in (string): Ruta de los archivos que contienen las curvas
             curva (float): Valor de la curva
         """
-        curva_suavisada = get_puntos_curva(curvas_in, curva)
+        curva_suavisada = get_puntos_curva(curvas_in, curva, cte_curvas)
 
-        curva_completa = get_puntos_curva_completa(curvas_in, curva, constante)
+        curva_completa = get_puntos_curva_completa(curvas_in, curva, cte_curvas)
 
         medio, _ = buscar_medio(xy, curva_suavisada, curvas_in)
 
@@ -449,7 +451,7 @@ def minimo_punto_busqueda_binaria( xy = (1, 1), curvas_in = "", curva = 0):
         
         return punto
   
-def calcular_minima_distancia_a_curva(xy, curvas_in, curva):
+def calcular_minima_distancia_a_curva(xy, curvas_in, curva, cte_curvas):
         """
         Dado un punto xy y una curva, devuelve la distancia al punto más cercano de la curva
         Args:
@@ -460,7 +462,7 @@ def calcular_minima_distancia_a_curva(xy, curvas_in, curva):
         Returns:
             float: Distancia al punto más cercano de la curva
         """
-        punto = minimo_punto_busqueda_binaria(xy, curvas_in, curva)
+        punto = minimo_punto_busqueda_binaria(xy, curvas_in, curva, cte_curvas)
         dist = distancia_euclidea_v2(xy[0], punto[0], xy[1], punto[1])
 
         return dist
