@@ -250,3 +250,217 @@ def calcular_indice_del_punto_mas_cercano(clic_x, clic_y, coor_x, coor_y):
     
     # Devuelve el índice del punto más cercano
     return indice_mas_cercano
+
+#Mover a nuevo archivo
+def leer_curva(file):
+    """
+        Dada la dirección de un archivo, lo lee y devuelve sus filas en una lista de tuplas
+    """
+    with open(file, 'r') as f_curva:
+                
+        next(f_curva)  # Saltar la primera línea
+
+        lista_puntos = []
+
+        for linea in f_curva:
+            xy = tuple(map(float, linea.split()))
+            lista_puntos.append((xy))
+
+    return lista_puntos
+
+def get_puntos_curva_completa(curvas_in, curva, constantes):
+    """
+        Dada una constante, devuelve una lista de pares x, y con los puntos que representan la curva 
+    """
+    lista_puntos = []
+    index_file = -1
+
+    for i in range(len(constantes)):
+        if ( constantes[i] == curva ):
+            index_file = i
+            break
+        
+    lista_puntos = leer_curva(curvas_in[index_file])
+        
+    return lista_puntos
+
+def get_puntos_curva(constantes, curva):
+        """
+        Dada una constante, devuelve una lista de pares x, y con los puntos que representan una
+        aproximación de la curva.
+        """
+
+        lista_puntos = []
+        index_file = -1
+
+         
+        for i in range(len(constantes)):
+            if ( constantes[i] == curva ):
+                index_file = i
+                break
+        print(constantes, index_file)
+        lista_puntos = leer_curva(constantes[index_file].replace("Curvas/", "./Curvas_Muestreadas/"))
+        
+        return lista_puntos
+
+def elegir_derecha(xy, p1, p2):
+        """
+        Dado un punto (x, y), devuelve True si p1, esta más cerca que p2 a (x, y)
+        """
+
+        x1 = xy[0]
+        y1 = xy[1]
+        x2 = p1[0]
+        y2 = p1[1]
+
+        distancia_p1 = distancia_euclidea_v2(x1, x2, y1, y2)
+
+        x2 = p2[0]
+        y2 = p2[1]
+
+        distancia_p2 = distancia_euclidea_v2(x1, x2, y1, y2)
+
+        return distancia_p1 < distancia_p2
+
+#Mover a nuevo archivo
+def buscar_medio(xy, c1, curvas_in = None, curva1 = None, curva2 = None):
+        """
+        Dada unas coordenadas x e y, retorna el indice de la curva que más se acerca al punto
+        """
+        #Busco en los archivos las 2 curvas, con las coordenadas x e y de cada punto 
+
+        #Mientras no encuentre la distancia minima, buscar
+
+        index_curva = int(len(c1)/2)
+        largo_segmento = int(len(c1)/2)
+        umbral_busqueda = int((len(c1)/100) * 10)
+        
+        punto_actual = c1[index_curva]
+        punto_der = c1[index_curva-1]
+        
+        mover_derecha = elegir_derecha(xy, punto_actual, punto_der)
+
+        #Mientras el tamaño del segmento no sea lo suficientemente pequeño sigo buscando
+        #Pequeño será el 5% del total de los puntos en la curva
+        while (largo_segmento > umbral_busqueda):
+
+            largo_segmento /= 2
+            #Buscar a derecha
+            if mover_derecha:
+                index_curva = int(index_curva + largo_segmento)
+
+                punto_actual = c1[index_curva]
+                punto_der = c1[index_curva-1]
+
+            #Buscar a la izquierda
+            else:
+                index_curva = int(index_curva - largo_segmento)
+
+                punto_actual = c1[index_curva]
+                punto_der = c1[index_curva-1]
+
+            mover_derecha = elegir_derecha(xy, punto_actual, punto_der)
+
+        #Punto_actual en la posición 2, contiene el indice del de este punto en el archivo.
+        medio = int( punto_actual[2] )
+
+        return medio, index_curva
+
+def fijar_rango(medio, curva_completa):
+        """
+        Calculo el inicio y el fin del rango de búsqueda
+        El inicio esta una decima parte de la totalidad de los puntos de la curvas
+        De forma parecida para el fin.
+        """
+        punto_0 = curva_completa[0]
+        punto_ultimo = curva_completa[-1]
+        distancia_ini_fin = distancia_euclidea_v2(punto_0[0], punto_ultimo[0], punto_0[1], punto_ultimo[1])
+
+        largo = len(curva_completa)
+
+        inicio  = medio - int( (len( curva_completa ) / 10) )
+        
+        if inicio < 0:
+            inicio = 0
+        else:
+            punto_inicio = curva_completa[inicio]
+            punto_medio = curva_completa[medio]
+            
+            distancia_ini_medio = distancia_euclidea_v2(punto_inicio[0], punto_medio[0], punto_inicio[1], punto_medio[1])
+
+            while ( distancia_ini_medio < distancia_ini_fin/20) and inicio > 0:
+                inicio -= int( (len( curva_completa ) / 20) )
+                punto_inicio = curva_completa[inicio] if inicio > 0 else curva_completa[0]
+
+                distancia_ini_medio = distancia_euclidea_v2(punto_inicio[0], punto_medio[0], punto_inicio[1], punto_medio[1])
+            
+            inicio = inicio if inicio > 0 else 0
+
+        fin = medio + int( (largo / 10) )
+
+        if fin > largo:
+            fin = largo-1
+        else:
+            punto_fin = curva_completa[fin]
+            punto_medio = curva_completa[medio]
+            distancia_fin_medio = distancia_euclidea(punto_fin[0], punto_medio[0], punto_fin[1], punto_medio[1])
+            
+            # print(f"Distancia fin medio: {distancia_fin_medio}, distancia_ini_fin: {distancia_ini_fin}")
+            while ( distancia_fin_medio < distancia_ini_fin/20 ) and fin < largo:
+                # print(f"Distancia fin medio: {distancia_fin_medio}, distancia_ini_fin: {distancia_ini_fin}")
+                fin += int( largo / 20) 
+
+                punto_fin = curva_completa[largo-1] if fin > largo else curva_completa[fin]
+                distancia_fin_medio = distancia_euclidea(punto_fin[0], punto_medio[0], punto_fin[1], punto_medio[1])
+            
+            fin = fin if fin < largo else largo-1
+
+        # print(f"Retorna {inicio} y {fin}, largo: {largo}")
+        return inicio, fin
+
+ #Mover a Funciones_auxiliares
+def calcular_origen(xy, curva_discreta):
+        """
+        Dado un punto xy y una curva, devuelve el punto de la curva que está más cerca de xy
+        """
+        min_distance = 99999.0
+    
+        punto = calcular_min_punto(xy, curva_discreta)
+        
+        return punto
+
+def minimo_punto_busqueda_binaria( xy = (1, 1), curvas_in = "", curva = 0):
+        """_summary_
+
+        Args:
+            xy (tuple): Coordenadas x, y del punto
+            curvas_in (string): Ruta de los archivos que contienen las curvas
+            curva (float): Valor de la curva
+        """
+        curva_suavisada = get_puntos_curva(curvas_in, curva)
+
+        curva_completa = get_puntos_curva_completa(curvas_in, curva, constante)
+
+        medio, _ = buscar_medio(xy, curva_suavisada, curvas_in)
+
+        inicio, fin = fijar_rango(medio, curva_completa)
+
+        punto = calcular_min_punto(xy, curva_completa[inicio:fin])
+        
+        return punto
+  
+def calcular_minima_distancia_a_curva(xy, curvas_in, curva):
+        """
+        Dado un punto xy y una curva, devuelve la distancia al punto más cercano de la curva
+        Args:
+            xy (tuple): Coordenadas x, y del punto
+            curvas_in (string): Ruta de los archivos que contienen las curvas
+            curva (float): Valor de la curva
+
+        Returns:
+            float: Distancia al punto más cercano de la curva
+        """
+        punto = minimo_punto_busqueda_binaria(xy, curvas_in, curva)
+        dist = distancia_euclidea_v2(xy[0], punto[0], xy[1], punto[1])
+
+        return dist
