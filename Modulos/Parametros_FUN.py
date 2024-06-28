@@ -7,8 +7,6 @@ import Parametros_BCD
 import Curvas
 import Landolt
 import Algebra
-from tests.pruebas_interpolación import probar
-from tests.pruebas_interpolación import probar_mv
 #######################################################################
 #######################################################################
 #############                FUNCION                     ##############

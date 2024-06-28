@@ -31,7 +31,6 @@ from Modulos import Normalizo_espectro
 from Modulos.Curvas import cargar_curvas_multiproceso
 #import Allen
 from Modulos import Distancia
-from tests.pruebas_interpolación import probar
 
 #######################################################################
 #######################################################################
