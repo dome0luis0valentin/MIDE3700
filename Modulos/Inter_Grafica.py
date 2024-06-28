@@ -68,16 +68,17 @@ class Inter_Grafica:
     def draw_point(self, x, y):
         #Agrego el punto a la lista de puntos
 
-        self.xdatalist.append(x)
-        self.ydatalist.append(y)
-            
-        ax = self.espectro.axes  # mantengo los ejes actuales
+        if not (x in self.xdatalist and y in self.ydatalist):
+            self.xdatalist.append(x)
+            self.ydatalist.append(y)
+                
+            ax = self.espectro.axes  # mantengo los ejes actuales
 
-        # Graficamos un punto rojo en el punto del espectro más cercano.
-        new_point = ax.plot([x],[y],'ro', picker=5)
-            
-        self.agregar_punto(Punto(x, y, new_point[0]))
-        draw()  # refrescamos el grafico.
+            # Graficamos un punto rojo en el punto del espectro más cercano.
+            new_point = ax.plot([x],[y],'ro', picker=5)
+                
+            self.agregar_punto(Punto(x, y, new_point[0]))
+            draw()  # refrescamos el grafico.
 
 #-------------------------------------------------------------------------------
     def click(self, event):
@@ -101,10 +102,8 @@ class Inter_Grafica:
 #Normalizo los datos para poder trabajar con el gráfico en iguales dimenciones de 0 a 1
                 eje_y_normalizado = []
                 
-                # print("Flujo linea 75 ", self.espectro.flujo[100])
                 for i in self.espectro.flujo:
                     eje_y_normalizado.append(math.log(i,10))
-                # print("Flujo linea después  75 ", eje_y_normalizado[100])
                 eje_x = self.espectro.l_onda
 
                 x, y = encontrar_punto_mas_cercano_normalizado(clic_x, clic_y, eje_x, eje_y_normalizado)
