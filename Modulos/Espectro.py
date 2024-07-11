@@ -136,7 +136,7 @@ class Espectro:
         self.axes.set_xlabel('$\lambda$ [$\AA$]')
         self.axes.set_ylabel('$\log (F_{\lambda})$')
         self.axes.axvline(x=3700., color='k')
-        self.axes.plot(self.l_onda, self.log_flujo, 'b-')
+        self.axes.plot(self.l_onda, self.log_flujo, 'b-', linewidth=0.7)
 
 #
 # Grafico los ajustes realizados hasta el momento
@@ -321,6 +321,9 @@ class Espectro:
         plt.savefig(f_ajuste)
         plt.clf()
         # input("Fin de impresion...")
+
+        #Mostramos la figura guardada en pantalla
+        f_png= Image.open(f_ajuste).show()
 #
         if n == 1:
 #
